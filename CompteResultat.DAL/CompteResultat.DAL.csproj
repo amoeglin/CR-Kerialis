@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9170E3D4-8E97-478E-9F4D-7D4471B16E37}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CompteResultat.DAL</RootNamespace>
+    <AssemblyName>CompteResultat.DAL</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AgeLabel.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AgeLabelExt.cs" />
+    <Compile Include="Assureur.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Cadencier.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CadencierExt.cs" />
+    <Compile Include="CDemoData.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CDemoDataWithoutOption.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CollabExterne.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="College.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CollegeExt.cs" />
+    <Compile Include="Company.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CompanyGroup.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CompteResult.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CompteResultatModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompteResultatModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CompteResultatModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CompteResultatModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompteResultatModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Contract.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CotisatPrev.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CotisatSante.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CRPlanning.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="C_TempExpData.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="C_TempOtherFields.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DecomptePrev.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Demography.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Distributeur.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Domain.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GroupGarantySante.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Import.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MyCompany.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PrestSante.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProvPrev.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProvPrevExt.cs" />
+    <Compile Include="ReAssureur.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ReportData.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ReportFile.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ReportTemplate.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SinistrePrev.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TempExpDataExt.cs" />
+    <Compile Include="ContractExt.cs" />
+    <Compile Include="SinistrePrevExt.cs" />
+    <Compile Include="CotisatSanteExt.cs" />
+    <Compile Include="CRPlanningExt.cs" />
+    <Compile Include="DBHelper.cs" />
+    <Compile Include="AssureurExt.cs" />
+    <Compile Include="BulkInsert.cs" />
+    <Compile Include="CompteResultExt.cs" />
+    <Compile Include="CompanyExt.cs" />
+    <Compile Include="DecomptePrevExt.cs" />
+    <Compile Include="DemographyExt.cs" />
+    <Compile Include="GenericClasses.cs" />
+    <Compile Include="GroupGarantySanteExt.cs" />
+    <Compile Include="ImportExt.cs" />
+    <Compile Include="MyCompanyExt.cs" />
+    <Compile Include="PrestSanteExt.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportFileExt.cs" />
+    <Compile Include="ReportTemplateExt.cs" />
+    <Compile Include="CotisatPrevExt.cs" />
+    <Compile Include="TempOtherFieldsExt.cs" />
+    <Compile Include="TypePrevoyance.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TypePrevoyanceExt.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <EntityDeploy Include="CompteResultatModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>CompteResultatModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="CompteResultatModel.edmx.diagram">
+      <DependentUpon>CompteResultatModel.edmx</DependentUpon>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CompteResultat.Common\CompteResultat.Common.csproj">
+      <Project>{65e37324-1ada-4bce-843e-9115c0f0e0e0}</Project>
+      <Name>CompteResultat.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CompteResultatModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>CompteResultatModel.edmx</DependentUpon>
+      <LastGenOutput>CompteResultatModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="CompteResultatModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>CompteResultatModel.edmx</DependentUpon>
+      <LastGenOutput>CompteResultatModel.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

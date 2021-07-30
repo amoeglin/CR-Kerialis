@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="4589511cd0d24af7a4e58a9e6bd67b3f" Name="Diagram1" ZoomLevel="80">
+        <EntityTypeShape EntityType="CompteResultatModel.Assureur" Width="1.5" PointX="0.875" PointY="7.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.Cadencier" Width="1.5" PointX="2.25" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.CollabExterne" Width="1.5" PointX="1.375" PointY="18.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.College" Width="1.5" PointX="2.25" PointY="3.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.Company" Width="1.5" PointX="5.375" PointY="3.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.CompanyGroup" Width="1.5" PointX="5" PointY="18.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.CompteResult" Width="1.5" PointX="7.5" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.Contract" Width="1.5" PointX="3.125" PointY="5.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.CotisatSante" Width="1.5" PointX="13.375" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.CRPlanning" Width="1.5" PointX="9.75" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.Demography" Width="1.5" PointX="11.5" PointY="9.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.Distributeur" Width="1.5" PointX="4.5" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.Domain" Width="1.5" PointX="3.25" PointY="18.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.MyCompany" Width="1.5" PointX="4.125" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.PrestSante" Width="1.5" PointX="13.375" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.ReAssureur" Width="1.5" PointX="2.25" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.ReportData" Width="1.5" PointX="9.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.ReportFile" Width="1.5" PointX="8.375" PointY="9.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.C_TempOtherFields" Width="1.5" PointX="11.5" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CompteResultatModel.Import" Width="1.5" PointX="5.75" PointY="0.5" IsExpanded="true" />
+        <AssociationConnector Association="CompteResultatModel.FK_Company_Company" ManuallyRouted="false" />
+        <AssociationConnector Association="CompteResultatModel.FK_CRPlanning_CompteResultat" ManuallyRouted="false" />
+        <AssociationConnector Association="CompteResultatModel.FK_ReportData_CompteResultat" ManuallyRouted="false" />
+        <AssociationConnector Association="CompteResultatModel.FK_ReportFile_CompteResultat" ManuallyRouted="false" />
+        <AssociationConnector Association="CompteResultatModel.IMAssContr" ManuallyRouted="false" />
+        <AssociationConnector Association="CompteResultatModel.IMContrDistrib" ManuallyRouted="false" />
+        <AssociationConnector Association="CompteResultatModel.IMReAssAss" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="CompteResultatModel.ReportTemplate" Width="1.75" PointX="7.625" PointY="0.5" />
+        <AssociationConnector Association="CompteResultatModel.IMContrComp" />
+        <EntityTypeShape EntityType="CompteResultatModel.AgeLabel" Width="1.5" PointX="0.5" PointY="3.5" />
+        <EntityTypeShape EntityType="CompteResultatModel.GroupGarantySante" Width="1.5" PointX="0.5" PointY="0.5" />
+        <EntityTypeShape EntityType="CompteResultatModel.CotisatPrev" Width="1.5" PointX="2.5" PointY="11.75" />
+        <EntityTypeShape EntityType="CompteResultatModel.DecomptePrev" Width="1.5" PointX="0.75" PointY="11.75" />
+        <EntityTypeShape EntityType="CompteResultatModel.SinistrePrev" Width="1.5" PointX="4.25" PointY="11.75" />
+        <AssociationConnector Association="CompteResultatModel.FK_ReportTemplate_ReportTemplate" />
+        <EntityTypeShape EntityType="CompteResultatModel.TypePrevoyance" Width="1.5" PointX="6.375" PointY="13.25" />
+        <EntityTypeShape EntityType="CompteResultatModel.C_TempExpData" Width="1.5" PointX="8.25" PointY="14" />
+        <EntityTypeShape EntityType="CompteResultatModel.ProvPrev" Width="1.5" PointX="10.375" PointY="13.75" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

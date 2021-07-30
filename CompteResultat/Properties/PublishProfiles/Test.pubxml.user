@@ -1,0 +1,436 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit http://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>http://localhost/CR3/</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="Account/ChangePassword.aspx">
+      <publishTime>03/14/2017 17:12:09</publishTime>
+    </File>
+    <File Include="Account/ChangePasswordSuccess.aspx">
+      <publishTime>03/14/2017 17:08:37</publishTime>
+    </File>
+    <File Include="Account/Logon.aspx">
+      <publishTime>03/15/2017 10:20:17</publishTime>
+    </File>
+    <File Include="Account/RecoverPassword.aspx">
+      <publishTime>03/15/2017 10:20:17</publishTime>
+    </File>
+    <File Include="Account/Register.aspx">
+      <publishTime>03/14/2017 17:16:44</publishTime>
+    </File>
+    <File Include="Account/Web.config">
+      <publishTime>03/15/2017 10:19:46</publishTime>
+    </File>
+    <File Include="ApplicationInsights.config">
+      <publishTime>03/14/2017 11:04:40</publishTime>
+    </File>
+    <File Include="App_Data/ErrorLog/ErrorLog.txt">
+      <publishTime>08/25/2017 14:43:23</publishTime>
+    </File>
+    <File Include="App_Data/ErrorLog/InfoLog.txt">
+      <publishTime>07/27/2017 17:36:21</publishTime>
+    </File>
+    <File Include="App_Data/Excel/CAD.xlsx">
+      <publishTime>08/03/2017 16:04:23</publishTime>
+    </File>
+    <File Include="App_Data/Excel/SDUPAS_Paramètres par défaut_GroupsEtGuarantees.xlsx">
+      <publishTime>08/03/2017 14:32:04</publishTime>
+    </File>
+    <File Include="App_Data/ExcelCR/Sante1.pptm">
+      <publishTime>08/25/2017 15:13:46</publishTime>
+    </File>
+    <File Include="App_Data/Logos/_Logo_Formation.jpg">
+      <publishTime>04/25/2017 14:47:39</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/PrevProvision.xlsm">
+      <publishTime>07/28/2017 10:22:14</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/ReportTemplate1 - 1an.pptm">
+      <publishTime>07/28/2017 10:23:19</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/ReportTemplate1 - 1an.xlsm">
+      <publishTime>08/04/2017 11:17:11</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/ReportTemplate1 - 2ans.pptm">
+      <publishTime>07/28/2017 10:23:19</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/ReportTemplate1 - 2ans.xlsm">
+      <publishTime>08/04/2017 11:17:13</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/ReportTemplate2 - 1an.pptm">
+      <publishTime>07/28/2017 10:23:23</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/ReportTemplate2 - 1an.xlsm">
+      <publishTime>08/04/2017 11:17:20</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/ReportTemplate2 - 2ans.pptm">
+      <publishTime>07/28/2017 10:23:23</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/ReportTemplate2 - 2ans.xlsm">
+      <publishTime>08/04/2017 11:17:08</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/ReportTemplate3 - 1an.pptm">
+      <publishTime>07/28/2017 10:23:26</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/ReportTemplate3 - 1an.xlsm">
+      <publishTime>08/04/2017 11:17:18</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/ReportTemplate3 - 2ans.pptm">
+      <publishTime>07/28/2017 10:23:26</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/ReportTemplate3 - 2ans.xlsm">
+      <publishTime>08/04/2017 11:17:15</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/ReportTemplatePrev1.pptm">
+      <publishTime>07/27/2017 16:23:58</publishTime>
+    </File>
+    <File Include="App_Data/ReportTemplates/ReportTemplatePrev1.xlsm">
+      <publishTime>07/28/2017 11:26:08</publishTime>
+    </File>
+    <File Include="App_Data/Upload/Test.txt">
+      <publishTime>07/26/2017 15:16:37</publishTime>
+    </File>
+    <File Include="bin/ApplicationInsights.config">
+      <publishTime>03/14/2017 11:04:40</publishTime>
+    </File>
+    <File Include="bin/CompteResultat.BL.dll">
+      <publishTime>04/08/2017 11:19:57</publishTime>
+    </File>
+    <File Include="bin/CompteResultat.BL.pdb">
+      <publishTime>04/08/2017 11:19:57</publishTime>
+    </File>
+    <File Include="bin/CompteResultat.Common.dll">
+      <publishTime>03/08/2017 11:33:19</publishTime>
+    </File>
+    <File Include="bin/CompteResultat.Common.pdb">
+      <publishTime>03/08/2017 11:33:19</publishTime>
+    </File>
+    <File Include="bin/CompteResultat.DAL.dll">
+      <publishTime>03/08/2017 16:38:50</publishTime>
+    </File>
+    <File Include="bin/CompteResultat.DAL.pdb">
+      <publishTime>03/08/2017 16:38:50</publishTime>
+    </File>
+    <File Include="bin/CompteResultat.dll">
+      <publishTime>08/25/2017 15:16:39</publishTime>
+    </File>
+    <File Include="bin/CompteResultat.dll.config">
+      <publishTime>08/25/2017 14:54:41</publishTime>
+    </File>
+    <File Include="bin/CompteResultat.pdb">
+      <publishTime>08/25/2017 15:16:39</publishTime>
+    </File>
+    <File Include="bin/de/DevExpress.Data.v17.1.resources.dll">
+      <publishTime>07/19/2017 10:42:11</publishTime>
+    </File>
+    <File Include="bin/de/DevExpress.Office.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:20</publishTime>
+    </File>
+    <File Include="bin/de/DevExpress.Pdf.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:21</publishTime>
+    </File>
+    <File Include="bin/de/DevExpress.Printing.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:21</publishTime>
+    </File>
+    <File Include="bin/de/DevExpress.RichEdit.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:31</publishTime>
+    </File>
+    <File Include="bin/de/DevExpress.Web.v17.1.resources.dll">
+      <publishTime>07/19/2017 10:41:58</publishTime>
+    </File>
+    <File Include="bin/DevExpress.Data.v17.1.dll">
+      <publishTime>07/19/2017 10:42:11</publishTime>
+    </File>
+    <File Include="bin/DevExpress.Office.v17.1.Core.dll">
+      <publishTime>07/19/2017 10:42:20</publishTime>
+    </File>
+    <File Include="bin/DevExpress.Pdf.v17.1.Core.dll">
+      <publishTime>07/19/2017 10:42:21</publishTime>
+    </File>
+    <File Include="bin/DevExpress.Printing.v17.1.Core.dll">
+      <publishTime>07/19/2017 10:42:21</publishTime>
+    </File>
+    <File Include="bin/DevExpress.RichEdit.v17.1.Core.dll">
+      <publishTime>07/19/2017 10:42:31</publishTime>
+    </File>
+    <File Include="bin/DevExpress.Web.ASPxThemes.v17.1.dll">
+      <publishTime>07/19/2017 10:42:03</publishTime>
+    </File>
+    <File Include="bin/DevExpress.Web.Resources.v17.1.dll">
+      <publishTime>07/19/2017 10:42:24</publishTime>
+    </File>
+    <File Include="bin/DevExpress.Web.v17.1.dll">
+      <publishTime>07/19/2017 10:41:59</publishTime>
+    </File>
+    <File Include="bin/EntityFramework.dll">
+      <publishTime>03/11/2015 17:43:42</publishTime>
+    </File>
+    <File Include="bin/EntityFramework.SqlServer.dll">
+      <publishTime>03/11/2015 17:43:42</publishTime>
+    </File>
+    <File Include="bin/EPPlus.dll">
+      <publishTime>07/14/2016 15:57:38</publishTime>
+    </File>
+    <File Include="bin/es/DevExpress.Data.v17.1.resources.dll">
+      <publishTime>07/19/2017 10:42:11</publishTime>
+    </File>
+    <File Include="bin/es/DevExpress.Office.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:20</publishTime>
+    </File>
+    <File Include="bin/es/DevExpress.Pdf.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:21</publishTime>
+    </File>
+    <File Include="bin/es/DevExpress.Printing.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:21</publishTime>
+    </File>
+    <File Include="bin/es/DevExpress.RichEdit.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:31</publishTime>
+    </File>
+    <File Include="bin/es/DevExpress.Web.v17.1.resources.dll">
+      <publishTime>07/19/2017 10:41:59</publishTime>
+    </File>
+    <File Include="bin/Excel.dll">
+      <publishTime>07/05/2014 09:57:36</publishTime>
+    </File>
+    <File Include="bin/Excel.pdb">
+      <publishTime>07/05/2014 09:57:36</publishTime>
+    </File>
+    <File Include="bin/GenericParsing.dll">
+      <publishTime>07/07/2017 15:15:29</publishTime>
+    </File>
+    <File Include="bin/ICSharpCode.SharpZipLib.dll">
+      <publishTime>03/01/2011 14:16:38</publishTime>
+    </File>
+    <File Include="bin/ja/DevExpress.Data.v17.1.resources.dll">
+      <publishTime>07/19/2017 10:42:11</publishTime>
+    </File>
+    <File Include="bin/ja/DevExpress.Office.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:20</publishTime>
+    </File>
+    <File Include="bin/ja/DevExpress.Pdf.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:21</publishTime>
+    </File>
+    <File Include="bin/ja/DevExpress.Printing.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:21</publishTime>
+    </File>
+    <File Include="bin/ja/DevExpress.RichEdit.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:31</publishTime>
+    </File>
+    <File Include="bin/ja/DevExpress.Web.v17.1.resources.dll">
+      <publishTime>07/19/2017 10:41:59</publishTime>
+    </File>
+    <File Include="bin/log4net.dll">
+      <publishTime>08/03/2017 19:26:22</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AI.Agent.Intercept.dll">
+      <publishTime>11/30/2016 16:07:42</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AI.DependencyCollector.dll">
+      <publishTime>07/12/2016 11:45:42</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AI.PerfCounterCollector.dll">
+      <publishTime>07/12/2016 11:50:34</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AI.ServerTelemetryChannel.dll">
+      <publishTime>06/12/2016 15:15:48</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AI.Web.dll">
+      <publishTime>07/12/2016 11:49:10</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AI.WindowsServer.dll">
+      <publishTime>07/12/2016 11:50:34</publishTime>
+    </File>
+    <File Include="bin/Microsoft.ApplicationInsights.dll">
+      <publishTime>06/12/2016 15:09:52</publishTime>
+    </File>
+    <File Include="bin/Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll">
+      <publishTime>06/15/2015 03:06:24</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Web.Infrastructure.dll">
+      <publishTime>05/01/2012 11:08:46</publishTime>
+    </File>
+    <File Include="bin/Newtonsoft.Json.dll">
+      <publishTime>02/04/2017 17:46:32</publishTime>
+    </File>
+    <File Include="bin/roslyn/csc.exe">
+      <publishTime>06/18/2015 21:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/Microsoft.Build.Tasks.CodeAnalysis.dll">
+      <publishTime>06/18/2015 21:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/Microsoft.CodeAnalysis.CSharp.dll">
+      <publishTime>06/18/2015 21:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/Microsoft.CodeAnalysis.dll">
+      <publishTime>06/18/2015 21:19:44</publishTime>
+    </File>
+    <File Include="bin/roslyn/Microsoft.CodeAnalysis.VisualBasic.dll">
+      <publishTime>06/18/2015 21:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/Microsoft.CSharp.Core.targets">
+      <publishTime>06/18/2015 21:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/Microsoft.VisualBasic.Core.targets">
+      <publishTime>06/18/2015 21:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/System.Collections.Immutable.dll">
+      <publishTime>06/18/2015 21:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/System.Reflection.Metadata.dll">
+      <publishTime>06/18/2015 21:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/vbc.exe">
+      <publishTime>06/18/2015 21:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/VBCSCompiler.exe">
+      <publishTime>06/18/2015 21:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/VBCSCompiler.exe.config">
+      <publishTime>06/18/2015 21:19:46</publishTime>
+    </File>
+    <File Include="bin/ru/DevExpress.Data.v17.1.resources.dll">
+      <publishTime>07/19/2017 10:42:11</publishTime>
+    </File>
+    <File Include="bin/ru/DevExpress.Office.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:20</publishTime>
+    </File>
+    <File Include="bin/ru/DevExpress.Pdf.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:21</publishTime>
+    </File>
+    <File Include="bin/ru/DevExpress.Printing.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:21</publishTime>
+    </File>
+    <File Include="bin/ru/DevExpress.RichEdit.v17.1.Core.resources.dll">
+      <publishTime>07/19/2017 10:42:31</publishTime>
+    </File>
+    <File Include="bin/ru/DevExpress.Web.v17.1.resources.dll">
+      <publishTime>07/19/2017 10:41:59</publishTime>
+    </File>
+    <File Include="CompteResultatAutomatique.aspx">
+      <publishTime>06/15/2017 13:11:57</publishTime>
+    </File>
+    <File Include="CompteResultatManuel.aspx">
+      <publishTime>08/25/2017 11:25:21</publishTime>
+    </File>
+    <File Include="Default.aspx">
+      <publishTime>07/13/2017 16:13:41</publishTime>
+    </File>
+    <File Include="Default2.aspx">
+      <publishTime>07/19/2017 14:31:46</publishTime>
+    </File>
+    <File Include="FileManager.aspx">
+      <publishTime>07/19/2017 14:31:29</publishTime>
+    </File>
+    <File Include="GestionCadencier.aspx">
+      <publishTime>07/13/2017 16:25:22</publishTime>
+    </File>
+    <File Include="GestionEntreprises.aspx">
+      <publishTime>04/05/2017 14:44:01</publishTime>
+    </File>
+    <File Include="GestionGaranties.aspx">
+      <publishTime>07/13/2017 16:25:15</publishTime>
+    </File>
+    <File Include="GestionLots.aspx">
+      <publishTime>06/15/2017 13:08:46</publishTime>
+    </File>
+    <File Include="GestionUtilisateurs.aspx">
+      <publishTime>03/05/2017 15:47:09</publishTime>
+    </File>
+    <File Include="Global.asax">
+      <publishTime>03/14/2017 11:07:45</publishTime>
+    </File>
+    <File Include="ImageHandler.ashx">
+      <publishTime>04/19/2017 16:19:17</publishTime>
+    </File>
+    <File Include="Images/ajax-loader.gif">
+      <publishTime>06/15/2017 15:28:32</publishTime>
+    </File>
+    <File Include="Images/assur.png">
+      <publishTime>05/19/2017 14:38:10</publishTime>
+    </File>
+    <File Include="Images/company.png">
+      <publishTime>05/19/2017 14:32:25</publishTime>
+    </File>
+    <File Include="Images/contract.png">
+      <publishTime>05/19/2017 14:32:16</publishTime>
+    </File>
+    <File Include="Images/cr.jpg">
+      <publishTime>02/05/2017 16:54:45</publishTime>
+    </File>
+    <File Include="Images/deletePath.jpg">
+      <publishTime>07/21/2017 15:59:12</publishTime>
+    </File>
+    <File Include="Images/deletePath16.jpg">
+      <publishTime>07/21/2017 16:01:15</publishTime>
+    </File>
+    <File Include="Images/subsid.png">
+      <publishTime>02/05/2017 16:54:24</publishTime>
+    </File>
+    <File Include="Images/user.jpg">
+      <publishTime>02/05/2017 17:02:37</publishTime>
+    </File>
+    <File Include="ImportData.aspx">
+      <publishTime>07/26/2017 11:35:55</publishTime>
+    </File>
+    <File Include="MonEntreprise.aspx">
+      <publishTime>04/24/2017 16:23:50</publishTime>
+    </File>
+    <File Include="packages.config">
+      <publishTime>01/01/0001 00:00:00</publishTime>
+    </File>
+    <File Include="Scripts/jquery-3.1.1.js">
+      <publishTime>04/19/2017 17:10:22</publishTime>
+    </File>
+    <File Include="Scripts/jquery-3.1.1.min.js">
+      <publishTime>04/19/2017 17:10:22</publishTime>
+    </File>
+    <File Include="Scripts/jquery-3.1.1.min.map">
+      <publishTime>04/19/2017 17:10:22</publishTime>
+    </File>
+    <File Include="Scripts/jquery-3.1.1.slim.js">
+      <publishTime>04/19/2017 17:10:22</publishTime>
+    </File>
+    <File Include="Scripts/jquery-3.1.1.slim.min.js">
+      <publishTime>04/19/2017 17:10:21</publishTime>
+    </File>
+    <File Include="Scripts/jquery-3.1.1.slim.min.map">
+      <publishTime>04/19/2017 17:10:21</publishTime>
+    </File>
+    <File Include="Site.Master">
+      <publishTime>03/08/2017 14:10:33</publishTime>
+    </File>
+    <File Include="Stats.aspx">
+      <publishTime>06/15/2017 13:08:46</publishTime>
+    </File>
+    <File Include="Styles/Site.css">
+      <publishTime>03/08/2017 14:07:06</publishTime>
+    </File>
+    <File Include="Test.aspx">
+      <publishTime>07/26/2017 15:18:19</publishTime>
+    </File>
+    <File Include="TEST.html">
+      <publishTime>05/16/2017 14:22:56</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>08/25/2017 15:06:29</publishTime>
+    </File>
+    <File Include="_TestPages/EFTest.aspx">
+      <publishTime>05/12/2017 16:46:42</publishTime>
+    </File>
+    <File Include="_TestPages/ODSTest.aspx">
+      <publishTime>04/14/2017 15:55:43</publishTime>
+    </File>
+    <File Include="_TestPages/SQL-OBJDS.aspx">
+      <publishTime>04/14/2017 15:59:11</publishTime>
+    </File>
+    <File Include="_TestPages/TreeView.aspx">
+      <publishTime>04/03/2017 17:50:43</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

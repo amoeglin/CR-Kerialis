@@ -1,0 +1,244 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.Master.cs" Inherits="CompteResultat.Site" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head runat="server">
+    <title></title>
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <link href="~/Styles/Site.css?v=<%= DateTime.Now.TimeOfDay %>" rel="stylesheet" type="text/css" />
+
+
+    <script src="Scripts/jquery-3.1.1.min.js" type="text/javascript" ></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#menu").css("display", "block");
+        });
+
+    </script>
+
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server">
+        
+
+    </asp:ContentPlaceHolder>
+</head>
+
+
+<body>
+    <form id="form1" runat="server">
+    
+    <div class="page">
+        <div class="header">
+            <div class="logoTitle">
+                <span><img class="logo" src="./Images/kerialis.png" alt="" /> </span>
+                <span class="title">
+                    <h1>CRPS COMPTES DE RESULTATS SANTE ET PREVOYANCE</h1>
+                </span>
+            </div>
+            <div class="loginDisplay">
+                <asp:LoginView ID="HeadLoginView" runat="server" EnableViewState="false">
+                    <AnonymousTemplate>
+                        [ <a href="~/Account/Logon.aspx" id="HeadLoginStatus" runat="server">Log In</a>
+                        ]
+                    </AnonymousTemplate>
+                    <LoggedInTemplate>
+                        Bonjour <span class="bold" style="text-decoration: underline">
+                            <a href="~/Account/ChangePassword.aspx" id="A1" runat="server">
+                            <asp:LoginName ID="HeadLoginName" runat="server" />
+                        </span>! </a> [
+                        <asp:LoginStatus style="text-decoration: underline" ID="HeadLoginStatus" runat="server" LogoutAction="Redirect" LogoutText="Log Out"
+                            LogoutPageUrl="~/" />
+                        ] 
+                       
+                        <button type="button" data-toggle="modal" data-target="#exampleModal" class="btn btn-secondary btn-sm ml-2" >
+                            <span style="color: #00A8BC;"><i class="fas fa-info-circle"></i></span>&nbsp; A propos</button>
+                        
+                    </LoggedInTemplate>
+                </asp:LoginView>
+                <asp:Label  ID="SoftVersion" runat="server" Text="Label"></asp:Label>
+            </div>
+
+            <% if (IsAdmin == false ){ %>
+
+                <div id="navbar" class="clear hideSkiplink" style="display:none;">
+                    <asp:Menu ID="Menu1" runat="server" CssClass="menu" EnableViewState="false"
+                        IncludeStyleBlock="false" Orientation="Horizontal">
+                        <Items>                       
+                            <asp:MenuItem NavigateUrl="~/ImportData.aspx" Text="Import" /> 
+                            
+                            <asp:MenuItem Selectable="false"   Text="Synthese" >
+                                <asp:MenuItem NavigateUrl="~/SyntheseSante.aspx" Text="Synthese Santé" />                            
+                                <asp:MenuItem NavigateUrl="~/SynthesePrev.aspx" Text="Synthese Prevoyance" />                                
+                            </asp:MenuItem>  
+
+                            <asp:MenuItem NavigateUrl="~/CompteResultatManuel.aspx" Text="Génération des Comptes de Résultats Santé et Prévoyance" />
+                            <asp:MenuItem NavigateUrl="~/FileManager.aspx" Text="Liste des Comptes résultats" /> 
+                        
+                            <asp:MenuItem Selectable="false"   Text="Paramètrage" >
+                                <asp:MenuItem NavigateUrl="~/MonEntreprise.aspx" Text="Mon Entreprise" />                            
+                                <asp:MenuItem NavigateUrl="~/GestionGaranties.aspx" Text="Groupes et Garanties Santé" />
+                                <asp:MenuItem NavigateUrl="~/GestionExperience.aspx" Text="Experience Santé" />
+                                <asp:MenuItem NavigateUrl="~/GestionCadencier.aspx" Text="Cadenciers Santé" />
+                                <asp:MenuItem NavigateUrl="~/GestionTypePrev.aspx" Text="Type Prevoyance" />
+                                <asp:MenuItem NavigateUrl="~/GestionEntreprises.aspx" Text="Paramètres des Entreprises" /> 
+                            </asp:MenuItem>  
+                            
+                                               
+                        </Items>
+                    </asp:Menu>
+                </div>
+
+            <%} %>
+            <% else{ %>
+
+                <div class="clear hideSkiplink" >
+                    <asp:Menu  ID="menu" runat="server" CssClass="menu" EnableViewState="false" style="display:none;"
+                        IncludeStyleBlock="false" Orientation="Horizontal">
+                        <Items>                            
+                            <asp:MenuItem NavigateUrl="~/ImportData.aspx" Text="Import" /> 
+                            
+                            <asp:MenuItem Selectable="false"   Text="Synthese" >
+                                <asp:MenuItem NavigateUrl="~/SyntheseSante.aspx" Text="Synthese Santé" />                            
+                                <asp:MenuItem NavigateUrl="~/SynthesePrev.aspx" Text="Synthese Prevoyance" />                                
+                            </asp:MenuItem>  
+
+                            <asp:MenuItem NavigateUrl="~/CompteResultatManuel.aspx" Text="Génération des Comptes de Résultats Santé et Prévoyance" />
+                            <asp:MenuItem NavigateUrl="~/FileManager.aspx" Text="Liste des Comptes résultats" />                             
+                        
+                            <asp:MenuItem Selectable="false"   Text="Paramètrage" >
+                                <asp:MenuItem NavigateUrl="~/MonEntreprise.aspx" Text="Mon Entreprise" />
+                                <asp:MenuItem NavigateUrl="~/GestionUtilisateurs.aspx" Text="Liste des Utilisateurs" />                            
+                                <asp:MenuItem NavigateUrl="~/GestionGaranties.aspx" Text="Groupes et Garanties Santé" />
+                                <asp:MenuItem NavigateUrl="~/GestionExperience.aspx" Text="Experience Santé" />
+                                <asp:MenuItem NavigateUrl="~/GestionCadencier.aspx" Text="Cadenciers Santé" />
+                                <asp:MenuItem NavigateUrl="~/GestionTypePrev.aspx" Text="Type Prevoyance" />
+                                <asp:MenuItem NavigateUrl="~/GestionEntreprises.aspx" Text="Paramètres des Entreprises" />
+                            </asp:MenuItem> 
+                            
+                            <asp:MenuItem Value="Purge" NavigateUrl="~/Purge.aspx" Text="Purge" />                         
+                        </Items>
+                    </asp:Menu>
+                </div>
+
+            <%} %>
+
+        </div>
+
+        <div class="main">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+        </div>
+
+        <div class="clear">
+        </div>        
+    </div>
+
+    <div class="footer">
+    </div>
+
+    </form>
+
+
+    <div  class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog"  role="document">
+        <div class="modal-content text-white" style="background-color: #00A8BC">
+          <div class="modal-header">
+            <h3 class="modal-title text-white" style="font-size:15px; color:white;" id="exampleModalLabel">A propos</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" style="font-size:15px;">
+              <div class="container">
+                <div class="row mb-3">
+                    <div class="col-md-8 offset-md-2">                        
+                        <asp:Image ID="imgLogo" runat="server" ImageUrl="./Images/moeglin.png" class="rounded mx-auto d-block"  />
+                    </div>                    
+                </div>
+                
+                <%--Abacus--%>
+                <div class="row">
+                    <div class="col-md-6 ">
+                        Abacus Actuaries Services Ltd<br />
+                        <%--34 boulevard du Midi<br />
+                        06150 Cannes la Bocca<br />--%>
+                        <br />
+                        <%--Tel : +33 4 93 90 54 15<br />
+                        Fax : +33 4 93 49 91 18<br />
+                        <br />--%>
+                        Email : <a href="mailto: support@actuariesservices.com">support@actuariesservices.com</a><br />
+                    </div>
+                    <div class="col-md-6 ">
+                        Cabinet d'actuaires consultants<br />
+                        <br />
+                        Etudes actuarielles<br />
+                        Développement de logiciels<br />
+                        Formation<br />
+                        Règlementation<br />
+                        Certification<br />
+                        Expertise judiciaire<br />
+                    </div>
+                </div>
+
+
+                <%--Cabinet Moeglin
+                <div class="row">
+                    <div class="col-md-6 ">
+                        Cabinet Moeglin<br />
+                        34 boulevard du Midi<br />
+                        06150 Cannes la Bocca<br />
+                        <br />
+                        Tel : +33 4 93 90 54 15<br />
+                        Fax : +33 4 93 49 91 18<br />
+                        <br />
+                        Email : <a href="mailto: support@moeglin.com">support@moeglin.com</a><br />
+                    </div>
+                    <div class="col-md-6 ">
+                        Cabinet d'actuaires consultants<br />
+                        <br />
+                        Etudes actuarielles<br />
+                        Développement de logiciels<br />
+                        Formation<br />
+                        Règlementation<br />
+                        Certification<br />
+                        Expertise judiciaire<br />
+                    </div>
+                </div>--%>
+                   <hr />
+                <div class="row">
+                    <div class="col-md-12 text-center text-white">
+                        <h3 style="color:white; font-weight:bold">COMPTES DE RESULTATS SANTE ET PREVOYANCE<br /></h3>
+                        <br />
+                        <asp:Label ID="SoftVersion2" runat="server" Text="Label"></asp:Label>
+                        <%--<br />
+                        Version : 1.0.0<br />--%>
+                    </div>
+                </div>
+
+                <%--<div class="row">
+                    <div class="col-md-12 text-center ">
+                        <a href="http://www.moeglin.com" target="_blank">www.moeglin.com</a>   
+                    </div>
+                </div>--%>
+
+              </div>
+            
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-info" style="" data-dismiss="modal">Fermer</button>            
+          </div>
+        </div>
+      </div>
+    </div>
+
+</body>
+</html>

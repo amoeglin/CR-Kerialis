@@ -1,0 +1,1908 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="CompteResultatModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="_TempExpData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ImportId" Type="int" />
+          <Property Name="AssureurName" Type="nvarchar" MaxLength="100" />
+          <Property Name="Au" Type="date" />
+          <Property Name="Contrat" Type="nvarchar" MaxLength="100" />
+          <Property Name="CodCol" Type="nvarchar" MaxLength="100" />
+          <Property Name="AnneeExp" Type="int" />
+          <Property Name="LibActe" Type="nvarchar" MaxLength="200" />
+          <Property Name="LibFam" Type="nvarchar" MaxLength="200" />
+          <Property Name="TypeCas" Type="nchar" MaxLength="20" />
+          <Property Name="NombreActe" Type="int" />
+          <Property Name="Fraisreel" Type="float" />
+          <Property Name="Rembss" Type="float" />
+          <Property Name="RembAnnexe" Type="float" />
+          <Property Name="RembNous" Type="float" />
+          <Property Name="Reseau" Type="nchar" MaxLength="20" />
+          <Property Name="MinFr" Type="float" />
+          <Property Name="MaxFr" Type="float" />
+          <Property Name="MinNous" Type="float" />
+          <Property Name="MaxNous" Type="float" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'CompteResultat.dbo._TempOtherFields' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="_TempOtherFields">
+          <Key>
+            <PropertyRef Name="ImportId" />
+          </Key>
+          <Property Name="ImportId" Type="int" Nullable="false" />
+          <Property Name="Assureur" Type="nvarchar" MaxLength="100" />
+          <Property Name="ContractId" Type="nvarchar" MaxLength="100" />
+          <Property Name="Company" Type="nvarchar" MaxLength="100" />
+          <Property Name="Subsid" Type="nvarchar" MaxLength="100" />
+          <Property Name="Gestionnaire" Type="nvarchar" MaxLength="50" />
+          <Property Name="Apporteur" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="AgeLabel">
+          <Key>
+            <PropertyRef Name="Age" />
+          </Key>
+          <Property Name="Age" Type="int" Nullable="false" />
+          <Property Name="Label" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Assureur">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ImportId" Type="int" />
+          <Property Name="ReAssureurId" Type="int" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Cadencier">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AssureurName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Year" Type="int" />
+          <Property Name="DebutSurvenance" Type="date" />
+          <Property Name="FinSurvenance" Type="date" />
+          <Property Name="Month" Type="int" />
+          <Property Name="Cumul" Type="float" />
+        </EntityType>
+        <EntityType Name="CollabExterne">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="College">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Company">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ImportId" Type="int" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="ContactName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" />
+          <Property Name="Address" Type="nvarchar" MaxLength="100" />
+          <Property Name="Telephone" Type="nvarchar" MaxLength="20" />
+          <Property Name="Logo" Type="nvarchar" MaxLength="200" />
+          <Property Name="Type" Type="int" />
+          <Property Name="ParentId" Type="int" />
+        </EntityType>
+        <EntityType Name="CompanyGroups">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" />
+          <Property Name="ContractIDList" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="CompteResult">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="200" />
+          <Property Name="AssurIds" Type="nvarchar(max)" />
+          <Property Name="CompanyIds" Type="nvarchar(max)" />
+          <Property Name="SubsidIds" Type="nvarchar(max)" />
+          <Property Name="ContractIds" Type="nvarchar(max)" />
+          <Property Name="ReportLevelId" Type="int" />
+          <Property Name="CollegeId" Type="int" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreationDate" Type="date" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="IsAutoGenerated" Type="bit" />
+          <Property Name="TaxDefault" Type="float" />
+          <Property Name="TaxActif" Type="float" />
+          <Property Name="TaxPerif" Type="float" />
+          <Property Name="ReportType" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Contract">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ImportId" Type="int" />
+          <Property Name="ContractId" Type="nvarchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CotisatPrev">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ImportId" Type="int" Nullable="false" />
+          <Property Name="AssureurName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ContractId" Type="nvarchar" MaxLength="100" />
+          <Property Name="Company" Type="nvarchar" MaxLength="100" />
+          <Property Name="Subsid" Type="nvarchar" MaxLength="100" />
+          <Property Name="CodeCol" Type="nvarchar" MaxLength="100" />
+          <Property Name="Year" Type="int" />
+          <Property Name="DebPrime" Type="date" />
+          <Property Name="FinPrime" Type="date" />
+          <Property Name="Cotisation" Type="float" />
+          <Property Name="CotisationBrute" Type="float" />
+        </EntityType>
+        <EntityType Name="CotisatSante">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ImportId" Type="int" Nullable="false" />
+          <Property Name="AssureurName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ContractId" Type="nvarchar" MaxLength="100" />
+          <Property Name="Company" Type="nvarchar" MaxLength="100" />
+          <Property Name="Subsid" Type="nvarchar" MaxLength="100" />
+          <Property Name="CodeCol" Type="nvarchar" MaxLength="100" />
+          <Property Name="Year" Type="int" />
+          <Property Name="DebPrime" Type="date" />
+          <Property Name="FinPrime" Type="date" />
+          <Property Name="Cotisation" Type="float" />
+          <Property Name="WithOption" Type="nvarchar" MaxLength="10" />
+          <Property Name="CotisationBrute" Type="float" />
+        </EntityType>
+        <EntityType Name="CRPlanning">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CRId" Type="int" />
+          <Property Name="DateArret" Type="date" />
+          <Property Name="DebutPeriode" Type="date" />
+          <Property Name="FinPeriode" Type="date" />
+          <Property Name="DatePlanification" Type="date" />
+          <Property Name="DateTraitement" Type="date" />
+          <Property Name="CalcProv" Type="bit" />
+        </EntityType>
+        <EntityType Name="DecomptePrev">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ImportId" Type="int" Nullable="false" />
+          <Property Name="AssureurName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ContractId" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Company" Type="nvarchar" MaxLength="100" />
+          <Property Name="Subsid" Type="nvarchar" MaxLength="100" />
+          <Property Name="Dossier" Type="nvarchar" MaxLength="30" />
+          <Property Name="CodeCol" Type="nvarchar" MaxLength="100" />
+          <Property Name="Apporteur" Type="nvarchar" MaxLength="50" />
+          <Property Name="Gestionnaire" Type="nvarchar" MaxLength="50" />
+          <Property Name="DatePayement" Type="date" />
+          <Property Name="DateVirement" Type="date" />
+          <Property Name="DateSin" Type="date" />
+          <Property Name="DebSin" Type="date" />
+          <Property Name="FinSin" Type="date" />
+          <Property Name="DateExtraction" Type="date" />
+          <Property Name="Total" Type="float" />
+        </EntityType>
+        <EntityType Name="Demography">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ImportId" Type="int" Nullable="false" />
+          <Property Name="AssureurName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ContractId" Type="nvarchar" MaxLength="100" />
+          <Property Name="Company" Type="nvarchar" MaxLength="100" />
+          <Property Name="Subsid" Type="nvarchar" MaxLength="100" />
+          <Property Name="DateDemo" Type="date" />
+          <Property Name="Age" Type="int" />
+          <Property Name="Sexe" Type="nvarchar" MaxLength="10" />
+          <Property Name="CodeCol" Type="nvarchar" MaxLength="100" />
+          <Property Name="Lien" Type="nvarchar" MaxLength="30" />
+          <Property Name="WithOption" Type="nvarchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="Distributeur">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ContractId" Type="int" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Adress" Type="nvarchar" MaxLength="100" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" />
+          <Property Name="Telephone" Type="nchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="Domain">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" />
+          <Property Name="CompanyList" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="GroupGarantySante">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AssureurName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="GroupName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="GarantyName" Type="nvarchar" MaxLength="50" />
+          <Property Name="CodeActe" Type="nvarchar" MaxLength="20" />
+          <Property Name="OrderNumber" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IMAssContr">
+          <Key>
+            <PropertyRef Name="IdAssurance" />
+            <PropertyRef Name="IdContract" />
+          </Key>
+          <Property Name="IdAssurance" Type="int" Nullable="false" />
+          <Property Name="IdContract" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IMContrComp">
+          <Key>
+            <PropertyRef Name="IdContract" />
+            <PropertyRef Name="IdCompany" />
+          </Key>
+          <Property Name="IdContract" Type="int" Nullable="false" />
+          <Property Name="IdCompany" Type="int" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'CompteResultat.dbo.IMContrDistrib' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="IMContrDistrib">
+          <Key>
+            <PropertyRef Name="IdContract" />
+            <PropertyRef Name="IdDistrib" />
+          </Key>
+          <Property Name="IdContract" Type="int" Nullable="false" />
+          <Property Name="IdDistrib" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Import">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Date" Type="date" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="IMReAssAss">
+          <Key>
+            <PropertyRef Name="ReAssId" />
+            <PropertyRef Name="AssId" />
+          </Key>
+          <Property Name="ReAssId" Type="int" Nullable="false" />
+          <Property Name="AssId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MyCompany">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Address" Type="nvarchar" MaxLength="200" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="50" />
+          <Property Name="Logo" Type="nvarchar" MaxLength="200" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" />
+          <Property Name="ServerSMTP" Type="nvarchar" MaxLength="50" />
+          <Property Name="PassSMTP" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="PrestSante">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ImportId" Type="int" Nullable="false" />
+          <Property Name="AssureurName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ContractId" Type="nvarchar" MaxLength="100" />
+          <Property Name="Company" Type="nvarchar" MaxLength="100" />
+          <Property Name="Subsid" Type="nvarchar" MaxLength="100" />
+          <Property Name="DateVision" Type="date" />
+          <Property Name="CodeCol" Type="nvarchar" MaxLength="100" />
+          <Property Name="DateSoins" Type="date" />
+          <Property Name="CodeActe" Type="nvarchar" MaxLength="20" />
+          <Property Name="GroupName" Type="nvarchar" MaxLength="50" />
+          <Property Name="GarantyName" Type="nvarchar" MaxLength="50" />
+          <Property Name="NombreActe" Type="int" />
+          <Property Name="FraisReel" Type="float" />
+          <Property Name="RembSS" Type="float" />
+          <Property Name="RembAnnexe" Type="float" />
+          <Property Name="RembNous" Type="float" />
+          <Property Name="CAS" Type="nvarchar" MaxLength="10" />
+          <Property Name="Reseau" Type="nvarchar" MaxLength="100" />
+          <Property Name="DatePayment" Type="date" />
+          <Property Name="PrixUnit" Type="float" />
+          <Property Name="Beneficiaire" Type="nvarchar" MaxLength="50" />
+          <Property Name="WithOption" Type="nvarchar" MaxLength="10" />
+          <Property Name="BO1" Type="nvarchar" MaxLength="50" />
+          <Property Name="BO2" Type="nvarchar" MaxLength="50" />
+          <Property Name="Test" Type="int" />
+        </EntityType>
+        <EntityType Name="ProvPrev">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ImportId" Type="int" Nullable="false" />
+          <Property Name="AssureurName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ContractId" Type="nvarchar" MaxLength="100" />
+          <Property Name="Company" Type="nvarchar" MaxLength="100" />
+          <Property Name="Subsid" Type="nvarchar" MaxLength="100" />
+          <Property Name="Dossier" Type="nvarchar" MaxLength="50" />
+          <Property Name="CodeCol" Type="nvarchar" MaxLength="100" />
+          <Property Name="Title" Type="nvarchar" MaxLength="10" />
+          <Property Name="Firstname" Type="nvarchar" MaxLength="50" />
+          <Property Name="Lastname" Type="nvarchar" MaxLength="50" />
+          <Property Name="Birthdate" Type="date" />
+          <Property Name="DateSinistre" Type="date" />
+          <Property Name="NatureSinistre" Type="nvarchar" MaxLength="50" />
+          <Property Name="CauseSinistre" Type="nvarchar" MaxLength="50" />
+          <Property Name="DebVal" Type="date" />
+          <Property Name="FinVal" Type="date" />
+          <Property Name="DateRecep" Type="date" />
+          <Property Name="DateRechute" Type="date" />
+          <Property Name="DateClo" Type="date" />
+          <Property Name="MotifClo" Type="nvarchar" MaxLength="50" />
+          <Property Name="DatePayment" Type="date" />
+          <Property Name="DateProvision" Type="date" />
+          <Property Name="Matricule" Type="nvarchar" MaxLength="100" />
+          <Property Name="Pm" Type="float" />
+          <Property Name="PmPassage" Type="float" />
+          <Property Name="Psap" Type="float" />
+          <Property Name="PmMgdc" Type="float" />
+          <Property Name="Psi" Type="float" />
+        </EntityType>
+        <EntityType Name="ReAssureur">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ReportData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CRId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ReportFile">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CRId" Type="int" Nullable="false" />
+          <Property Name="FileType" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="FileLocation" Type="nvarchar" MaxLength="200" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ReportTemplate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" />
+          <Property Name="FileName" Type="nvarchar" MaxLength="50" />
+          <Property Name="YearsToCalc" Type="int" />
+          <Property Name="Type" Type="nvarchar" MaxLength="20" />
+          <Property Name="WithOption" Type="bit" />
+          <Property Name="DisplayOrder" Type="int" />
+        </EntityType>
+        <EntityType Name="SinistrePrev">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ImportId" Type="int" Nullable="false" />
+          <Property Name="AssureurName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ContractId" Type="nvarchar" MaxLength="100" />
+          <Property Name="Company" Type="nvarchar" MaxLength="100" />
+          <Property Name="Subsid" Type="nvarchar" MaxLength="100" />
+          <Property Name="Dossier" Type="nvarchar" MaxLength="50" />
+          <Property Name="CodeCol" Type="nvarchar" MaxLength="100" />
+          <Property Name="Title" Type="nvarchar" MaxLength="10" />
+          <Property Name="Firstname" Type="nvarchar" MaxLength="50" />
+          <Property Name="Lastname" Type="nvarchar" MaxLength="50" />
+          <Property Name="Birthdate" Type="date" />
+          <Property Name="DateSinistre" Type="date" />
+          <Property Name="NatureSinistre" Type="nvarchar" MaxLength="50" />
+          <Property Name="CauseSinistre" Type="nvarchar" MaxLength="50" />
+          <Property Name="DebVal" Type="date" />
+          <Property Name="FinVal" Type="date" />
+          <Property Name="DateRecep" Type="date" />
+          <Property Name="DateRechute" Type="date" />
+          <Property Name="DateClo" Type="date" />
+          <Property Name="MotifClo" Type="nvarchar" MaxLength="50" />
+          <Property Name="DatePayment" Type="date" />
+        </EntityType>
+        <EntityType Name="TypePrevoyance">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CodeSinistre" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="LabelSinistre" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <Association Name="FK_Company_Company">
+          <End Role="Company" Type="Self.Company" Multiplicity="0..1" />
+          <End Role="Company1" Type="Self.Company" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Company1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CRPlanning_CompteResultat">
+          <End Role="CompteResult" Type="Self.CompteResult" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CRPlanning" Type="Self.CRPlanning" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CompteResult">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CRPlanning">
+              <PropertyRef Name="CRId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IMAssContr_Assureur">
+          <End Role="Assureur" Type="Self.Assureur" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="IMAssContr" Type="Self.IMAssContr" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Assureur">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IMAssContr">
+              <PropertyRef Name="IdAssurance" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IMAssContr_Contract">
+          <End Role="Contract" Type="Self.Contract" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="IMAssContr" Type="Self.IMAssContr" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Contract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IMAssContr">
+              <PropertyRef Name="IdContract" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IMContrComp_Company">
+          <End Role="Company" Type="Self.Company" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="IMContrComp" Type="Self.IMContrComp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IMContrComp">
+              <PropertyRef Name="IdCompany" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IMContrComp_Contract">
+          <End Role="Contract" Type="Self.Contract" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="IMContrComp" Type="Self.IMContrComp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Contract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IMContrComp">
+              <PropertyRef Name="IdContract" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IMContrDistrib_Contract">
+          <End Role="Contract" Type="Self.Contract" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="IMContrDistrib" Type="Self.IMContrDistrib" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Contract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IMContrDistrib">
+              <PropertyRef Name="IdContract" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IMContrDistrib_Distributeur">
+          <End Role="Distributeur" Type="Self.Distributeur" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="IMContrDistrib" Type="Self.IMContrDistrib" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Distributeur">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IMContrDistrib">
+              <PropertyRef Name="IdDistrib" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IMReAssAss_Assureur">
+          <End Role="Assureur" Type="Self.Assureur" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="IMReAssAss" Type="Self.IMReAssAss" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Assureur">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IMReAssAss">
+              <PropertyRef Name="AssId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IMReAssAss_ReAssureur">
+          <End Role="ReAssureur" Type="Self.ReAssureur" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="IMReAssAss" Type="Self.IMReAssAss" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ReAssureur">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IMReAssAss">
+              <PropertyRef Name="ReAssId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ReportData_CompteResultat">
+          <End Role="CompteResult" Type="Self.CompteResult" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="ReportData" Type="Self.ReportData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CompteResult">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ReportData">
+              <PropertyRef Name="CRId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ReportFile_CompteResultat">
+          <End Role="CompteResult" Type="Self.CompteResult" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="ReportFile" Type="Self.ReportFile" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CompteResult">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ReportFile">
+              <PropertyRef Name="CRId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="GetDateMaxForDossier" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Dossier" Type="nvarchar" Mode="In" />
+          <Parameter Name="DateArret" Type="date" Mode="In" />
+        </Function>
+        <Function Name="GetDemoData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AssurList" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="CompanyList" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="SubsidList" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="ContractList" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="DateDebut" Type="date" Mode="In" />
+          <Parameter Name="DateFin" Type="date" Mode="In" />
+        </Function>
+        <Function Name="GetDemoDataWithoutOption" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AssurList" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="CompanyList" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="SubsidList" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="ContractList" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="DateDebut" Type="date" Mode="In" />
+          <Parameter Name="DateFin" Type="date" Mode="In" />
+        </Function>
+        <Function Name="GetSumPrestaAnnualized" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Dossier" Type="nvarchar" Mode="In" />
+          <Parameter Name="DateArret" Type="date" Mode="In" />
+        </Function>
+        <Function Name="GetSumPrestaForDossier" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Dossier" Type="nvarchar" Mode="In" />
+          <Parameter Name="DateArret" Type="date" Mode="In" />
+        </Function>
+        <EntityContainer Name="CompteResultatModelStoreContainer">
+          <EntitySet Name="_TempExpData" EntityType="Self._TempExpData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AgeLabel" EntityType="Self.AgeLabel" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Assureur" EntityType="Self.Assureur" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Cadencier" EntityType="Self.Cadencier" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CollabExterne" EntityType="Self.CollabExterne" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="College" EntityType="Self.College" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Company" EntityType="Self.Company" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CompanyGroups" EntityType="Self.CompanyGroups" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CompteResult" EntityType="Self.CompteResult" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Contract" EntityType="Self.Contract" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CotisatPrev" EntityType="Self.CotisatPrev" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CotisatSante" EntityType="Self.CotisatSante" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CRPlanning" EntityType="Self.CRPlanning" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DecomptePrev" EntityType="Self.DecomptePrev" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Demography" EntityType="Self.Demography" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Distributeur" EntityType="Self.Distributeur" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Domain" EntityType="Self.Domain" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="GroupGarantySante" EntityType="Self.GroupGarantySante" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IMAssContr" EntityType="Self.IMAssContr" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IMContrComp" EntityType="Self.IMContrComp" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Import" EntityType="Self.Import" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MyCompany" EntityType="Self.MyCompany" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PrestSante" EntityType="Self.PrestSante" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProvPrev" EntityType="Self.ProvPrev" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ReAssureur" EntityType="Self.ReAssureur" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ReportData" EntityType="Self.ReportData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ReportFile" EntityType="Self.ReportFile" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ReportTemplate" EntityType="Self.ReportTemplate" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SinistrePrev" EntityType="Self.SinistrePrev" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TypePrevoyance" EntityType="Self.TypePrevoyance" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="_TempOtherFields" EntityType="Self._TempOtherFields" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [_TempOtherFields].[ImportId] AS [ImportId], 
+    [_TempOtherFields].[Assureur] AS [Assureur], 
+    [_TempOtherFields].[ContractId] AS [ContractId], 
+    [_TempOtherFields].[Company] AS [Company], 
+    [_TempOtherFields].[Subsid] AS [Subsid], 
+    [_TempOtherFields].[Gestionnaire] AS [Gestionnaire], 
+    [_TempOtherFields].[Apporteur] AS [Apporteur]
+    FROM [dbo].[_TempOtherFields] AS [_TempOtherFields]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="IMContrDistrib" EntityType="Self.IMContrDistrib" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [IMContrDistrib].[IdContract] AS [IdContract], 
+    [IMContrDistrib].[IdDistrib] AS [IdDistrib]
+    FROM [dbo].[IMContrDistrib] AS [IMContrDistrib]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="IMReAssAss" EntityType="Self.IMReAssAss" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [IMReAssAss].[ReAssId] AS [ReAssId], 
+    [IMReAssAss].[AssId] AS [AssId]
+    FROM [dbo].[IMReAssAss] AS [IMReAssAss]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_Company_Company" Association="Self.FK_Company_Company">
+            <End Role="Company" EntitySet="Company" />
+            <End Role="Company1" EntitySet="Company" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CRPlanning_CompteResultat" Association="Self.FK_CRPlanning_CompteResultat">
+            <End Role="CompteResult" EntitySet="CompteResult" />
+            <End Role="CRPlanning" EntitySet="CRPlanning" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IMAssContr_Assureur" Association="Self.FK_IMAssContr_Assureur">
+            <End Role="Assureur" EntitySet="Assureur" />
+            <End Role="IMAssContr" EntitySet="IMAssContr" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IMAssContr_Contract" Association="Self.FK_IMAssContr_Contract">
+            <End Role="Contract" EntitySet="Contract" />
+            <End Role="IMAssContr" EntitySet="IMAssContr" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IMContrComp_Company" Association="Self.FK_IMContrComp_Company">
+            <End Role="Company" EntitySet="Company" />
+            <End Role="IMContrComp" EntitySet="IMContrComp" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IMContrComp_Contract" Association="Self.FK_IMContrComp_Contract">
+            <End Role="Contract" EntitySet="Contract" />
+            <End Role="IMContrComp" EntitySet="IMContrComp" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IMContrDistrib_Contract" Association="Self.FK_IMContrDistrib_Contract">
+            <End Role="Contract" EntitySet="Contract" />
+            <End Role="IMContrDistrib" EntitySet="IMContrDistrib" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IMContrDistrib_Distributeur" Association="Self.FK_IMContrDistrib_Distributeur">
+            <End Role="Distributeur" EntitySet="Distributeur" />
+            <End Role="IMContrDistrib" EntitySet="IMContrDistrib" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IMReAssAss_Assureur" Association="Self.FK_IMReAssAss_Assureur">
+            <End Role="Assureur" EntitySet="Assureur" />
+            <End Role="IMReAssAss" EntitySet="IMReAssAss" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IMReAssAss_ReAssureur" Association="Self.FK_IMReAssAss_ReAssureur">
+            <End Role="ReAssureur" EntitySet="ReAssureur" />
+            <End Role="IMReAssAss" EntitySet="IMReAssAss" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ReportData_CompteResultat" Association="Self.FK_ReportData_CompteResultat">
+            <End Role="CompteResult" EntitySet="CompteResult" />
+            <End Role="ReportData" EntitySet="ReportData" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ReportFile_CompteResultat" Association="Self.FK_ReportFile_CompteResultat">
+            <End Role="CompteResult" EntitySet="CompteResult" />
+            <End Role="ReportFile" EntitySet="ReportFile" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="CompteResultatModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Assureur">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ReAssureurId" Type="Int32" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Contracts" Relationship="Self.IMAssContr" FromRole="Assureur" ToRole="Contract" />
+          <NavigationProperty Name="ReAssureurs" Relationship="Self.IMReAssAss" FromRole="Assureur" ToRole="ReAssureur" />
+          <Property Name="ImportId" Type="Int32" />
+        </EntityType>
+        <EntityType Name="Cadencier">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Year" Type="Int32" />
+          <Property Name="Month" Type="Int32" />
+          <Property Name="Cumul" Type="Double" />
+          <Property Name="DebutSurvenance" Type="DateTime" Precision="0" />
+          <Property Name="FinSurvenance" Type="DateTime" Precision="0" />
+          <Property Name="AssureurName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="CollabExterne">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="College">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Company">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Address" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Telephone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Logo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Type" Type="Int32" />
+          <Property Name="ParentId" Type="Int32" />
+          <NavigationProperty Name="Company1" Relationship="Self.FK_Company_Company" FromRole="Company" ToRole="Company1" />
+          <NavigationProperty Name="Company2" Relationship="Self.FK_Company_Company" FromRole="Company1" ToRole="Company" />
+          <Property Name="ImportId" Type="Int32" />
+          <NavigationProperty Name="Contracts" Relationship="CompteResultatModel.IMContrComp" FromRole="Company" ToRole="Contract" />
+          <Property Name="ContactName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="CompanyGroup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ContractIDList" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="CompteResult">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="IsAutoGenerated" Type="Boolean" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreationDate" Type="DateTime" Precision="0" />
+          <Property Name="ReportLevelId" Type="Int32" />
+          <Property Name="CollegeId" Type="Int32" />
+          <NavigationProperty Name="CRPlannings" Relationship="Self.FK_CRPlanning_CompteResultat" FromRole="CompteResult" ToRole="CRPlanning" />
+          <NavigationProperty Name="ReportDatas" Relationship="Self.FK_ReportData_CompteResultat" FromRole="CompteResult" ToRole="ReportData" />
+          <NavigationProperty Name="ReportFiles" Relationship="Self.FK_ReportFile_CompteResultat" FromRole="CompteResult" ToRole="ReportFile" />
+          <Property Name="ContractIds" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SubsidIds" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="AssurIds" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="TaxDefault" Type="Double" />
+          <Property Name="TaxActif" Type="Double" />
+          <Property Name="TaxPerif" Type="Double" />
+          <Property Name="ReportType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyIds" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Contract">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ContractId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Assureurs" Relationship="Self.IMAssContr" FromRole="Contract" ToRole="Assureur" />
+          <NavigationProperty Name="Distributeurs" Relationship="Self.IMContrDistrib" FromRole="Contract" ToRole="Distributeur" />
+          <Property Name="ImportId" Type="Int32" />
+          <NavigationProperty Name="Companies" Relationship="CompteResultatModel.IMContrComp" FromRole="Contract" ToRole="Company" />
+        </EntityType>
+        <EntityType Name="CotisatSante">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ImportId" Type="Int32" Nullable="false" />
+          <Property Name="ContractId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CodeCol" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Year" Type="Int32" />
+          <Property Name="DebPrime" Type="DateTime" Precision="0" />
+          <Property Name="FinPrime" Type="DateTime" Precision="0" />
+          <Property Name="Cotisation" Type="Double" />
+          <Property Name="AssureurName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Company" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Subsid" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="WithOption" Type="String" MaxLength="10" Unicode="true" FixedLength="false" />
+          <Property Name="CotisationBrute" Type="Double" />
+        </EntityType>
+        <EntityType Name="CRPlanning">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CRId" Type="Int32" />
+          <Property Name="DateArret" Type="DateTime" Precision="0" />
+          <Property Name="DebutPeriode" Type="DateTime" Precision="0" />
+          <Property Name="FinPeriode" Type="DateTime" Precision="0" />
+          <Property Name="DatePlanification" Type="DateTime" Precision="0" />
+          <Property Name="DateTraitement" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="CompteResult" Relationship="Self.FK_CRPlanning_CompteResultat" FromRole="CRPlanning" ToRole="CompteResult" />
+          <Property Name="CalcProv" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="Demography">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ImportId" Type="Int32" Nullable="false" />
+          <Property Name="ContractId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="DateDemo" Type="DateTime" Precision="0" />
+          <Property Name="Age" Type="Int32" />
+          <Property Name="Sexe" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="CodeCol" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Lien" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="Company" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="AssureurName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Subsid" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="WithOption" Type="String" MaxLength="10" Unicode="true" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="Distributeur">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ContractId" Type="Int32" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Adress" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Telephone" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="Contracts" Relationship="Self.IMContrDistrib" FromRole="Distributeur" ToRole="Contract" />
+        </EntityType>
+        <EntityType Name="Domain">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyList" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="MyCompany">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Address" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Phone" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Logo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ServerSMTP" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PassSMTP" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="PrestSante">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ImportId" Type="Int32" Nullable="false" />
+          <Property Name="ContractId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CodeCol" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="DateSoins" Type="DateTime" Precision="0" />
+          <Property Name="CodeActe" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="NombreActe" Type="Int32" />
+          <Property Name="FraisReel" Type="Double" />
+          <Property Name="RembSS" Type="Double" />
+          <Property Name="RembAnnexe" Type="Double" />
+          <Property Name="RembNous" Type="Double" />
+          <Property Name="DateVision" Type="DateTime" Precision="0" />
+          <Property Name="AssureurName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="GroupName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="GarantyName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CAS" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Reseau" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Company" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Subsid" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="DatePayment" Type="DateTime" Precision="0" />
+          <Property Name="PrixUnit" Type="Double" />
+          <Property Name="WithOption" Type="String" MaxLength="10" Unicode="true" FixedLength="false" />
+          <Property Name="Beneficiaire" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BO1" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BO2" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Test" Type="Int32" />
+        </EntityType>
+        <EntityType Name="ReAssureur">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Assureurs" Relationship="Self.IMReAssAss" FromRole="ReAssureur" ToRole="Assureur" />
+        </EntityType>
+        <EntityType Name="ReportData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CRId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="CompteResult" Relationship="Self.FK_ReportData_CompteResultat" FromRole="ReportData" ToRole="CompteResult" />
+        </EntityType>
+        <EntityType Name="ReportFile">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CRId" Type="Int32" Nullable="false" />
+          <Property Name="FileType" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="FileLocation" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="CompteResult" Relationship="Self.FK_ReportFile_CompteResultat" FromRole="ReportFile" ToRole="CompteResult" />
+        </EntityType>
+        <EntityType Name="C_TempOtherFields">
+          <Key>
+            <PropertyRef Name="ImportId" />
+          </Key>
+          <Property Name="ImportId" Type="Int32" Nullable="false" />
+          <Property Name="ContractId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Assureur" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Company" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Subsid" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Gestionnaire" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Apporteur" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Import">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <Association Name="FK_Company_Company">
+          <End Role="Company" Type="Self.Company" Multiplicity="0..1" />
+          <End Role="Company1" Type="Self.Company" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Company1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CRPlanning_CompteResultat">
+          <End Role="CompteResult" Type="Self.CompteResult" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CRPlanning" Type="Self.CRPlanning" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CompteResult">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CRPlanning">
+              <PropertyRef Name="CRId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ReportData_CompteResultat">
+          <End Role="CompteResult" Type="Self.CompteResult" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="ReportData" Type="Self.ReportData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CompteResult">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ReportData">
+              <PropertyRef Name="CRId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ReportFile_CompteResultat">
+          <End Role="CompteResult" Type="Self.CompteResult" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="ReportFile" Type="Self.ReportFile" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CompteResult">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ReportFile">
+              <PropertyRef Name="CRId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="IMAssContr">
+          <End Role="Assureur" Type="Self.Assureur" Multiplicity="*" />
+          <End Role="Contract" Type="Self.Contract" Multiplicity="*" />
+        </Association>
+        <Association Name="IMContrDistrib">
+          <End Role="Contract" Type="Self.Contract" Multiplicity="*" />
+          <End Role="Distributeur" Type="Self.Distributeur" Multiplicity="*" />
+        </Association>
+        <Association Name="IMReAssAss">
+          <End Role="Assureur" Type="Self.Assureur" Multiplicity="*" />
+          <End Role="ReAssureur" Type="Self.ReAssureur" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="CompteResultatEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Assureurs" EntityType="Self.Assureur" />
+          <EntitySet Name="Cadenciers" EntityType="Self.Cadencier" />
+          <EntitySet Name="CollabExternes" EntityType="Self.CollabExterne" />
+          <EntitySet Name="Colleges" EntityType="Self.College" />
+          <EntitySet Name="Companies" EntityType="Self.Company" />
+          <EntitySet Name="CompanyGroups" EntityType="Self.CompanyGroup" />
+          <EntitySet Name="CompteResults" EntityType="Self.CompteResult" />
+          <EntitySet Name="Contracts" EntityType="Self.Contract" />
+          <EntitySet Name="CotisatSantes" EntityType="Self.CotisatSante" />
+          <EntitySet Name="CRPlannings" EntityType="Self.CRPlanning" />
+          <EntitySet Name="Demographies" EntityType="Self.Demography" />
+          <EntitySet Name="Distributeurs" EntityType="Self.Distributeur" />
+          <EntitySet Name="Domains" EntityType="Self.Domain" />
+          <EntitySet Name="MyCompanies" EntityType="Self.MyCompany" />
+          <EntitySet Name="PrestSantes" EntityType="Self.PrestSante" />
+          <EntitySet Name="ReAssureurs" EntityType="Self.ReAssureur" />
+          <EntitySet Name="ReportDatas" EntityType="Self.ReportData" />
+          <EntitySet Name="ReportFiles" EntityType="Self.ReportFile" />
+          <EntitySet Name="C_TempOtherFields" EntityType="Self.C_TempOtherFields" />
+          <EntitySet Name="Imports" EntityType="Self.Import" />
+          <AssociationSet Name="FK_Company_Company" Association="Self.FK_Company_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="Company1" EntitySet="Companies" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CRPlanning_CompteResultat" Association="Self.FK_CRPlanning_CompteResultat">
+            <End Role="CompteResult" EntitySet="CompteResults" />
+            <End Role="CRPlanning" EntitySet="CRPlannings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ReportData_CompteResultat" Association="Self.FK_ReportData_CompteResultat">
+            <End Role="CompteResult" EntitySet="CompteResults" />
+            <End Role="ReportData" EntitySet="ReportDatas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ReportFile_CompteResultat" Association="Self.FK_ReportFile_CompteResultat">
+            <End Role="CompteResult" EntitySet="CompteResults" />
+            <End Role="ReportFile" EntitySet="ReportFiles" />
+          </AssociationSet>
+          <AssociationSet Name="IMAssContr" Association="Self.IMAssContr">
+            <End Role="Assureur" EntitySet="Assureurs" />
+            <End Role="Contract" EntitySet="Contracts" />
+          </AssociationSet>
+          <AssociationSet Name="IMContrDistrib" Association="Self.IMContrDistrib">
+            <End Role="Contract" EntitySet="Contracts" />
+            <End Role="Distributeur" EntitySet="Distributeurs" />
+          </AssociationSet>
+          <AssociationSet Name="IMReAssAss" Association="Self.IMReAssAss">
+            <End Role="Assureur" EntitySet="Assureurs" />
+            <End Role="ReAssureur" EntitySet="ReAssureurs" />
+          </AssociationSet>
+          <EntitySet Name="ReportTemplate" EntityType="CompteResultatModel.ReportTemplate" />
+          <AssociationSet Name="IMContrComp" Association="CompteResultatModel.IMContrComp">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="Contract" EntitySet="Contracts" />
+          </AssociationSet>
+          <EntitySet Name="AgeLabels" EntityType="CompteResultatModel.AgeLabel" />
+          <EntitySet Name="GroupGarantySantes" EntityType="CompteResultatModel.GroupGarantySante" />
+          <EntitySet Name="CotisatPrevs" EntityType="CompteResultatModel.CotisatPrev" />
+          <EntitySet Name="DecomptePrevs" EntityType="CompteResultatModel.DecomptePrev" />
+          <EntitySet Name="SinistrePrevs" EntityType="CompteResultatModel.SinistrePrev" />
+          <AssociationSet Name="FK_ReportTemplate_ReportTemplate" Association="CompteResultatModel.FK_ReportTemplate_ReportTemplate">
+            <End Role="ReportTemplate" EntitySet="ReportTemplate" />
+            <End Role="ReportTemplate1" EntitySet="ReportTemplate" />
+          </AssociationSet>
+          <EntitySet Name="TypePrevoyances" EntityType="CompteResultatModel.TypePrevoyance" />
+          <FunctionImport Name="SPGetSumPrestaForDossier" ReturnType="Collection(Double)">
+            <Parameter Name="Dossier" Mode="In" Type="String" />
+            <Parameter Name="DateArret" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="SPGetSumPrestaAnnualized" ReturnType="Collection(Double)">
+            <Parameter Name="Dossier" Mode="In" Type="String" />
+            <Parameter Name="DateArret" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="SPGetDateMaxForDossier" ReturnType="Collection(DateTime)">
+            <Parameter Name="Dossier" Mode="In" Type="String" />
+            <Parameter Name="DateArret" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="SPGetDemoData" ReturnType="Collection(CompteResultatModel.CDemoData)">
+            <Parameter Name="AssurList" Mode="In" Type="String" />
+            <Parameter Name="CompanyList" Mode="In" Type="String" />
+            <Parameter Name="SubsidList" Mode="In" Type="String" />
+            <Parameter Name="ContractList" Mode="In" Type="String" />
+            <Parameter Name="DateDebut" Mode="In" Type="DateTime" />
+            <Parameter Name="DateFin" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="SPGetDemoDataWithoutOption" ReturnType="Collection(CompteResultatModel.CDemoDataWithoutOption)">
+            <Parameter Name="AssurList" Mode="In" Type="String" />
+            <Parameter Name="CompanyList" Mode="In" Type="String" />
+            <Parameter Name="SubsidList" Mode="In" Type="String" />
+            <Parameter Name="ContractList" Mode="In" Type="String" />
+            <Parameter Name="DateDebut" Mode="In" Type="DateTime" />
+            <Parameter Name="DateFin" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <EntitySet Name="C_TempExpData" EntityType="CompteResultatModel.C_TempExpData" />
+          <EntitySet Name="ProvPrevs" EntityType="CompteResultatModel.ProvPrev" />
+        </EntityContainer>
+        <EntityType Name="ReportTemplate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FileName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="YearsToCalc" Type="Int32" />
+          <Property Name="Type" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="ReportTemplate1" Relationship="CompteResultatModel.FK_ReportTemplate_ReportTemplate" FromRole="ReportTemplate" ToRole="ReportTemplate1" />
+          <NavigationProperty Name="ReportTemplate2" Relationship="CompteResultatModel.FK_ReportTemplate_ReportTemplate" FromRole="ReportTemplate1" ToRole="ReportTemplate" />
+          <Property Name="WithOption" Type="Boolean" />
+          <Property Name="DisplayOrder" Type="Int32" />
+        </EntityType>
+        <Association Name="IMContrComp">
+          <End Type="CompteResultatModel.Company" Role="Company" Multiplicity="*" />
+          <End Type="CompteResultatModel.Contract" Role="Contract" Multiplicity="*" />
+        </Association>
+        <EntityType Name="AgeLabel">
+          <Key>
+            <PropertyRef Name="Age" />
+          </Key>
+          <Property Name="Age" Type="Int32" Nullable="false" />
+          <Property Name="Label" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="GroupGarantySante">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AssureurName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="GroupName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="GarantyName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CodeActe" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="OrderNumber" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CotisatPrev">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ImportId" Type="Int32" Nullable="false" />
+          <Property Name="ContractId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CodeCol" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Year" Type="Int32" />
+          <Property Name="DebPrime" Type="DateTime" Precision="0" />
+          <Property Name="FinPrime" Type="DateTime" Precision="0" />
+          <Property Name="Cotisation" Type="Double" />
+          <Property Name="AssureurName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Company" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Subsid" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CotisationBrute" Type="Double" />
+        </EntityType>
+        <EntityType Name="DecomptePrev">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ImportId" Type="Int32" Nullable="false" />
+          <Property Name="Dossier" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="Company" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Subsid" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CodeCol" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Apporteur" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Gestionnaire" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DatePayement" Type="DateTime" Precision="0" />
+          <Property Name="DateVirement" Type="DateTime" Precision="0" />
+          <Property Name="AssureurName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ContractId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DateSin" Type="DateTime" Precision="0" />
+          <Property Name="DebSin" Type="DateTime" Precision="0" />
+          <Property Name="FinSin" Type="DateTime" Precision="0" />
+          <Property Name="DateExtraction" Type="DateTime" Precision="0" />
+          <Property Name="Total" Type="Double" />
+        </EntityType>
+        <EntityType Name="SinistrePrev">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ImportId" Type="Int32" Nullable="false" />
+          <Property Name="AssureurName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ContractId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Dossier" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Subsid" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CodeCol" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Firstname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Lastname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Birthdate" Type="DateTime" Precision="0" />
+          <Property Name="DateSinistre" Type="DateTime" Precision="0" />
+          <Property Name="NatureSinistre" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CauseSinistre" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DebVal" Type="DateTime" Precision="0" />
+          <Property Name="FinVal" Type="DateTime" Precision="0" />
+          <Property Name="DateRecep" Type="DateTime" Precision="0" />
+          <Property Name="DateRechute" Type="DateTime" Precision="0" />
+          <Property Name="DateClo" Type="DateTime" Precision="0" />
+          <Property Name="MotifClo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DatePayment" Type="DateTime" Precision="0" />
+          <Property Name="Company" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <Association Name="FK_ReportTemplate_ReportTemplate">
+          <End Type="CompteResultatModel.ReportTemplate" Role="ReportTemplate" Multiplicity="1" />
+          <End Type="CompteResultatModel.ReportTemplate" Role="ReportTemplate1" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="ReportTemplate">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ReportTemplate1">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="TypePrevoyance">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="CodeSinistre" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="LabelSinistre" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+        </EntityType>
+        <ComplexType Name="CDemoData">
+          <Property Type="Int32" Name="Year" Nullable="true" />
+          <Property Type="String" Name="Subsid" Nullable="true" MaxLength="100" />
+          <Property Type="Int32" Name="Age" Nullable="true" />
+          <Property Type="String" Name="Sex" Nullable="false" MaxLength="8" />
+          <Property Type="String" Name="Lien" Nullable="false" MaxLength="8" />
+          <Property Type="String" Name="TrancheAge" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="NombreAssure" Nullable="true" />
+          <Property Type="Int32" Name="Age_Assur" Nullable="true" />
+          <Property Type="String" Name="CodeCol" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="FamColl" Nullable="false" MaxLength="1" />
+          <Property Type="String" Name="SURCOM" Nullable="false" MaxLength="6" />
+        </ComplexType>
+        <ComplexType Name="CDemoDataWithoutOption">
+          <Property Type="Int32" Name="Year" Nullable="true" />
+          <Property Type="String" Name="Subsid" Nullable="true" MaxLength="100" />
+          <Property Type="Int32" Name="Age" Nullable="true" />
+          <Property Type="String" Name="Sex" Nullable="false" MaxLength="8" />
+          <Property Type="String" Name="Lien" Nullable="false" MaxLength="8" />
+          <Property Type="String" Name="TrancheAge" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="NombreAssure" Nullable="true" />
+          <Property Type="Int32" Name="Age_Assur" Nullable="true" />
+          <Property Type="String" Name="CodeCol" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="FamColl" Nullable="false" MaxLength="1" />
+        </ComplexType>
+        <EntityType Name="C_TempExpData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Au" Type="DateTime" Precision="0" />
+          <Property Name="Contrat" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CodCol" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="AnneeExp" Type="Int32" />
+          <Property Name="LibActe" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="LibFam" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="TypeCas" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="NombreActe" Type="Int32" />
+          <Property Name="Fraisreel" Type="Double" />
+          <Property Name="Rembss" Type="Double" />
+          <Property Name="RembAnnexe" Type="Double" />
+          <Property Name="RembNous" Type="Double" />
+          <Property Name="Reseau" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="MinFr" Type="Double" />
+          <Property Name="MaxFr" Type="Double" />
+          <Property Name="MinNous" Type="Double" />
+          <Property Name="MaxNous" Type="Double" />
+          <Property Name="ImportId" Type="Int32" />
+          <Property Name="AssureurName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="ProvPrev">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ImportId" Type="Int32" Nullable="false" />
+          <Property Name="AssureurName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ContractId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Company" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Subsid" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Dossier" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CodeCol" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Firstname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Lastname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Birthdate" Type="DateTime" Precision="0" />
+          <Property Name="DateSinistre" Type="DateTime" Precision="0" />
+          <Property Name="NatureSinistre" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CauseSinistre" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DebVal" Type="DateTime" Precision="0" />
+          <Property Name="FinVal" Type="DateTime" Precision="0" />
+          <Property Name="DateRecep" Type="DateTime" Precision="0" />
+          <Property Name="DateRechute" Type="DateTime" Precision="0" />
+          <Property Name="DateClo" Type="DateTime" Precision="0" />
+          <Property Name="MotifClo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DatePayment" Type="DateTime" Precision="0" />
+          <Property Name="DateProvision" Type="DateTime" Precision="0" />
+          <Property Name="Matricule" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Pm" Type="Double" />
+          <Property Name="PmPassage" Type="Double" />
+          <Property Name="Psap" Type="Double" />
+          <Property Name="PmMgdc" Type="Double" />
+          <Property Name="Psi" Type="Double" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="CompteResultatModelStoreContainer" CdmEntityContainer="CompteResultatEntities">
+          <EntitySetMapping Name="Assureurs">
+            <EntityTypeMapping TypeName="CompteResultatModel.Assureur">
+              <MappingFragment StoreEntitySet="Assureur">
+                <ScalarProperty Name="ImportId" ColumnName="ImportId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ReAssureurId" ColumnName="ReAssureurId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Cadenciers">
+            <EntityTypeMapping TypeName="CompteResultatModel.Cadencier">
+              <MappingFragment StoreEntitySet="Cadencier">
+                <ScalarProperty Name="AssureurName" ColumnName="AssureurName" />
+                <ScalarProperty Name="FinSurvenance" ColumnName="FinSurvenance" />
+                <ScalarProperty Name="DebutSurvenance" ColumnName="DebutSurvenance" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="Cumul" ColumnName="Cumul" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CollabExternes">
+            <EntityTypeMapping TypeName="CompteResultatModel.CollabExterne">
+              <MappingFragment StoreEntitySet="CollabExterne">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Colleges">
+            <EntityTypeMapping TypeName="CompteResultatModel.College">
+              <MappingFragment StoreEntitySet="College">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Companies">
+            <EntityTypeMapping TypeName="CompteResultatModel.Company">
+              <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="ContactName" ColumnName="ContactName" />
+                <ScalarProperty Name="ImportId" ColumnName="ImportId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Telephone" ColumnName="Telephone" />
+                <ScalarProperty Name="Logo" ColumnName="Logo" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CompanyGroups">
+            <EntityTypeMapping TypeName="CompteResultatModel.CompanyGroup">
+              <MappingFragment StoreEntitySet="CompanyGroups">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ContractIDList" ColumnName="ContractIDList" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CompteResults">
+            <EntityTypeMapping TypeName="CompteResultatModel.CompteResult">
+              <MappingFragment StoreEntitySet="CompteResult">
+                <ScalarProperty Name="CompanyIds" ColumnName="CompanyIds" />
+                <ScalarProperty Name="ReportType" ColumnName="ReportType" />
+                <ScalarProperty Name="TaxPerif" ColumnName="TaxPerif" />
+                <ScalarProperty Name="TaxActif" ColumnName="TaxActif" />
+                <ScalarProperty Name="TaxDefault" ColumnName="TaxDefault" />
+                <ScalarProperty Name="AssurIds" ColumnName="AssurIds" />
+                <ScalarProperty Name="SubsidIds" ColumnName="SubsidIds" />
+                <ScalarProperty Name="ContractIds" ColumnName="ContractIds" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="IsAutoGenerated" ColumnName="IsAutoGenerated" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="ReportLevelId" ColumnName="ReportLevelId" />
+                <ScalarProperty Name="CollegeId" ColumnName="CollegeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Contracts">
+            <EntityTypeMapping TypeName="CompteResultatModel.Contract">
+              <MappingFragment StoreEntitySet="Contract">
+                <ScalarProperty Name="ImportId" ColumnName="ImportId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ContractId" ColumnName="ContractId" />
+                </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CotisatSantes">
+            <EntityTypeMapping TypeName="CompteResultatModel.CotisatSante">
+              <MappingFragment StoreEntitySet="CotisatSante">
+                <ScalarProperty Name="CotisationBrute" ColumnName="CotisationBrute" />
+                <ScalarProperty Name="WithOption" ColumnName="WithOption" />
+                <ScalarProperty Name="Subsid" ColumnName="Subsid" />
+                <ScalarProperty Name="Company" ColumnName="Company" />
+                <ScalarProperty Name="AssureurName" ColumnName="AssureurName" />
+                <ScalarProperty Name="Cotisation" ColumnName="Cotisation" />
+                <ScalarProperty Name="FinPrime" ColumnName="FinPrime" />
+                <ScalarProperty Name="DebPrime" ColumnName="DebPrime" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="CodeCol" ColumnName="CodeCol" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ImportId" ColumnName="ImportId" />
+                <ScalarProperty Name="ContractId" ColumnName="ContractId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CRPlannings">
+            <EntityTypeMapping TypeName="CompteResultatModel.CRPlanning">
+              <MappingFragment StoreEntitySet="CRPlanning">
+                <ScalarProperty Name="CalcProv" ColumnName="CalcProv" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CRId" ColumnName="CRId" />
+                <ScalarProperty Name="DateArret" ColumnName="DateArret" />
+                <ScalarProperty Name="DebutPeriode" ColumnName="DebutPeriode" />
+                <ScalarProperty Name="FinPeriode" ColumnName="FinPeriode" />
+                <ScalarProperty Name="DatePlanification" ColumnName="DatePlanification" />
+                <ScalarProperty Name="DateTraitement" ColumnName="DateTraitement" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Demographies">
+            <EntityTypeMapping TypeName="CompteResultatModel.Demography">
+              <MappingFragment StoreEntitySet="Demography">
+                <ScalarProperty Name="WithOption" ColumnName="WithOption" />
+                <ScalarProperty Name="Subsid" ColumnName="Subsid" />
+                <ScalarProperty Name="AssureurName" ColumnName="AssureurName" />
+                <ScalarProperty Name="Company" ColumnName="Company" />
+                <ScalarProperty Name="Lien" ColumnName="Lien" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ImportId" ColumnName="ImportId" />
+                <ScalarProperty Name="ContractId" ColumnName="ContractId" />
+                <ScalarProperty Name="DateDemo" ColumnName="DateDemo" />
+                <ScalarProperty Name="Age" ColumnName="Age" />
+                <ScalarProperty Name="Sexe" ColumnName="Sexe" />
+                <ScalarProperty Name="CodeCol" ColumnName="CodeCol" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Distributeurs">
+            <EntityTypeMapping TypeName="CompteResultatModel.Distributeur">
+              <MappingFragment StoreEntitySet="Distributeur">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ContractId" ColumnName="ContractId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Adress" ColumnName="Adress" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Telephone" ColumnName="Telephone" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Domains">
+            <EntityTypeMapping TypeName="CompteResultatModel.Domain">
+              <MappingFragment StoreEntitySet="Domain">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CompanyList" ColumnName="CompanyList" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MyCompanies">
+            <EntityTypeMapping TypeName="CompteResultatModel.MyCompany">
+              <MappingFragment StoreEntitySet="MyCompany">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Logo" ColumnName="Logo" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="ServerSMTP" ColumnName="ServerSMTP" />
+                <ScalarProperty Name="PassSMTP" ColumnName="PassSMTP" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PrestSantes">
+            <EntityTypeMapping TypeName="CompteResultatModel.PrestSante">
+              <MappingFragment StoreEntitySet="PrestSante">
+                <ScalarProperty Name="Test" ColumnName="Test" />
+                <ScalarProperty Name="BO2" ColumnName="BO2" />
+                <ScalarProperty Name="BO1" ColumnName="BO1" />
+                <ScalarProperty Name="Beneficiaire" ColumnName="Beneficiaire" />
+                <ScalarProperty Name="WithOption" ColumnName="WithOption" />
+                <ScalarProperty Name="PrixUnit" ColumnName="PrixUnit" />
+                <ScalarProperty Name="DatePayment" ColumnName="DatePayment" />
+                <ScalarProperty Name="Subsid" ColumnName="Subsid" />
+                <ScalarProperty Name="Company" ColumnName="Company" />
+                <ScalarProperty Name="Reseau" ColumnName="Reseau" />
+                <ScalarProperty Name="CAS" ColumnName="CAS" />
+                <ScalarProperty Name="GarantyName" ColumnName="GarantyName" />
+                <ScalarProperty Name="GroupName" ColumnName="GroupName" />
+                <ScalarProperty Name="AssureurName" ColumnName="AssureurName" />
+                <ScalarProperty Name="DateVision" ColumnName="DateVision" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ImportId" ColumnName="ImportId" />
+                <ScalarProperty Name="ContractId" ColumnName="ContractId" />
+                <ScalarProperty Name="CodeCol" ColumnName="CodeCol" />
+                <ScalarProperty Name="DateSoins" ColumnName="DateSoins" />
+                <ScalarProperty Name="CodeActe" ColumnName="CodeActe" />
+                <ScalarProperty Name="NombreActe" ColumnName="NombreActe" />
+                <ScalarProperty Name="FraisReel" ColumnName="FraisReel" />
+                <ScalarProperty Name="RembSS" ColumnName="RembSS" />
+                <ScalarProperty Name="RembAnnexe" ColumnName="RembAnnexe" />
+                <ScalarProperty Name="RembNous" ColumnName="RembNous" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReAssureurs">
+            <EntityTypeMapping TypeName="CompteResultatModel.ReAssureur">
+              <MappingFragment StoreEntitySet="ReAssureur">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReportDatas">
+            <EntityTypeMapping TypeName="CompteResultatModel.ReportData">
+              <MappingFragment StoreEntitySet="ReportData">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CRId" ColumnName="CRId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReportFiles">
+            <EntityTypeMapping TypeName="CompteResultatModel.ReportFile">
+              <MappingFragment StoreEntitySet="ReportFile">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CRId" ColumnName="CRId" />
+                <ScalarProperty Name="FileType" ColumnName="FileType" />
+                <ScalarProperty Name="FileLocation" ColumnName="FileLocation" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="C_TempOtherFields">
+            <EntityTypeMapping TypeName="CompteResultatModel.C_TempOtherFields">
+              <MappingFragment StoreEntitySet="_TempOtherFields">
+                <ScalarProperty Name="ImportId" ColumnName="ImportId" />
+                <ScalarProperty Name="ContractId" ColumnName="ContractId" />
+                <ScalarProperty Name="Assureur" ColumnName="Assureur" />
+                <ScalarProperty Name="Company" ColumnName="Company" />
+                <ScalarProperty Name="Subsid" ColumnName="Subsid" />
+                <ScalarProperty Name="Gestionnaire" ColumnName="Gestionnaire" />
+                <ScalarProperty Name="Apporteur" ColumnName="Apporteur" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Imports">
+            <EntityTypeMapping TypeName="CompteResultatModel.Import">
+              <MappingFragment StoreEntitySet="Import">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="IMAssContr" TypeName="CompteResultatModel.IMAssContr" StoreEntitySet="IMAssContr">
+            <EndProperty Name="Assureur">
+              <ScalarProperty Name="Id" ColumnName="IdAssurance" />
+            </EndProperty>
+            <EndProperty Name="Contract">
+              <ScalarProperty Name="Id" ColumnName="IdContract" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="IMContrDistrib" TypeName="CompteResultatModel.IMContrDistrib" StoreEntitySet="IMContrDistrib">
+            <EndProperty Name="Contract">
+              <ScalarProperty Name="Id" ColumnName="IdContract" />
+            </EndProperty>
+            <EndProperty Name="Distributeur">
+              <ScalarProperty Name="Id" ColumnName="IdDistrib" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="IMReAssAss" TypeName="CompteResultatModel.IMReAssAss" StoreEntitySet="IMReAssAss">
+            <EndProperty Name="Assureur">
+              <ScalarProperty Name="Id" ColumnName="AssId" />
+            </EndProperty>
+            <EndProperty Name="ReAssureur">
+              <ScalarProperty Name="Id" ColumnName="ReAssId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <EntitySetMapping Name="ReportTemplate">
+            <EntityTypeMapping TypeName="CompteResultatModel.ReportTemplate">
+              <MappingFragment StoreEntitySet="ReportTemplate">
+                <ScalarProperty Name="DisplayOrder" ColumnName="DisplayOrder" />
+                <ScalarProperty Name="WithOption" ColumnName="WithOption" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="YearsToCalc" ColumnName="YearsToCalc" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="IMContrComp" TypeName="CompteResultatModel.IMContrComp" StoreEntitySet="IMContrComp">
+            <EndProperty Name="Contract">
+              <ScalarProperty Name="Id" ColumnName="IdContract" />
+            </EndProperty>
+            <EndProperty Name="Company">
+              <ScalarProperty Name="Id" ColumnName="IdCompany" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <EntitySetMapping Name="AgeLabels">
+            <EntityTypeMapping TypeName="CompteResultatModel.AgeLabel">
+              <MappingFragment StoreEntitySet="AgeLabel">
+                <ScalarProperty Name="Label" ColumnName="Label" />
+                <ScalarProperty Name="Age" ColumnName="Age" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GroupGarantySantes">
+            <EntityTypeMapping TypeName="CompteResultatModel.GroupGarantySante">
+              <MappingFragment StoreEntitySet="GroupGarantySante">
+                <ScalarProperty Name="OrderNumber" ColumnName="OrderNumber" />
+                <ScalarProperty Name="CodeActe" ColumnName="CodeActe" />
+                <ScalarProperty Name="GarantyName" ColumnName="GarantyName" />
+                <ScalarProperty Name="GroupName" ColumnName="GroupName" />
+                <ScalarProperty Name="AssureurName" ColumnName="AssureurName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CotisatPrevs">
+            <EntityTypeMapping TypeName="CompteResultatModel.CotisatPrev">
+              <MappingFragment StoreEntitySet="CotisatPrev">
+                <ScalarProperty Name="CotisationBrute" ColumnName="CotisationBrute" />
+                <ScalarProperty Name="Subsid" ColumnName="Subsid" />
+                <ScalarProperty Name="Company" ColumnName="Company" />
+                <ScalarProperty Name="AssureurName" ColumnName="AssureurName" />
+                <ScalarProperty Name="Cotisation" ColumnName="Cotisation" />
+                <ScalarProperty Name="FinPrime" ColumnName="FinPrime" />
+                <ScalarProperty Name="DebPrime" ColumnName="DebPrime" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="CodeCol" ColumnName="CodeCol" />
+                <ScalarProperty Name="ContractId" ColumnName="ContractId" />
+                <ScalarProperty Name="ImportId" ColumnName="ImportId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DecomptePrevs">
+            <EntityTypeMapping TypeName="CompteResultatModel.DecomptePrev">
+              <MappingFragment StoreEntitySet="DecomptePrev">
+                <ScalarProperty Name="Total" ColumnName="Total" />
+                <ScalarProperty Name="DateExtraction" ColumnName="DateExtraction" />
+                <ScalarProperty Name="FinSin" ColumnName="FinSin" />
+                <ScalarProperty Name="DebSin" ColumnName="DebSin" />
+                <ScalarProperty Name="DateSin" ColumnName="DateSin" />
+                <ScalarProperty Name="ContractId" ColumnName="ContractId" />
+                <ScalarProperty Name="AssureurName" ColumnName="AssureurName" />
+                <ScalarProperty Name="DateVirement" ColumnName="DateVirement" />
+                <ScalarProperty Name="DatePayement" ColumnName="DatePayement" />
+                <ScalarProperty Name="Gestionnaire" ColumnName="Gestionnaire" />
+                <ScalarProperty Name="Apporteur" ColumnName="Apporteur" />
+                <ScalarProperty Name="CodeCol" ColumnName="CodeCol" />
+                <ScalarProperty Name="Subsid" ColumnName="Subsid" />
+                <ScalarProperty Name="Company" ColumnName="Company" />
+                <ScalarProperty Name="Dossier" ColumnName="Dossier" />
+                <ScalarProperty Name="ImportId" ColumnName="ImportId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SinistrePrevs">
+            <EntityTypeMapping TypeName="CompteResultatModel.SinistrePrev">
+              <MappingFragment StoreEntitySet="SinistrePrev">
+                <ScalarProperty Name="Company" ColumnName="Company" />
+                <ScalarProperty Name="DatePayment" ColumnName="DatePayment" />
+                <ScalarProperty Name="MotifClo" ColumnName="MotifClo" />
+                <ScalarProperty Name="DateClo" ColumnName="DateClo" />
+                <ScalarProperty Name="DateRechute" ColumnName="DateRechute" />
+                <ScalarProperty Name="DateRecep" ColumnName="DateRecep" />
+                <ScalarProperty Name="FinVal" ColumnName="FinVal" />
+                <ScalarProperty Name="DebVal" ColumnName="DebVal" />
+                <ScalarProperty Name="CauseSinistre" ColumnName="CauseSinistre" />
+                <ScalarProperty Name="NatureSinistre" ColumnName="NatureSinistre" />
+                <ScalarProperty Name="DateSinistre" ColumnName="DateSinistre" />
+                <ScalarProperty Name="Birthdate" ColumnName="Birthdate" />
+                <ScalarProperty Name="Lastname" ColumnName="Lastname" />
+                <ScalarProperty Name="Firstname" ColumnName="Firstname" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="CodeCol" ColumnName="CodeCol" />
+                <ScalarProperty Name="Subsid" ColumnName="Subsid" />
+                <ScalarProperty Name="Dossier" ColumnName="Dossier" />
+                <ScalarProperty Name="ContractId" ColumnName="ContractId" />
+                <ScalarProperty Name="AssureurName" ColumnName="AssureurName" />
+                <ScalarProperty Name="ImportId" ColumnName="ImportId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TypePrevoyances">
+            <EntityTypeMapping TypeName="CompteResultatModel.TypePrevoyance">
+              <MappingFragment StoreEntitySet="TypePrevoyance">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="LabelSinistre" ColumnName="LabelSinistre" />
+                <ScalarProperty Name="CodeSinistre" ColumnName="CodeSinistre" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="SPGetSumPrestaForDossier" FunctionName="CompteResultatModel.Store.GetSumPrestaForDossier" />
+          <FunctionImportMapping FunctionImportName="SPGetSumPrestaAnnualized" FunctionName="CompteResultatModel.Store.GetSumPrestaAnnualized" />
+          <FunctionImportMapping FunctionImportName="SPGetDateMaxForDossier" FunctionName="CompteResultatModel.Store.GetDateMaxForDossier" />
+          <FunctionImportMapping FunctionImportName="SPGetDemoData" FunctionName="CompteResultatModel.Store.GetDemoData">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="CompteResultatModel.CDemoData">
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Subsid" ColumnName="Subsid" />
+                <ScalarProperty Name="Age" ColumnName="Age" />
+                <ScalarProperty Name="Sex" ColumnName="Sex" />
+                <ScalarProperty Name="Lien" ColumnName="Lien" />
+                <ScalarProperty Name="TrancheAge" ColumnName="TrancheAge" />
+                <ScalarProperty Name="NombreAssure" ColumnName="NombreAssure" />
+                <ScalarProperty Name="Age_Assur" ColumnName="Age_Assur" />
+                <ScalarProperty Name="CodeCol" ColumnName="CodeCol" />
+                <ScalarProperty Name="FamColl" ColumnName="FamColl" />
+                <ScalarProperty Name="SURCOM" ColumnName="SURCOM" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="SPGetDemoDataWithoutOption" FunctionName="CompteResultatModel.Store.GetDemoDataWithoutOption">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="CompteResultatModel.CDemoDataWithoutOption">
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Subsid" ColumnName="Subsid" />
+                <ScalarProperty Name="Age" ColumnName="Age" />
+                <ScalarProperty Name="Sex" ColumnName="Sex" />
+                <ScalarProperty Name="Lien" ColumnName="Lien" />
+                <ScalarProperty Name="TrancheAge" ColumnName="TrancheAge" />
+                <ScalarProperty Name="NombreAssure" ColumnName="NombreAssure" />
+                <ScalarProperty Name="Age_Assur" ColumnName="Age_Assur" />
+                <ScalarProperty Name="CodeCol" ColumnName="CodeCol" />
+                <ScalarProperty Name="FamColl" ColumnName="FamColl" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="C_TempExpData">
+            <EntityTypeMapping TypeName="CompteResultatModel.C_TempExpData">
+              <MappingFragment StoreEntitySet="_TempExpData">
+                <ScalarProperty Name="AssureurName" ColumnName="AssureurName" />
+                <ScalarProperty Name="ImportId" ColumnName="ImportId" />
+                <ScalarProperty Name="MaxNous" ColumnName="MaxNous" />
+                <ScalarProperty Name="MinNous" ColumnName="MinNous" />
+                <ScalarProperty Name="MaxFr" ColumnName="MaxFr" />
+                <ScalarProperty Name="MinFr" ColumnName="MinFr" />
+                <ScalarProperty Name="Reseau" ColumnName="Reseau" />
+                <ScalarProperty Name="RembNous" ColumnName="RembNous" />
+                <ScalarProperty Name="RembAnnexe" ColumnName="RembAnnexe" />
+                <ScalarProperty Name="Rembss" ColumnName="Rembss" />
+                <ScalarProperty Name="Fraisreel" ColumnName="Fraisreel" />
+                <ScalarProperty Name="NombreActe" ColumnName="NombreActe" />
+                <ScalarProperty Name="TypeCas" ColumnName="TypeCas" />
+                <ScalarProperty Name="LibFam" ColumnName="LibFam" />
+                <ScalarProperty Name="LibActe" ColumnName="LibActe" />
+                <ScalarProperty Name="AnneeExp" ColumnName="AnneeExp" />
+                <ScalarProperty Name="CodCol" ColumnName="CodCol" />
+                <ScalarProperty Name="Contrat" ColumnName="Contrat" />
+                <ScalarProperty Name="Au" ColumnName="Au" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProvPrevs">
+            <EntityTypeMapping TypeName="CompteResultatModel.ProvPrev">
+              <MappingFragment StoreEntitySet="ProvPrev">
+                <ScalarProperty Name="Psi" ColumnName="Psi" />
+                <ScalarProperty Name="PmMgdc" ColumnName="PmMgdc" />
+                <ScalarProperty Name="Psap" ColumnName="Psap" />
+                <ScalarProperty Name="PmPassage" ColumnName="PmPassage" />
+                <ScalarProperty Name="Pm" ColumnName="Pm" />
+                <ScalarProperty Name="Matricule" ColumnName="Matricule" />
+                <ScalarProperty Name="DateProvision" ColumnName="DateProvision" />
+                <ScalarProperty Name="DatePayment" ColumnName="DatePayment" />
+                <ScalarProperty Name="MotifClo" ColumnName="MotifClo" />
+                <ScalarProperty Name="DateClo" ColumnName="DateClo" />
+                <ScalarProperty Name="DateRechute" ColumnName="DateRechute" />
+                <ScalarProperty Name="DateRecep" ColumnName="DateRecep" />
+                <ScalarProperty Name="FinVal" ColumnName="FinVal" />
+                <ScalarProperty Name="DebVal" ColumnName="DebVal" />
+                <ScalarProperty Name="CauseSinistre" ColumnName="CauseSinistre" />
+                <ScalarProperty Name="NatureSinistre" ColumnName="NatureSinistre" />
+                <ScalarProperty Name="DateSinistre" ColumnName="DateSinistre" />
+                <ScalarProperty Name="Birthdate" ColumnName="Birthdate" />
+                <ScalarProperty Name="Lastname" ColumnName="Lastname" />
+                <ScalarProperty Name="Firstname" ColumnName="Firstname" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="CodeCol" ColumnName="CodeCol" />
+                <ScalarProperty Name="Dossier" ColumnName="Dossier" />
+                <ScalarProperty Name="Subsid" ColumnName="Subsid" />
+                <ScalarProperty Name="Company" ColumnName="Company" />
+                <ScalarProperty Name="ContractId" ColumnName="ContractId" />
+                <ScalarProperty Name="AssureurName" ColumnName="AssureurName" />
+                <ScalarProperty Name="ImportId" ColumnName="ImportId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

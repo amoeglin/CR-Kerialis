@@ -1,0 +1,69 @@
+http://www.actuariesservices.com/downloads/Kerialis/Mise-a-jour-18052021/CompteResultat.zip
+http://www.actuariesservices.com/downloads/Kerialis/Mise-a-jour-18052021/CompteResultat.bak
+http://www.actuariesservices.com/downloads/Kerialis/Mise-a-jour-18052021/CompteResultat_ASPNETDB.bak
+
+http://www.actuariesservices.com/downloads/Kerialis/7-Update-1-5-21.zip
+http://www.actuariesservices.com/downloads/Kerialis/CLIENTS.zip
+
+http://www.cyclingfans.com/giro-d-italia/live
+http://localhost:53159/ImportData.aspx
+http://albatros2/GestionLicences/Logiciels.aspx
+https://www.google.com/search?q=github+tag+commit&rlz=1C1CHBD_enFR849FR849&oq=github+tag+commit&aqs=chrome..69i57j0j0i22i30l7j69i64.10750j0j7&sourceid=chrome&ie=UTF-8
+https://stackoverflow.com/questions/18216991/create-a-tag-in-a-github-repository
+https://github.com/amoeglin/CompteResultat-Kerialis/commits/master
+https://docs.github.com/en/github/administering-a-repository/releasing-projects-on-github/managing-releases-in-a-repository
+
+
+ 
+Implementation of Form: 
+=======================
+ 
+=> develop web forms
+ 
+
+
+
+ 
+ 
+Implementation of Licence Check:
+================================
+ 
+Web.config: see: app.config - do we need those settings, we already have config.ini ???
+
+ 
+Check Lic on Login & maybe at "Create CR" button (see: Startup.cs) =>
+---------------------------------------------------------------------
+ 
+if (ProtectionUtilities.CheckProtection(liccfg)) ... => L142 
+
+
+Add a new file: ProtectionUtilities.cs => modify
+------------------------------------------------ 
+
+NomProgramme
+NomOption_Prev && NomOption_Solvency
+
+private static string IniFilePath => change App Name
+ 
+public static bool CheckProtection(string licenceFilePath) =>
+  define options => later
+
+public static string GetAboutString() => not required
+
+public static void LeaveProtection() => change App
+
+
+
+
+Example INI File:
+=================
+
+[INFOSCLIENT]
+NomClient=Cabinet MOEGLIN
+NomSite=BureauDistant
+NomSociete=*
+EmailSupport=*** support@moeglin.com ***
+Tel=33 04 93 90 54 15
+licencepath=C:\LifeActuarial
+
+Langue=FR
