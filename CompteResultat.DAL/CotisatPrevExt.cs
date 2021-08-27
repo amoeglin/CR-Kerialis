@@ -26,7 +26,7 @@ namespace CompteResultat.DAL
                 {
                     cotisat = context.CotisatPrevs
                     .Where(d => years.Contains((d.Year.HasValue ? d.Year.Value : 0)) && companyList.Contains(d.Company))
-                    .GroupBy(p => new { p.AssureurName, p.Company, AnnSurv = p.Year })
+                    .GroupBy(p => new { p.AssureurName, p.Company, AnnSurv = p.Year, p.CodeGarantie })
                     .Select(g => new ExcelGlobalCotisatData
                     {
                         Assureur = g.Key.AssureurName,
@@ -34,7 +34,8 @@ namespace CompteResultat.DAL
                         Subsid = "",
                         YearSurv = g.Key.AnnSurv.HasValue ? g.Key.AnnSurv.Value : 0,
                         Cotisat = g.Sum(i => i.Cotisation),
-                        CotisatBrute = g.Sum(i => i.CotisationBrute)
+                        CotisatBrute = g.Sum(i => i.CotisationBrute),
+                        CodeGarantie = g.Key.CodeGarantie
                     })
                     .OrderBy(gr => gr.YearSurv).ThenBy(ga => ga.Company)
                     .ToList();

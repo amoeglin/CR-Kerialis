@@ -97,6 +97,26 @@ namespace CompteResultat.DAL
             }
         }
 
+        public static List<string> GetAllSubsids()
+        {
+            try
+            {
+                List<string> subs;
+
+                using (var context = new CompteResultatEntities())
+                {
+                    subs = context.C_TempOtherFields.Where(c => c.Subsid != null && c.Subsid != "").Select(c => c.Subsid).ToList();
+                }
+
+                return subs;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
         public static List<string> GetUniqueSubsidContractIdPairs()
         {
             try
@@ -312,23 +332,23 @@ namespace CompteResultat.DAL
             }
         }
                 
-        public static string GetParentCompanyNameForSubsid(string subsid)
+        public static List<string> GetParentCompanyNamesForSubsid(string subsid)
         {
             try
             {
-                string compName;
+                List<string> compNames;
 
                 using (var context = new CompteResultatEntities())
                 {
                     var elements = context.C_TempOtherFields.Where(t => t.Subsid == subsid).Select(t => t.Company);
 
                     if (elements.Any())
-                        compName = elements.First();
+                        compNames = elements.ToList();
                     else
-                        compName = C.cINVALIDSTRING;
+                        compNames = null;
                 }
 
-                return compName;
+                return compNames;
             }
             catch (Exception ex)
             {

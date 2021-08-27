@@ -53,6 +53,7 @@ namespace CompteResultat.DAL
         public double GainLoss { get; set; }
         public DateTime DateArret { get; set; }
         public double? Coef { get; set; }
+        public string CodeGarantie { get; set; }
     }
 
     public class ExcelGlobalSinistreData
@@ -149,6 +150,7 @@ namespace CompteResultat.DAL
         public int YearSurv { get; set; }
         public double? Cotisat { get; set; }
         public double? CotisatBrute { get; set; }
+        public string CodeGarantie { get; set; }
     }
 
     public class IMAssurContrIDPair : IEquatable<IMAssurContrIDPair>
@@ -297,6 +299,7 @@ namespace CompteResultat.DAL
         public DateTime? DatePayement { get; set; }
         public DateTime? DebSin { get; set; }
         public DateTime? FinSin { get; set; }
+        public DateTime? DateSin { get; set; }
     }
 
     public class DemoSanteWithOptionInfo

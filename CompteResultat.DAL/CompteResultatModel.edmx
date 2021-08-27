@@ -154,6 +154,7 @@ warning 6002: The table/view 'CompteResultat.dbo._TempOtherFields' does not have
           <Property Name="FinPrime" Type="date" />
           <Property Name="Cotisation" Type="float" />
           <Property Name="CotisationBrute" Type="float" />
+          <Property Name="CodeGarantie" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="CotisatSante">
           <Key>
@@ -1220,6 +1221,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="Company" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Subsid" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="CotisationBrute" Type="Double" />
+          <Property Name="CodeGarantie" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="DecomptePrev">
           <Key>
@@ -1710,6 +1712,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySetMapping Name="CotisatPrevs">
             <EntityTypeMapping TypeName="CompteResultatModel.CotisatPrev">
               <MappingFragment StoreEntitySet="CotisatPrev">
+                <ScalarProperty Name="CodeGarantie" ColumnName="CodeGarantie" />
                 <ScalarProperty Name="CotisationBrute" ColumnName="CotisationBrute" />
                 <ScalarProperty Name="Subsid" ColumnName="Subsid" />
                 <ScalarProperty Name="Company" ColumnName="Company" />

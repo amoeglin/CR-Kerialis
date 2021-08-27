@@ -158,7 +158,7 @@ namespace CompteResultat.BL
                     //Produit
                     TransformFile(UploadPathPrest, CSVSep, ConfigStringPrest, NewPrestEntCSV, "Id", importId, C.eImportFile.PrestaSante, true);
                     Thread.Sleep(500);
-                    if (File.Exists(NewPrestProdCSV))
+                    if (File.Exists(NewPrestEntCSV))
                         G.GetAssurContrCompSubsidFromCSV(ref dataAssurContrCompSubsid, NewPrestEntCSV, ImportId);
                 }
 
@@ -171,7 +171,7 @@ namespace CompteResultat.BL
 
                     TransformFile(UploadPathCot, CSVSep, ConfigStringCot, NewCotEntCSV, "Id", importId, C.eImportFile.CotisatSante, true);
                     Thread.Sleep(500);
-                    if (File.Exists(NewCotProdCSV))
+                    if (File.Exists(NewCotEntCSV))
                         G.GetAssurContrCompSubsidFromCSV(ref dataAssurContrCompSubsid, NewCotEntCSV, ImportId);
                 }
 
@@ -184,7 +184,7 @@ namespace CompteResultat.BL
 
                     TransformFile(UploadPathDemo, CSVSep, ConfigStringDemo, NewDemoEntCSV, "Id", importId, C.eImportFile.Demography, true);
                     Thread.Sleep(500);
-                    if (File.Exists(NewDemoProdCSV))
+                    if (File.Exists(NewDemoEntCSV))
                         G.GetAssurContrCompSubsidFromCSV(ref dataAssurContrCompSubsid, NewDemoEntCSV, ImportId);
                 }
 
@@ -310,49 +310,35 @@ namespace CompteResultat.BL
 
                 //Verify Subsid
                 List<string> existingSubsid = Company.GetUniqueSubsids();
-                List<string> newSubsid = C_TempOtherFields.GetUniqueSubsids();
+                List<string> newSubsid = C_TempOtherFields.GetAllSubsids();
                 List<string> subsToBeAdded = newSubsid.Where(i => !existingSubsid.Contains(i)).ToList();
 
                 //we test all subsids to take duplicate subsids into account
                 foreach (string sub in newSubsid)
                 {
                     //get the name of the associated Parent Company
-                    string parCompName = C_TempOtherFields.GetParentCompanyNameForSubsid(sub);
-                    if (parCompName == C.cINVALIDSTRING)
+                    List<string> parCompNames = C_TempOtherFields.GetParentCompanyNamesForSubsid(sub);
+                    if (parCompNames == null)
                         throw new Exception("No parent company was found in the '_TempOtherFields' table for the following subsidiary: " + sub);
 
-                    //get the id of the associated Parent Company
-                    int parCompId = Company.GetCompIdForParentCompName(parCompName);
-                    if (parCompId == C.cINVALIDID)
-                        throw new Exception("No parent company ID was found in the 'Company' table for the following parent company: " + parCompName);
-
-                    //verify if the parent companyId & subsid name combination already exists
-                    if (!Company.SubsidCompIdPairExists(sub, parCompId))
+                    foreach (string parComp in parCompNames)
                     {
-                        //now we add the subsidiary
-                        int compId = Company.Insert(new Company { ImportId = importId, Name = sub, ParentId = parCompId });
-                    }
-                }
-
-                //this is the old evaluation where we don't take duplicate subsid names (for different parent comps) into account
-                if (false)
-                {
-                    foreach (string sub in subsToBeAdded)
-                    {
-                        //get the name of the associated Parent Company
-                        string parCompName = C_TempOtherFields.GetParentCompanyNameForSubsid(sub);
-                        if (parCompName == C.cINVALIDSTRING)
-                            throw new Exception("No parent company was found in the '_TempOtherFields' table for the following subsidiary: " + sub);
-
                         //get the id of the associated Parent Company
-                        int parCompId = Company.GetCompIdForParentCompName(parCompName);
-                        if (parCompId == C.cINVALIDID)
-                            throw new Exception("No parent company ID was found in the 'Company' table for the following parent company: " + parCompName);
+                        List<int> parCompIds = Company.GetCompIdsForParentCompName(parComp);
+                        if (parCompIds == null)
+                            throw new Exception("No parent company ID was found in the 'Company' table for the following parent company: " + parComp);
 
-                        //now we add the subsidiary
-                        int compId = Company.Insert(new Company { ImportId = importId, Name = sub, ParentId = parCompId });
+                        //verify if the parent companyId & subsid name combination already exists
+                        foreach (int comp in parCompIds)
+                        {
+                            if (!Company.SubsidCompIdPairExists(sub, comp))
+                            {
+                                //now we add the subsidiary
+                                int compId = Company.Insert(new Company { ImportId = importId, Name = sub, ParentId = comp });
+                            }
+                        }
                     }
-                }
+                }                
 
                 #endregion
 
@@ -433,8 +419,9 @@ namespace CompteResultat.BL
                 foreach (OtherTableContrSubsidPair item in CSPairTempTable)
                 {
                     //string searchItem = item.Subsid.ToLower() + "##" + ImportId;
-                    int contrId = dictContrNameId.FirstOrDefault(x => x.Value.ToLower() == item.ContractId.ToLower()).Key;
-                    string ourParentCompany = C_TempOtherFields.GetParentCompanyNameForSubsid(item.Subsid);
+                    int contrIdold = dictContrNameId.FirstOrDefault(x => x.Value.ToLower() == item.ContractId.ToLower()).Key;
+                    List<int> contrIds = dictContrNameId.Where(x => x.Value.ToLower() == item.ContractId.ToLower()).Select(x => x.Key).ToList();
+                    List<string> ourParentCompanies = C_TempOtherFields.GetParentCompanyNamesForSubsid(item.Subsid);
 
                     //int subsidId = dictSubsidNameId.FirstOrDefault(x => x.Value.ToLower() == item.Subsid.ToLower()).Key;
                     //var values = dictionary.Where(x => someKeys.Contains(x.Key)).Select(x => x.Value);
@@ -448,10 +435,16 @@ namespace CompteResultat.BL
                         {
                             string parentCompName = Company.GetCompanyNameForId(parentCompId.Value);
 
-                            if (parentCompName == ourParentCompany)
+                            foreach (string parComp in ourParentCompanies)
                             {
-                                if (subsidId != 0 && contrId != 0)
-                                    CSIDPairFromTempTable.Add(new IMContrCompIDPair { IdContract = contrId, IdCompany = subsidId });
+                                if (parentCompName == parComp)
+                                {
+                                    foreach (int contrId in contrIds)
+                                    {
+                                        if (subsidId != 0 && contrId != 0)
+                                            CSIDPairFromTempTable.Add(new IMContrCompIDPair { IdContract = contrId, IdCompany = subsidId });
+                                    }
+                                }
                             }
                         }
                     }

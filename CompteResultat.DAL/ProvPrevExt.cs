@@ -42,6 +42,72 @@ namespace CompteResultat.DAL
                 throw ex;
             }
         }
+
+
+        // OLD désactivé le 0208 2021 AM
+        public static List<ProvPrev> GetProvPrevGlobalEntData(List<string> parentCompanyList, List<string> companyList,
+            DateTime debutPeriod, DateTime finPeriod, DateTime dateArret)
+        {
+            try
+            {
+                List<ProvPrev> provPrev;
+
+                using (var context = new CompteResultatEntities())
+                {
+                    //selection with DateProvision
+                    provPrev = context.ProvPrevs.Where(pp => parentCompanyList.Contains(pp.Company)
+                        && companyList.Contains(pp.Subsid)
+                        && pp.DateSinistre >= debutPeriod && pp.DateSinistre <= finPeriod
+                        && pp.DateProvision == dateArret).ToList();
+                }
+
+                return provPrev;
+
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
+        // NEW ACTIVE le 0208 2021 AM
+        public static List<ProvPrev> GetProvPrevGlobalEntData_NEW(List<int> years, List<string> parentCompanyList, DateTime dateArret)
+        {
+            try
+            {
+                List<ProvPrev> provPrev;
+
+                using (var context = new CompteResultatEntities())
+                {
+                    //selection with DateProvision
+                    provPrev = context.ProvPrevs
+                        .Where(pp => years.Contains(pp.DateSinistre.Value.Year) && parentCompanyList.Contains(pp.Company) && pp.DateProvision == dateArret)
+                        .GroupBy(p => new { p.AssureurName, p.Company, AnnSurv = p.DateSinistre.Value.Year })
+                        .Select (g=> new ProvPrev
+                         {
+                            Pm = g.Sum(i => i.Pm),
+                            PmPassage = g.Sum(i => i.PmPassage),
+                            Psap = g.Sum(i => i.Psap),
+                            PmMgdc = g.Sum(i => i.PmMgdc),
+                            Psi = g.Sum(i => i.Psi),
+                        })
+                        .ToList();
+                }
+
+                return provPrev;
+
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
+
+
+
     }
 
     public class MetaData

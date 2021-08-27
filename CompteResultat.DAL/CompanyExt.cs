@@ -568,23 +568,23 @@ namespace CompteResultat.DAL
             }
         }
 
-        public static int GetCompIdForParentCompName(string companyName)
+        public static List<int> GetCompIdsForParentCompName(string companyName)
         {
             try
             {
-                int compId;
+                List<int> compIds;
 
                 using (var context = new CompteResultatEntities())
                 {
                     var elements = context.Companies.Where(c => c.Name == companyName && c.ParentId == null).Select(c => c.Id);
 
                     if (elements.Any())
-                        compId = elements.First();
+                        compIds = elements.ToList(); // elements.First();
                     else
-                        compId = C.cINVALIDID;
+                        compIds = null; //  C.cINVALIDID;
                 }
 
-                return compId;
+                return compIds;
             }
             catch (Exception ex)
             {

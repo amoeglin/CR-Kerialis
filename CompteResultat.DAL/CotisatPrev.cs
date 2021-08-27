@@ -26,5 +26,6 @@ namespace CompteResultat.DAL
         public string Company { get; set; }
         public string Subsid { get; set; }
         public Nullable<double> CotisationBrute { get; set; }
+        public string CodeGarantie { get; set; }
     }
 }

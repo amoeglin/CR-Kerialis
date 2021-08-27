@@ -340,10 +340,18 @@ namespace CompteResultat.BL
                 ExcelSheetHandler.FillGlobalSheetSynthese(fiExcelFile, companyList, subsidList, debutPeriod, finPeriod, dateArret, reportType, TaxDef, TaxAct, TaxPer);
                 numberTopPerteLoss = NumberTopPerteLoss;
             }
+            else if (templateType == C.eReportTemplateTypes.PREV_SYNTH)
+            {
+                //ExcelSheetHandler.FillGlobalSheetSynthesePrev(fiExcelFile, companyList, subsidList, debutPeriod, finPeriod, dateArret, reportType, TaxDef, TaxAct, TaxPer);
+                ExcelSheetHandler.FillGlobalSheetPrev(fiExcelFile, companyList, subsidList, debutPeriod,finPeriod, dateArret, reportType, TaxDef, TaxAct, TaxPer);
+                numberTopPerteLoss = NumberTopPerteLoss;
+            }
 
             ExcelSheetHandler.FillDates(fiExcelFile, dateArret, debutPeriod, finPeriod, TaxDef, TaxAct, TaxPer, null, numberTopPerteLoss);
 
             ExcelSheetHandler.FillOUI(fiExcelFile);
+
+            ExcelSheetHandler.FillTypePrev(fiExcelFile);
         }       
 
         public void CreateExcelPREVData(FileInfo fiExcelFile, string assurNameList, string parentCompanyNameList, string companyNameList, string contrNameList, DateTime debutPeriod, DateTime finPeriod,
@@ -367,7 +375,9 @@ namespace CompteResultat.BL
                 ExcelSheetHandler.FillDates(fiExcelFile, dateArret, debutPeriod, finPeriod, null, null, null, calculateProvision);
 
                 //Test - we no longer use Excel Macros
-                ExcelSheetHandler.FillOUI(fiExcelFile);
+                //ExcelSheetHandler.FillOUI(fiExcelFile);
+
+                ExcelSheetHandler.FillTypePrev(fiExcelFile);
 
 
                 //### run Excel Macros 

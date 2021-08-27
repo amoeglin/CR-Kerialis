@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'C:\_ROBERT\_DEV\PROJECTS\DOT-NET\CompteResultat\CompteResultat-Kerialis\CompteResultat.DAL\CompteResultatModel.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\_ROBERT\_DEV\PROJECTS\DOT-NET\CompteResultat\_CR-Kerialis\CompteResultat.DAL\CompteResultatModel.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

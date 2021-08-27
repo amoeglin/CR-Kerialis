@@ -112,6 +112,15 @@ namespace CompteResultat {
         protected global::System.Web.UI.WebControls.CheckBox chkGlobalEnt;
         
         /// <summary>
+        /// chk1An control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chk1An;
+        
+        /// <summary>
         /// cmdCreate control.
         /// </summary>
         /// <remarks>

@@ -173,7 +173,8 @@ namespace CompteResultat.Common
             PREV,
             PREV_GLOBAL,
             SANTE_GLOBAL,
-            SANTE_SYNT
+            SANTE_SYNT,
+            PREV_SYNTH
         }
 
         public enum eExcelSheetPrestaData
@@ -278,7 +279,9 @@ namespace CompteResultat.Common
         public static string cEXCELPAGEGARDE = "Page de garde";
 
         public static string cEXCELGLOBAL = "DATA";
+        public static string cEXCELGLOBALGARANTIE = "DATA_GARANTIE";        
         public static string cEXCELGLOBALCUMUL = "DATA_CUMUL";
+        public static string cEXCELGLOBALCUMULGARANTIE = "DATA_CUMUL_GARANTIE";
 
         //Synthese: data Produit & Data Entreprise
         public static string cEXCELSYNTHESEPROD = "DATA PRODUIT";

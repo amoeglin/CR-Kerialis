@@ -309,15 +309,15 @@ namespace CompteResultat
             if (chkSynthese.Checked)
             {
                 //GLOBAL SOCIETE PRODUIT
-                //reportName = "SYNTHESE_SANTE_" + dateTimeToday;
-                //C.eReportTypes repType = C.eReportTypes.GlobalSynthese;
-                //C.eReportTemplateTypes repTemplate = C.eReportTemplateTypes.SANTE_SYNT;
-                //assurNames = Assureur.GetEnterpriseAssNamesByType(C.cASSTYPEPRODUCT);
+                reportName = "SYNTHESE_PREV_" + dateTimeToday;
+                C.eReportTypes repType = C.eReportTypes.GlobalSynthese;
+                C.eReportTemplateTypes repTemplate = C.eReportTemplateTypes.PREV_SYNTH;
+                assurNames = Assureur.GetEnterpriseAssNamesByType(C.cASSTYPEENTERPRISEPREV);
 
-                //myCR = SetCRDetails(repType, repTemplate, reportName);
-                //SetGenericCRParams(ref myCR, assurNames);
+                myCR = SetCRDetails(repType, repTemplate, reportName);
+                SetGenericCRParams(ref myCR, assurNames);
 
-                //myCR.CreateNewCompteResultat(true);
+                myCR.CreateNewCompteResultat(true);
             }
             
             // GLOBAL SOCIETE ENTERPRISE => get all assureurs that end with _ENTREPRISE => get all Comps & Subsids for those Assur
@@ -331,6 +331,19 @@ namespace CompteResultat
                 myCR = SetCRDetails(repType, repTemplate, reportName);
                 SetGenericCRParams(ref myCR, assurNames);
                 myCR.CreateNewCompteResultat(true);
+            }
+
+            if (chk1An.Checked)
+            {
+                reportName = "_PREV_1AN_" + dateTimeToday;
+                C.eReportTypes repType = C.eReportTypes.Standard;
+                C.eReportTemplateTypes repTemplate = C.eReportTemplateTypes.PREV;
+                assurNames = Assureur.GetEnterpriseAssNamesByType(C.cASSTYPEPRODUCT);
+
+                myCR = SetCRDetails(repType, repTemplate, reportName);
+                SetGenericCRParams(ref myCR, assurNames);
+                myCR.CreateNewCompteResultat(true);
+
             }
 
         }

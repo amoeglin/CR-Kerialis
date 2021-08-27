@@ -67,7 +67,7 @@
         </div>
 
         <div>         
-            <asp:CheckBox ID="chkCalcProv" class="element" runat="server" Checked="true" style="display:inline-block;margin-bottom:15px; margin-top:15px;" Text="&nbsp;Calculer les provisions" /><br />
+            <asp:CheckBox Visible="false" ID="chkCalcProv" class="element" runat="server" Checked="true" style="display:inline-block;margin-bottom:15px; margin-top:15px;" Text="&nbsp;Calculer les provisions" /><br />
         </div>
 
     </div>
@@ -84,8 +84,15 @@
         </div>        
         <div>         
             <asp:CheckBox ID="chkGlobalEnt" class="element" runat="server" Checked="true" style="display:inline-block;margin-top:00px;" Text="&nbsp;Global société par entreprise" /><br />
+        </div>      
+               
+        <div>         
+            <asp:CheckBox ID="chk1An" class="element" runat="server" Checked="true" style="display:inline-block;margin-top:00px;" Text="&nbsp;Compte de résultats pour une année de survenance et pour tous les produits" /><br />
+
         </div>        
     </div>
+
+
     
         
     <div class="itemCreateSynthese">

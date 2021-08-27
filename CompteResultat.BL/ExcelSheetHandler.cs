@@ -161,6 +161,34 @@ namespace CompteResultat.BL
             }
         }
 
+        public static void FillGlobalSheetSynthesePrev(FileInfo excelFilePath, string companyList, string subsidList, DateTime debutPeriod,
+          DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, double TaxDef, double TaxAct, double TaxPer)
+        {
+            try
+            {
+                DataTable syntheseTableProd = GetSyntheseTable(debutPeriod, finPeriod, dateArret, reportType, true, false);
+                DataTable syntheseTableEnt = GetSyntheseTable(debutPeriod, finPeriod, dateArret, reportType, false, false);
+
+                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
+                {
+                    pck.Workbook.Worksheets[C.cEXCELSYNTHESEPROD].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELSYNTHESEPROD];
+                    ws.Cells["A2"].LoadFromDataTable(syntheseTableProd, false);
+
+                    pck.Workbook.Worksheets[C.cEXCELSYNTHESEENT].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+                    ws = pck.Workbook.Worksheets[C.cEXCELSYNTHESEENT];
+                    ws.Cells["A2"].LoadFromDataTable(syntheseTableEnt, false);
+
+                    pck.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: FillGlobalSheetSynthese : " + ex.Message);
+                throw ex;
+            }
+        }
+
         public static DataTable GetSyntheseTable(DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, bool isProdTable, bool simpleMode=false)
         {
             try
@@ -473,11 +501,13 @@ namespace CompteResultat.BL
         {
             try
             {
-                bool isGlobalEnt = reportType == C.eReportTypes.GlobalEnt ? true : false;
+                bool isGlobalEnt = (reportType == C.eReportTypes.GlobalEnt || reportType == C.eReportTypes.GlobalSynthese) ? true : false;
                 List<string> parentCompanyList = Regex.Split(companyList, C.cVALSEP).ToList();
                 List<string> subsidiaryList = Regex.Split(subsidList, C.cVALSEP).ToList();
                 DataTable globalTable = CreateGlobalTablePrev(reportType);
+                DataTable globalGarantieTable = CreateGlobalTablePrev(reportType);
                 DataTable globalTableCumul = CreateGlobalTablePrev(reportType);
+                DataTable globalGarantieTableCumul = CreateGlobalTablePrev(reportType);
 
                 //get years && coefCad                
                 List<int> years = new List<int>();
@@ -488,10 +518,17 @@ namespace CompteResultat.BL
 
                 //get presta data
                 List<ExcelGlobalDecompteData> globalDecompte = new List<ExcelGlobalDecompteData>();
+                List<ExcelGlobalDecompteData> globalDecompteWithGarantie = new List<ExcelGlobalDecompteData>();
                 if (isGlobalEnt)
-                    globalDecompte = DecomptePrev.GetDecompteGlobalEntData(years, parentCompanyList);
+                {
+                    globalDecompte = DecomptePrev.GetDecompteGlobalEntData(years, parentCompanyList, dateArret);
+                    globalDecompteWithGarantie = DecomptePrev.GetDecompteGlobalEntDataWithGarantie(years, parentCompanyList, dateArret);
+                }
                 else
-                    globalDecompte = DecomptePrev.GetDecompteGlobalSubsidData(years, subsidiaryList);
+                {
+                    globalDecompte = DecomptePrev.GetDecompteGlobalSubsidData(years, subsidiaryList, dateArret);                    
+                    globalDecompteWithGarantie = DecomptePrev.GetDecompteGlobalSubsidDataWithGarantie(years, subsidiaryList, dateArret);
+                }
 
                 //get cotisat data
                 List<ExcelGlobalCotisatData> globalCotisat = new List<ExcelGlobalCotisatData>();
@@ -499,99 +536,19 @@ namespace CompteResultat.BL
                     globalCotisat = CotisatPrev.GetCotisatGlobalEntDataPrev(years, parentCompanyList);
                 else
                     globalCotisat = CotisatPrev.GetCotisatGlobalSubsidDataPrev(years, subsidiaryList);
+
+                //get ProvPrev
+                List<ProvPrev> allProvPrevData = new List<ProvPrev>();
+                allProvPrevData = ProvPrev.GetProvPrevGlobalEntData(parentCompanyList, subsidiaryList, debutPeriod, finPeriod, dateArret);
                 
-                //merge both datasets
-                foreach (ExcelGlobalDecompteData dat in globalDecompte)
-                {
-                    ExcelGlobalCotisatData item = null;
-                    if (isGlobalEnt)
-                        item = globalCotisat.FirstOrDefault(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.YearSurv == dat.YearSurv);
-                    else
-                        item = globalCotisat.FirstOrDefault(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.Subsid == dat.Subsid && i.YearSurv == dat.YearSurv);
-
-                    if (item != null)
-                    {
-                        dat.CotBrute = item.CotisatBrute.HasValue ? item.CotisatBrute.Value : 0;
-                        dat.CotNet = item.Cotisat.HasValue ? item.Cotisat.Value : 0;
-                    }
-
-                    //calculate all remaining fields
-                    //calculate new dates for dateDebut == 1/1/YearSurv && dateFin == 31/12/YearSurv
-                    DateTime dateDebutSurv = new DateTime(dat.YearSurv, 1, 1);
-                    DateTime dateFinSurv = new DateTime(dat.YearSurv, 12, 31);
-                    double presta = dat.RNous.HasValue ? dat.RNous.Value : 0;
-                    double coeffCad = 0;
-
-                    double provision = 0;
-                    provision = Math.Round(provision, 2);
-
-                    double cotNet = 0;
-                    cotNet = dat.CotNet;
-
-                    double cotBrute = 0;
-                    cotBrute = dat.CotBrute;
-                    //if ((1 + (TaxDef / 100)) != 0)
-                    //    cotNet = (dat.CotBrut * (1 - (TaxAct / 100))) / (1 + (TaxDef / 100));
-                    cotNet = Math.Round(cotNet, 2);
-                    cotBrute = Math.Round(cotBrute, 2);
-
-                    double ratio = 0;
-                    if (cotNet != 0)
-                        ratio = (presta + provision) / cotNet;
-
-                    double gainLoss = cotNet - presta - provision;
-
-                    dat.RNous = presta;
-                    dat.Coef = 0;
-                    dat.Provisions = provision;
-                    dat.CotNet = cotNet;
-                    dat.CotBrute = cotBrute;
-                    dat.Ratio = ratio;
-                    dat.GainLoss = gainLoss;
-                }
-
                 //Some values from the Cot table may be missing => because we don't have a corresponding entry in the Presta table for certain PK's (Assur-Comp-Year...)
                 //we need to add those missing values from the Cot Table
-                foreach (ExcelGlobalCotisatData dat in globalCotisat)
-                {
-                    ExcelGlobalDecompteData decompteLine = null;
-                    if (isGlobalEnt)
-                        decompteLine = globalDecompte.FirstOrDefault(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.YearSurv == dat.YearSurv);
-                    else
-                        decompteLine = globalDecompte.FirstOrDefault(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.Subsid == dat.Subsid && i.YearSurv == dat.YearSurv);
+                globalDecompte = AddFromCotisatToGlobalDecompte(isGlobalEnt, globalDecompte, globalCotisat);
+                globalDecompte = AddFromProvisToGlobalDecompte(isGlobalEnt, globalDecompte, allProvPrevData);
 
-                    if (decompteLine == null)
-                    {
-                        ExcelGlobalDecompteData item = new ExcelGlobalDecompteData();
-                        item.Assureur = dat.Assureur;
-                        item.Company = dat.Company;
-                        item.Subsid = dat.Subsid;
-                        item.YearSurv = dat.YearSurv;
-                        item.CotNet = dat.Cotisat.HasValue ? dat.Cotisat.Value : 0;
-                        item.CotBrute = dat.CotisatBrute.HasValue ? dat.CotisatBrute.Value : 0;
+                globalDecompteWithGarantie = AddFromCotisatToGlobalDecompte(isGlobalEnt, globalDecompteWithGarantie, globalCotisat);
+                globalDecompteWithGarantie = AddFromProvisToGlobalDecompte(isGlobalEnt, globalDecompteWithGarantie, allProvPrevData);
 
-                        double cotNet = 0;
-                        cotNet = item.CotNet;
-                        double cotBrute = 0;
-                        cotBrute = item.CotBrute;
-                        //if ((1 + (TaxDef / 100)) != 0)
-                        //    cotNet = (item.CotBrut * (1 - (TaxAct / 100))) / (1 + (TaxDef / 100));
-                        cotNet = Math.Round(cotNet, 2);
-                        item.CotNet = cotNet;
-                        cotBrute = Math.Round(cotBrute, 2);
-                        item.CotBrute = cotBrute;
-
-                        double gainLoss = cotNet - (item.RNous.HasValue ? item.RNous.Value : 0) - item.Provisions;
-                        item.GainLoss = gainLoss;                        
-
-                        DateTime dateDebutSurv = new DateTime(dat.YearSurv, 1, 1);
-                        DateTime dateFinSurv = new DateTime(dat.YearSurv, 12, 31);
-                        double coeffCad = 0;
-                        item.Coef = coeffCad;
-
-                        globalDecompte.Add(item);
-                    }
-                }
 
                 //CUMUL
                 List<ExcelGlobalDecompteData> globalCotisatCumul = globalDecompte
@@ -620,48 +577,33 @@ namespace CompteResultat.BL
                    .OrderBy(ga => ga.YearSurv)
                    .ToList();
 
-                //double? total = globalPresta.Sum(p => p.FR);
-
-                //create DATA_CUMUL table
-                //Assureur, Company, Subsid, YearSurv, TypeSinistre, Prestations, Provisions, CotBrut, TauxChargement, CotNet, Ratio, GainLoss
-                foreach (ExcelGlobalDecompteData decompte in globalCotisatCumul)
-                {
-                    //calculate CotNet
-                    //double cotNet = 0;
-                    //if ((1 + (TaxDef / 100)) != 0)
-                    //    cotNet = (prest?.CotBrut ?? 0) * (1 - (TaxDef / 100)) / (1 + (TaxAct / 100));
-
-                    double ratio = 0;
-                    if (decompte.CotNet != 0)
-                        ratio = (decompte.Provisions + (decompte.RNous.HasValue ? decompte.RNous.Value : 0)) / decompte.CotNet;
-
-                    double tauxChargement = 0;
-                    if (decompte.CotBrute != 0)
-                    {
-                        tauxChargement = 1 - (decompte.CotNet / decompte.CotBrute);
-                    }
-
-                    //double gainLoss = cotNet - (prest.RNous.HasValue ? prest.RNous.Value : 0) - prest.Provisions;
-
-                    DataRow newRow = globalTableCumul.NewRow();
-
-                    newRow["Assureur"] = decompte.Assureur;
-                    newRow["Company"] = "";
-                    newRow["Subsid"] = "";
-                    newRow["YearSurv"] = decompte.YearSurv;
-                    newRow["TypeSinistre"] = "";
-                    newRow["Prestations"] = decompte?.RNous ?? 0;
-                    newRow["Provisions"] = Math.Round(decompte.Provisions, 2);
-                    newRow["CotBrute"] = decompte?.CotBrute ?? 0;
-                    newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
-                    //newRow["CotNet"] = Math.Round(cotNet, 2);
-                    newRow["CotNet"] = decompte?.CotNet ?? 0;
-                    newRow["Ratio"] = Math.Round(ratio, 4);
-                    newRow["GainLoss"] = decompte.GainLoss;
-                    newRow["DateArret"] = dateArret;
-
-                    globalTableCumul.Rows.Add(newRow);
-                }
+                //CUMUL with Garantie
+                List<ExcelGlobalDecompteData> globalCotisatWithGarantieCumul = globalDecompteWithGarantie
+                   .GroupBy(p => new { p.Assureur, p.YearSurv, p.CodeGarantie })
+                   .Select(g => new ExcelGlobalDecompteData
+                   {
+                       Assureur = g.Key.Assureur,
+                       Company = "",
+                       Subsid = "",
+                       YearSurv = g.Key.YearSurv,
+                       RNous = g.Sum(i => i.RNous),
+                       Provisions = g.Sum(i => i.Provisions),
+                       CotBrute = g.Sum(i => i.CotBrute),
+                       TaxActive = TaxAct.ToString(),
+                       TaxDefault = TaxDef.ToString(),
+                       TaxTotal = "",
+                       CotNet = g.Sum(i => i.CotNet),
+                       Ratio = ((g.Sum(i => i.RNous) + g.Sum(i => i.Provisions)) / g.Sum(i => i.CotNet)).Value,
+                       GainLoss = g.Sum(i => i.GainLoss),
+                       Coef = 0,
+                       FR = 0,
+                       RSS = 0,
+                       RAnnexe = 0,
+                       DateArret = dateArret,
+                       CodeGarantie = g.Key.CodeGarantie
+                   })
+                   .OrderBy(ga => ga.YearSurv)
+                   .ToList();
 
                 //create DATA table
                 foreach (ExcelGlobalDecompteData decompte in globalDecompte)
@@ -671,6 +613,9 @@ namespace CompteResultat.BL
                     {
                         tauxChargement = 1 - (decompte.CotNet / decompte.CotBrute);
                     }
+
+                    double cotNet = decompte?.CotNet ?? 0;
+                    double gainLoss = cotNet - decompte.Provisions - (decompte.RNous.HasValue ? decompte.RNous.Value : 0);
 
                     DataRow newRow = globalTable.NewRow();
 
@@ -690,10 +635,116 @@ namespace CompteResultat.BL
                     newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
                     newRow["CotNet"] = decompte?.CotNet ?? 0;
                     newRow["Ratio"] = Math.Round(decompte.Ratio, 4);
-                    newRow["GainLoss"] = decompte.GainLoss;
+                    newRow["GainLoss"] = gainLoss;
                     newRow["DateArret"] = dateArret;
 
                     globalTable.Rows.Add(newRow);
+                }
+
+                //create DATA_CUMUL table
+                foreach (ExcelGlobalDecompteData decompte in globalCotisatCumul)
+                {
+                    double ratio = 0;
+                    if (decompte.CotNet != 0)
+                        ratio = (decompte.Provisions + (decompte.RNous.HasValue ? decompte.RNous.Value : 0)) / decompte.CotNet;
+
+                    double tauxChargement = 0;
+                    if (decompte.CotBrute != 0)
+                    {
+                        tauxChargement = 1 - (decompte.CotNet / decompte.CotBrute);
+                    }
+
+                    double cotNet = decompte?.CotNet ?? 0;
+                    double gainLoss = cotNet - decompte.Provisions - (decompte.RNous.HasValue ? decompte.RNous.Value : 0);
+
+                    DataRow newRow = globalTableCumul.NewRow();
+
+                    newRow["Assureur"] = decompte.Assureur;
+                    newRow["Company"] = "";
+                    newRow["Subsid"] = "";
+                    newRow["YearSurv"] = decompte.YearSurv;
+                    newRow["TypeSinistre"] = "";
+                    newRow["Prestations"] = decompte?.RNous ?? 0;
+                    newRow["Provisions"] = Math.Round(decompte.Provisions, 2);
+                    newRow["CotBrute"] = decompte?.CotBrute ?? 0;
+                    newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
+                    newRow["CotNet"] = decompte?.CotNet ?? 0;
+                    newRow["Ratio"] = Math.Round(ratio, 4);
+                    newRow["GainLoss"] = gainLoss;
+                    newRow["DateArret"] = dateArret;
+
+                    globalTableCumul.Rows.Add(newRow);                    
+                }                
+
+                //create DATA_GARANTIE table
+                foreach (ExcelGlobalDecompteData decompte in globalDecompteWithGarantie)
+                {
+                    double tauxChargement = 0;
+                    if (decompte.CotBrute != 0)
+                    {
+                        tauxChargement = 1 - (decompte.CotNet / decompte.CotBrute);
+                    }
+
+                    double cotNet = decompte?.CotNet ?? 0;
+                    double gainLoss = cotNet - decompte.Provisions - (decompte.RNous.HasValue ? decompte.RNous.Value : 0);
+
+                    DataRow newRow = globalGarantieTable.NewRow();
+
+                    newRow["Assureur"] = decompte.Assureur;
+                    newRow["Company"] = decompte.Company;
+
+                    if (!isGlobalEnt)
+                        newRow["Subsid"] = decompte.Subsid;
+                    else
+                        newRow["Subsid"] = "";
+
+                    newRow["YearSurv"] = decompte.YearSurv;
+                    newRow["TypeSinistre"] = decompte.CodeGarantie;
+                    newRow["Prestations"] = decompte?.RNous ?? 0;
+                    newRow["Provisions"] = Math.Round(decompte.Provisions, 2);
+                    newRow["CotBrute"] = decompte?.CotBrute ?? 0;
+                    newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
+                    newRow["CotNet"] = decompte?.CotNet ?? 0;
+                    newRow["Ratio"] = Math.Round(decompte.Ratio, 4);
+                    newRow["GainLoss"] = gainLoss;
+                    newRow["DateArret"] = dateArret;
+
+                    globalGarantieTable.Rows.Add(newRow);
+                }
+
+                //create DATA_GARANTIE_CUMUL table
+                foreach (ExcelGlobalDecompteData decompte in globalCotisatWithGarantieCumul)
+                {
+                    double ratio = 0;
+                    if (decompte.CotNet != 0)
+                        ratio = (decompte.Provisions + (decompte.RNous.HasValue ? decompte.RNous.Value : 0)) / decompte.CotNet;
+
+                    double tauxChargement = 0;
+                    if (decompte.CotBrute != 0)
+                    {
+                        tauxChargement = 1 - (decompte.CotNet / decompte.CotBrute);
+                    }
+
+                    double cotNet = decompte?.CotNet ?? 0;
+                    double gainLoss = cotNet - decompte.Provisions - (decompte.RNous.HasValue ? decompte.RNous.Value : 0);
+
+                    DataRow newRow = globalGarantieTableCumul.NewRow();
+
+                    newRow["Assureur"] = decompte.Assureur;
+                    newRow["Company"] = "";
+                    newRow["Subsid"] = "";
+                    newRow["YearSurv"] = decompte.YearSurv;
+                    newRow["TypeSinistre"] = decompte.CodeGarantie;
+                    newRow["Prestations"] = decompte?.RNous ?? 0;
+                    newRow["Provisions"] = Math.Round(decompte.Provisions, 2);
+                    newRow["CotBrute"] = decompte?.CotBrute ?? 0;
+                    newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
+                    newRow["CotNet"] = decompte?.CotNet ?? 0;
+                    newRow["Ratio"] = Math.Round(ratio, 4);
+                    newRow["GainLoss"] = gainLoss;
+                    newRow["DateArret"] = dateArret;
+
+                    globalGarantieTableCumul.Rows.Add(newRow);
                 }
 
                 using (ExcelPackage pck = new ExcelPackage(excelFilePath))
@@ -702,9 +753,17 @@ namespace CompteResultat.BL
                     ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELGLOBAL];
                     ws.Cells["A2"].LoadFromDataTable(globalTable, false);
 
+                    pck.Workbook.Worksheets[C.cEXCELGLOBALGARANTIE].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+                    ws = pck.Workbook.Worksheets[C.cEXCELGLOBALGARANTIE];
+                    ws.Cells["A2"].LoadFromDataTable(globalGarantieTable, false);
+
                     pck.Workbook.Worksheets[C.cEXCELGLOBALCUMUL].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
                     ws = pck.Workbook.Worksheets[C.cEXCELGLOBALCUMUL];
                     ws.Cells["A2"].LoadFromDataTable(globalTableCumul, false);
+
+                    pck.Workbook.Worksheets[C.cEXCELGLOBALCUMULGARANTIE].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+                    ws = pck.Workbook.Worksheets[C.cEXCELGLOBALCUMULGARANTIE];
+                    ws.Cells["A2"].LoadFromDataTable(globalGarantieTableCumul, false);
 
                     pck.Save();
                 }
@@ -714,6 +773,120 @@ namespace CompteResultat.BL
                 log.Error("Error :: FillGlobalEntSheet : " + ex.Message);
                 throw ex;
             }
+        }
+
+        private static List<ExcelGlobalDecompteData> AddFromCotisatToGlobalDecompte(bool isGlobalEnt, List<ExcelGlobalDecompteData> globalDecompte, List<ExcelGlobalCotisatData> globalCotisat)
+        {
+            foreach (ExcelGlobalCotisatData dat in globalCotisat)
+            {               
+                ExcelGlobalDecompteData item = new ExcelGlobalDecompteData();
+                item.Assureur = dat.Assureur;
+                item.Company = dat.Company;
+                item.Subsid = dat.Subsid;
+                item.YearSurv = dat.YearSurv;
+                item.CotNet = dat.Cotisat.HasValue ? dat.Cotisat.Value : 0;
+                item.CotBrute = dat.CotisatBrute.HasValue ? dat.CotisatBrute.Value : 0;                
+                item.GainLoss = item.CotNet;                
+                item.CodeGarantie = dat.CodeGarantie;
+
+                DateTime dateDebutSurv = new DateTime(dat.YearSurv, 1, 1);
+                DateTime dateFinSurv = new DateTime(dat.YearSurv, 12, 31);
+                
+                globalDecompte.Add(item);                
+            }
+
+            return globalDecompte;
+        }
+
+        private static List<ExcelGlobalDecompteData> AddFromProvisToGlobalDecompte(bool isGlobalEnt, List<ExcelGlobalDecompteData> globalDecompte, List<ProvPrev> allProvPrevData)
+        {
+            foreach (ProvPrev dat in allProvPrevData)
+            {                
+                ExcelGlobalDecompteData item = new ExcelGlobalDecompteData();
+                item.Assureur = dat.AssureurName;
+                item.Company = dat.Company;
+                item.Subsid = dat.Subsid;
+                item.YearSurv = dat.DateSinistre.Value.Year;
+                item.CotNet = 0;
+                item.CotBrute = 0;
+
+                double dPm = dat.Pm.HasValue ? dat.Pm.Value : 0;
+                double dPmPassage = dat.PmPassage.HasValue ? dat.PmPassage.Value : 0;
+                double dPsap = dat.Psap.HasValue ? dat.Psap.Value : 0;
+                double dPmMgdc = dat.PmMgdc.HasValue ? dat.PmMgdc.Value : 0;
+                double dPsi = dat.Psi.HasValue ? dat.Psi.Value : 0;
+
+                item.Provisions = dPm + dPmPassage + dPsap + dPmMgdc + dPsi;
+                item.GainLoss = item.Provisions;
+                item.CodeGarantie = dat.NatureSinistre;
+
+                DateTime dateDebutSurv = new DateTime(dat.DateSinistre.Value.Year, 1, 1);
+                DateTime dateFinSurv = new DateTime(dat.DateSinistre.Value.Year, 12, 31);
+                double coeffCad = 0;
+                item.Coef = coeffCad;
+
+                globalDecompte.Add(item);
+            }
+
+            return globalDecompte;
+        }
+
+        private static List<ExcelGlobalDecompteData> UpdateGlobalDecompteWithCotisat(bool isGlobalEnt, List<ExcelGlobalDecompteData> globalDecompte, List<ExcelGlobalCotisatData> globalCotisat)
+        {
+            List<ExcelGlobalDecompteData> globDec = null;
+
+            foreach (ExcelGlobalDecompteData dat in globalDecompte)
+            {
+                ExcelGlobalCotisatData item = null;
+                if (isGlobalEnt)
+                    item = globalCotisat.FirstOrDefault(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.YearSurv == dat.YearSurv);
+                else
+                    item = globalCotisat.FirstOrDefault(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.Subsid == dat.Subsid && i.YearSurv == dat.YearSurv);
+
+                if (item != null)
+                {
+                    dat.CotBrute = item.CotisatBrute.HasValue ? item.CotisatBrute.Value : 0;
+                    dat.CotNet = item.Cotisat.HasValue ? item.Cotisat.Value : 0;
+                }
+
+                dat.Provisions = 0;
+
+                //calculate all remaining fields
+                //calculate new dates for dateDebut == 1/1/YearSurv && dateFin == 31/12/YearSurv
+                DateTime dateDebutSurv = new DateTime(dat.YearSurv, 1, 1);
+                DateTime dateFinSurv = new DateTime(dat.YearSurv, 12, 31);
+                double presta = dat.RNous.HasValue ? dat.RNous.Value : 0;
+                double coeffCad = 0;
+
+                double provision = 0;
+                provision = Math.Round(provision, 2);
+
+                double cotNet = 0;
+                cotNet = dat.CotNet;
+
+                double cotBrute = 0;
+                cotBrute = dat.CotBrute;
+                //if ((1 + (TaxDef / 100)) != 0)
+                //    cotNet = (dat.CotBrut * (1 - (TaxAct / 100))) / (1 + (TaxDef / 100));
+                cotNet = Math.Round(cotNet, 2);
+                cotBrute = Math.Round(cotBrute, 2);
+
+                double ratio = 0;
+                if (cotNet != 0)
+                    ratio = (presta + provision) / cotNet;
+
+                double gainLoss = cotNet - presta - provision;
+
+                dat.RNous = presta;
+                dat.Coef = 0;
+                //dat.Provisions = provision;
+                dat.CotNet = cotNet;
+                dat.CotBrute = cotBrute;
+                dat.Ratio = ratio;
+                dat.GainLoss = gainLoss;
+            }
+
+            return globDec;
         }
 
         public static void FillPrevProvSheet(C.ePrevProv prevProvSheet, FileInfo excelFilePath, string assurNameList, string parentCompanyNameList, string companyNameList, string contrNameList, string college, 
@@ -732,6 +905,7 @@ namespace CompteResultat.BL
                 List<SinistrePrev> allSinistreData = new List<SinistrePrev>();                
                 List<ProvPrev> allProvPrevData = new List<ProvPrev>();
                 List<SinistreEtProv> sinistreEtProv = new List<SinistreEtProv>();
+                List<CotisatPrev> allCotisatData = new List<CotisatPrev>();
 
                 //certain report templates will require data for more than 1 year, take this into account  
                 DateTime debutNew;
@@ -743,6 +917,10 @@ namespace CompteResultat.BL
                 //{
                     debutNew = new DateTime(debutPeriod.Year - years, debutPeriod.Month, debutPeriod.Day);
                     finNew = new DateTime(finPeriod.Year - years, finPeriod.Month, finPeriod.Day);
+
+                
+                allProvPrevData = ProvPrev.GetProvPrevForContracts(assurList, parentCompanyList, companyList, contrList, college, debutNew, finNew, dateArret);
+                List<string> dossierListPrevProv = allProvPrevData.Select(s => s.Dossier).ToList();
 
                 if (prevProvSheet == C.ePrevProv.Prev)
                 {
@@ -783,7 +961,7 @@ namespace CompteResultat.BL
                 }
                 else if (prevProvSheet == C.ePrevProv.Prov)
                 {
-                    allProvPrevData = ProvPrev.GetProvPrevForContracts(assurList, parentCompanyList, companyList, contrList, college, debutNew, finNew, dateArret);                    
+                    //allProvPrevData = ProvPrev.GetProvPrevForContracts(assurList, parentCompanyList, companyList, contrList, college, debutNew, finNew, dateArret);                    
 
                     if(allProvPrevData.Any())
                     {
@@ -827,8 +1005,8 @@ namespace CompteResultat.BL
                 }
                 //}
 
-
                 //transform the data
+                #region TABLE
                 DataTable prevTable = new DataTable();
                 DataTable prevTableIncap = new DataTable();
                 DataTable prevTableInval = new DataTable();
@@ -916,8 +1094,13 @@ namespace CompteResultat.BL
                     }
                 }
 
+                #endregion TABLE
+
                 //get a list of all dossiers from mySinistreData
                 List<string> dossierList = sinistreEtProv.Select(s => s.Dossier).ToList();
+                List<string> missingElements = dossierListPrevProv.Except(dossierList).ToList();
+                dossierList.AddRange(missingElements);
+
 
                 //get all decomptes for all dossiers listed in dossierList
                 List<DecomptePrevReduced> decPrevReduced = DecomptePrev.GetDecomptesForDossierList(assurList, dossierList, dateArret);
@@ -1035,12 +1218,16 @@ namespace CompteResultat.BL
                     else
                         newRow["Nbj Inval"] = (object)DBNull.Value;
 
-
-                    //calculate from Decompte Table                   
+                    
+                    //Test Code 
+                    //if (dossier == "8954")
+                    //{
+                    //    string aaa = "";
+                    //}
 
                     //decimal presta1 = DecomptePrev.GetSumPrestaForDossier(dossier, dateArret);
                     //presta = DecomptePrev.GetSumPrestaForDossierFromSP(dossier, dateArret);
-                    var res = decPrevReduced.Where(d => d.Dossier == dossier && d.DatePayement < dateArret).Sum(d => d.Total);                    
+                    var res = decPrevReduced.Where(d => d.Dossier == dossier && d.DatePayement <= dateArret && d.DateSin == sin.DateSinistre).Sum(d => d.Total);                    
                     presta = res.HasValue ? res.Value : 0;
 
                     newRow["PRESTATION"] = presta; 
@@ -1094,7 +1281,8 @@ namespace CompteResultat.BL
                     newRow["Montant du Capital Décès"] = 0;
                     if (newRow["Code Sinistre"].ToString().ToUpper() == "DECES")
                     {
-                        newRow["Montant du Capital Décès"] = presta;
+                        newRow["Montant du Capital Décès"] = 0;
+                        newRow["Prestation annualisée pour l'incapacité ou l'invalidité"] = 0;
                     }
                                         
                     newRow["Catégorie d'invalidité(1 , 2 ou 3)"] = 1;
@@ -1365,7 +1553,7 @@ namespace CompteResultat.BL
                 List<CotisatSante> yearCotDataSante = new List<CotisatSante>();
                 List<CotisatPrev> myCotDataPrev = new List<CotisatPrev>();
                 List<CotisatPrev> yearCotDataPrev = new List<CotisatPrev>();
-
+              
                 //certain report templates will require data for more than 1 year, take this into account  
                 DateTime debutNew;
                 DateTime finNew;
@@ -1398,7 +1586,8 @@ namespace CompteResultat.BL
                 DataColumn annee = new DataColumn("ANNEE", typeof(int));
                 DataColumn cotisat = new DataColumn("COTISATION", typeof(decimal));
                 DataColumn famille_college = new DataColumn("FAMILLE_COLLEGE", typeof(string));
-                DataColumn cotisatBrute = new DataColumn("COTISATION_BRUTE", typeof(decimal));                
+                DataColumn cotisatBrute = new DataColumn("COTISATION_BRUTE", typeof(decimal));
+                DataColumn codeGarantie = new DataColumn("CODE_GARANTIE", typeof(string));
 
                 if (templateType == C.eReportTemplateTypes.SANTE || templateType == C.eReportTemplateTypes.SANTE_GLOBAL)
                 {
@@ -1422,7 +1611,7 @@ namespace CompteResultat.BL
                 }
                 else if (templateType == C.eReportTemplateTypes.PREV || templateType == C.eReportTemplateTypes.PREV_GLOBAL)
                 {
-                    cotisatTable.Columns.AddRange(new DataColumn[] { debprime, finprime, contract, codcol, annee, cotisat, cotisatBrute });
+                    cotisatTable.Columns.AddRange(new DataColumn[] { debprime, finprime, contract, codcol, annee, cotisat, cotisatBrute, codeGarantie });
 
                     foreach (CotisatPrev cot in myCotDataPrev)
                     {
@@ -1435,6 +1624,7 @@ namespace CompteResultat.BL
                         newRow["ANNEE"] = cot.Year.HasValue ? cot.Year.Value : 0;
                         newRow["COTISATION"] = cot.Cotisation.HasValue ? cot.Cotisation.Value : 0;                        
                         newRow["COTISATION_BRUTE"] = cot.CotisationBrute.HasValue ? cot.CotisationBrute.Value : 0;
+                        newRow["CODE_GARANTIE"] = cot.CodeGarantie;
 
                         cotisatTable.Rows.Add(newRow);
                     }
@@ -1748,6 +1938,49 @@ namespace CompteResultat.BL
                     if (numberTopPerteLoss != 0)
                         ws.Cells["Q2"].Value = numberTopPerteLoss.ToString();
 
+                    pck.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: FillAffichageSheet : " + ex.Message);
+                throw ex;
+            }
+        }
+
+        public static void FillTypePrev(FileInfo excelFilePath)
+        {
+            try
+            {
+                DataTable typePrevTable = new DataTable();                
+                DataColumn code = new DataColumn("CODE", typeof(string));
+                DataColumn label = new DataColumn("LABEL", typeof(string));
+                typePrevTable.Columns.AddRange(new DataColumn[] { code, label });
+
+                List<TypePrevoyance> typePref = TypePrevoyance.GetTypePrev();
+
+                if (typePref.Any())
+                {
+                    DataRow newRow = typePrevTable.NewRow();
+                    newRow["CODE"] = "CODE SINISTRE";
+                    newRow["LABEL"] = "LIBELLE SINISTRE";
+                    typePrevTable.Rows.Add(newRow);
+
+                    foreach (var elem in typePref)
+                    {
+                        newRow = typePrevTable.NewRow();
+                        newRow["CODE"] = elem.CodeSinistre;
+                        newRow["LABEL"] = elem.LabelSinistre;
+                        typePrevTable.Rows.Add(newRow);
+                    }
+                }
+
+                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
+                {
+                    //pck.Workbook.Worksheets[C.cEXCELGROUPGARANT].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELGROUPGARANT];
+                    ws.Cells["A1"].LoadFromDataTable(typePrevTable, false);
+                   
                     pck.Save();
                 }
             }
