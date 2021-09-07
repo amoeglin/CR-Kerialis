@@ -632,7 +632,8 @@ namespace CompteResultat.BL
                     newRow["Prestations"] = decompte?.RNous ?? 0;
                     newRow["Provisions"] = Math.Round(decompte.Provisions, 2);
                     newRow["CotBrute"] = decompte?.CotBrute ?? 0;
-                    newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
+                    //newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
+                    newRow["TauxChargement"] = Math.Round(tauxChargement, 4);
                     newRow["CotNet"] = decompte?.CotNet ?? 0;
                     newRow["Ratio"] = Math.Round(decompte.Ratio, 4);
                     newRow["GainLoss"] = gainLoss;
@@ -667,7 +668,8 @@ namespace CompteResultat.BL
                     newRow["Prestations"] = decompte?.RNous ?? 0;
                     newRow["Provisions"] = Math.Round(decompte.Provisions, 2);
                     newRow["CotBrute"] = decompte?.CotBrute ?? 0;
-                    newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
+                    //newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
+                    newRow["TauxChargement"] = Math.Round(tauxChargement, 4);
                     newRow["CotNet"] = decompte?.CotNet ?? 0;
                     newRow["Ratio"] = Math.Round(ratio, 4);
                     newRow["GainLoss"] = gainLoss;
@@ -703,7 +705,8 @@ namespace CompteResultat.BL
                     newRow["Prestations"] = decompte?.RNous ?? 0;
                     newRow["Provisions"] = Math.Round(decompte.Provisions, 2);
                     newRow["CotBrute"] = decompte?.CotBrute ?? 0;
-                    newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
+                    //newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
+                    newRow["TauxChargement"] = Math.Round(tauxChargement, 4);
                     newRow["CotNet"] = decompte?.CotNet ?? 0;
                     newRow["Ratio"] = Math.Round(decompte.Ratio, 4);
                     newRow["GainLoss"] = gainLoss;
@@ -738,8 +741,9 @@ namespace CompteResultat.BL
                     newRow["Prestations"] = decompte?.RNous ?? 0;
                     newRow["Provisions"] = Math.Round(decompte.Provisions, 2);
                     newRow["CotBrute"] = decompte?.CotBrute ?? 0;
-                    newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
-                    newRow["CotNet"] = decompte?.CotNet ?? 0;
+                   //newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
+                    newRow["TauxChargement"] = Math.Round(tauxChargement, 4);
+                     newRow["CotNet"] = decompte?.CotNet ?? 0;
                     newRow["Ratio"] = Math.Round(ratio, 4);
                     newRow["GainLoss"] = gainLoss;
                     newRow["DateArret"] = dateArret;
@@ -2587,7 +2591,7 @@ namespace CompteResultat.BL
                 DataColumn Prestations = new DataColumn("Prestations", typeof(decimal));
                 DataColumn Provisions = new DataColumn("Provisions", typeof(decimal));
                 DataColumn CotBrute = new DataColumn("CotBrute", typeof(decimal));
-                DataColumn TauxChargement = new DataColumn("TauxChargement", typeof(string));
+                DataColumn TauxChargement = new DataColumn("TauxChargement", typeof(decimal));
                 DataColumn CotNet = new DataColumn("CotNet", typeof(decimal));
                 DataColumn Ratio = new DataColumn("Ratio", typeof(decimal));
                 DataColumn GainLoss = new DataColumn("GainLoss", typeof(decimal));
