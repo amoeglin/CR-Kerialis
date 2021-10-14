@@ -151,13 +151,61 @@ namespace CompteResultat.DAL
                 {
                     prestations = context.PrestSantes
                     .Where(d => years.Contains(d.DateSoins.Value.Year) && companyList.Contains(d.Company))
-                    .GroupBy(p => new { p.AssureurName, p.Company, AnnSurv = p.DateSoins.Value.Year })
+                    .GroupBy(p => new { p.AssureurName, p.Company, AnnSurv = p.DateSoins.Value.Year, p.ContractId })
                     .Select(g => new ExcelGlobalPrestaData
                     {
                         Assureur = g.Key.AssureurName,
+                        Contract = g.Key.ContractId,
                         Company = g.Key.Company,
                         Subsid = "",
                         YearSurv = g.Key.AnnSurv,
+                        FR = g.Sum(i => i.FraisReel),
+                        RSS = g.Sum(i => i.RembSS),
+                        RAnnexe = g.Sum(i => i.RembAnnexe),
+                        RNous = g.Sum(i => i.RembNous),
+                        Provisions = 0,
+                        CotBrut = 0,
+                        TaxTotal = "",
+                        TaxDefault = "",
+                        TaxActive = "",
+                        CotNet = 0,
+                        Ratio = 0,
+                        GainLoss = 0,
+                        DateArret = DateTime.Now
+                    })
+                    //.OrderBy(ga => ga.YearSurv).ThenBy(gb => gb.Company)
+                    .OrderBy(ga => ga.Company).ThenBy(gb => gb.Subsid).ThenBy(gc => gc.YearSurv)
+                    .ToList();
+                }
+
+                return prestations;
+
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
+        public static List<ExcelGlobalPrestaData> GetPrestaGlobalEntDataCompta(List<int> years, List<string> companyList)
+        {
+            try
+            {
+                List<ExcelGlobalPrestaData> prestations = new List<ExcelGlobalPrestaData>();
+
+                using (var context = new CompteResultatEntities())
+                {
+                    prestations = context.PrestSantes
+                    .Where(d => years.Contains(d.DatePayment.Value.Year) && companyList.Contains(d.Company))
+                    .GroupBy(p => new { p.AssureurName, p.Company, AnnPaiement = p.DatePayment.Value.Year, p.ContractId })
+                    .Select(g => new ExcelGlobalPrestaData
+                    {
+                        Assureur = g.Key.AssureurName,
+                        Contract = g.Key.ContractId,
+                        Company = g.Key.Company,
+                        Subsid = "",
+                        YearSurv = g.Key.AnnPaiement,
                         FR = g.Sum(i => i.FraisReel),
                         RSS = g.Sum(i => i.RembSS),
                         RAnnexe = g.Sum(i => i.RembAnnexe),
@@ -197,13 +245,61 @@ namespace CompteResultat.DAL
                 {
                     prestations = context.PrestSantes
                     .Where(d => years.Contains(d.DateSoins.Value.Year) && subsidList.Contains(d.Company))
-                    .GroupBy(p => new { p.AssureurName, p.Company, p.Subsid, AnnSurv = p.DateSoins.Value.Year })
+                    .GroupBy(p => new { p.AssureurName, p.Company, p.Subsid, AnnSurv = p.DateSoins.Value.Year, p.ContractId })
                     .Select(g => new ExcelGlobalPrestaData
                     {
                         Assureur = g.Key.AssureurName,
+                        Contract = g.Key.ContractId,
                         Company = g.Key.Company,
                         Subsid = g.Key.Subsid,
                         YearSurv = g.Key.AnnSurv,
+                        FR = g.Sum(i => i.FraisReel),
+                        RSS = g.Sum(i => i.RembSS),
+                        RAnnexe = g.Sum(i => i.RembAnnexe),
+                        RNous = g.Sum(i => i.RembNous),
+                        Provisions = 0,
+                        CotBrut = 0,
+                        TaxTotal = "",
+                        TaxDefault = "",
+                        TaxActive = "",
+                        CotNet = 0,
+                        Ratio = 0,
+                        GainLoss = 0,
+                        DateArret = DateTime.Now
+                    })
+                    //.OrderBy(ga => ga.YearSurv).ThenBy(gb => gb.Company).ThenBy(gc => gc.Subsid)
+                    .OrderBy(ga => ga.Company).ThenBy(gb => gb.Subsid).ThenBy(gc => gc.YearSurv)
+                    .ToList();
+                }
+
+                return prestations;
+
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
+        public static List<ExcelGlobalPrestaData> GetPrestaGlobalSubsidDataCompta(List<int> years, List<string> subsidList)
+        {
+            try
+            {
+                List<ExcelGlobalPrestaData> prestations = new List<ExcelGlobalPrestaData>();
+
+                using (var context = new CompteResultatEntities())
+                {
+                    prestations = context.PrestSantes
+                    .Where(d => years.Contains(d.DatePayment.Value.Year) && subsidList.Contains(d.Company))
+                    .GroupBy(p => new { p.AssureurName, p.Company, p.Subsid, AnneePaiement = p.DatePayment.Value.Year, p.ContractId })
+                    .Select(g => new ExcelGlobalPrestaData
+                    {
+                        Assureur = g.Key.AssureurName,
+                        Contract = g.Key.ContractId,
+                        Company = g.Key.Company,
+                        Subsid = g.Key.Subsid,
+                        YearSurv = g.Key.AnneePaiement,
                         FR = g.Sum(i => i.FraisReel),
                         RSS = g.Sum(i => i.RembSS),
                         RAnnexe = g.Sum(i => i.RembAnnexe),
@@ -310,6 +406,30 @@ namespace CompteResultat.DAL
 
                     //cotisat2 = context.CotisatSantes.Where(cot => contrIds.Contains(cot.ContractId)).
                     //    Select(cot => new { cot.DebPrime, cot.FinPrime, cot.ContractId, cot.CodeCol, cot.Year, cot.Cotisation }).ToList();
+                }
+
+                return prestations;
+
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
+        public static List<PrestSante> GetPrestationsForContractsCompta(List<string> assurList, List<string> parentCompanyList, List<string> companyList,
+            List<string> contrIds, string college, DateTime debutPeriod, DateTime finPeriod, DateTime dateArret)
+        {
+            try
+            {
+                List<PrestSante> prestations;
+
+                using (var context = new CompteResultatEntities())
+                {
+                    prestations = context.PrestSantes.Where(prest => assurList.Contains(prest.AssureurName) && parentCompanyList.Contains(prest.Company)
+                        && companyList.Contains(prest.Subsid) && contrIds.Contains(prest.ContractId)
+                        && prest.DatePayment >= debutPeriod && prest.DatePayment <= finPeriod && prest.DatePayment <= dateArret).ToList();
                 }
 
                 return prestations;

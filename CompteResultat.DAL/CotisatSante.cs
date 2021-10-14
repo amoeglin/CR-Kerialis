@@ -27,5 +27,6 @@ namespace CompteResultat.DAL
         public string Subsid { get; set; }
         public string WithOption { get; set; }
         public Nullable<double> CotisationBrute { get; set; }
+        public string CodeSinistre { get; set; }
     }
 }

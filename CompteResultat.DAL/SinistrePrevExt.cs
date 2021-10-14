@@ -157,7 +157,7 @@ namespace CompteResultat.DAL
                 using (var context = new CompteResultatEntities())
                 {
                     sinistreLabels = context.Database
-                            .SqlQuery<string>("SELECT DISTINCT CauseSinistre FROM dbo.SinistrePrev ORDER BY CauseSinistre")
+                            .SqlQuery<string>("SELECT DISTINCT NatureSinistre FROM dbo.SinistrePrev ORDER BY NatureSinistre")
                             .ToList<string>();
                 }
 

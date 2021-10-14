@@ -246,11 +246,9 @@ namespace CompteResultat.BL
                     TransformFile(UploadPathExp, CSVSep, ConfigStringExp, NewExpCSV, "Id", importId);                  
                 }
 
-
                 // create the NewOtherFieldsCSV
-                if(dataAssurContrCompSubsid.Count > 1)
+                if (dataAssurContrCompSubsid.Count > 1)
                     G.CreateCSVFromStringList(dataAssurContrCompSubsid, NewOtherFieldsCSV);
-
 
                 //### NO LONGER NEEDED ?
                 //Create the csv file that will be imported into the temporary TempOtherFields Table
@@ -637,6 +635,10 @@ namespace CompteResultat.BL
                 if (UpdateCad)
                     BLCadencier.RecreateCadencier();
 
+                //Update TypePrevoyance
+                if (File.Exists(UploadPathDecompPrev) || File.Exists(UploadPathSinistrPrev) || File.Exists(UploadPathCotPrev) || File.Exists(UploadPathProv))
+                    BLTypePrev.RecreateTypePrevoyance();
+
                 //everything went well, we delete the corresponding data from the Temp Table
                 C_TempOtherFields.DeleteRowsWithImportId(ImportId);
 
@@ -669,73 +671,6 @@ namespace CompteResultat.BL
                 }
             }
         }       
-
-        public static void oldCleanTablesForSpecificImportID(int importId, bool isRollback)
-        {
-            try
-            {
-                //https://stackoverflow.com/questions/42372677/entity-framework-execute-multiple-commands-in-one-round-trip
-
-                string sql = "";
-               
-                sql += @"DELETE FROM PrestSante WHERE ImportId = {0};";
-                sql += @"DELETE FROM CotisatSante WHERE ImportId = {0};";
-                sql += @"DELETE FROM Demography WHERE ImportId = {0};";
-
-                sql += @"DELETE FROM SinistrePrev WHERE ImportId = {0};";
-                sql += @"DELETE FROM CotisatPrev WHERE ImportId = {0};";
-                sql += @"DELETE FROM DecomptePrev WHERE ImportId = {0};";
-
-                sql += @"DELETE FROM _TempExpData WHERE ImportId = {0};";
-
-                sql += @"TRUNCATE TABLE _TempOtherFields;";
-                sql += @"DELETE FROM Import WHERE Id = {0};";
-
-                using (var context = new CompteResultatEntities())
-                {
-                    context.Database.ExecuteSqlCommand(sql, importId);
-                }
-
-                if (isRollback)
-                {
-                    Assureur.DeleteRowsWithImportId(importId);
-                    Contract.DeleteRowsWithImportId(importId);
-                    Company.DeleteRowsWithImportId(importId);
-                }
-
-
-                if (false)
-                {
-                    //Delete Data Sante                
-                    PrestSante.DeleteRowsWithImportId(importId);
-                    CotisatSante.DeleteRowsWithImportId(importId);
-                    Demography.DeleteRowsWithImportId(importId);
-
-                    //Delete Data Prev
-                    SinistrePrev.DeleteRowsWithImportId(importId);
-                    CotisatPrev.DeleteRowsWithImportId(importId);
-                    DecomptePrev.DeleteRowsWithImportId(importId);
-
-                    C_TempOtherFields.DeleteRowsWithImportId(importId);
-
-                    if (isRollback)
-                    {
-                        Assureur.DeleteRowsWithImportId(importId);
-                        Contract.DeleteRowsWithImportId(importId);
-                        Company.DeleteRowsWithImportId(importId);
-                    }
-
-                    Import.DeleteImportWithId(importId);
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.Message);
-                throw ex;
-            }
-        }
 
         public static void CleanTablesForSpecificImportID(int importId, bool isRollback)
         {
@@ -825,6 +760,9 @@ namespace CompteResultat.BL
 
             try
             {
+                //get all entries trom the table typePrevoyance
+                List<TypePrevoyance> typePref = TypePrevoyance.GetTypePrev();
+
                 //save the new CSV file
                 if (File.Exists(saveLocation) && !forceCompanySubsid)
                 {
@@ -858,7 +796,6 @@ namespace CompteResultat.BL
                     }
                 }
 
-
                 //<add key="Prestations" value="Id =>Field2;Name =>Field4;Email;NumbEmployees=>Field1;" />
 
                 //Read the config string & create the mapping table (which is a dictionary) :
@@ -881,21 +818,12 @@ namespace CompteResultat.BL
                         {
                             field = Regex.Split(col, C.cMAP)[0].Trim();
                             val = Regex.Split(col, C.cMAP)[1].Trim();
-
                             newHeaderLine += field + C.cVALSEP;
-                        }
-                        //else if (col.Contains(C.cEQUAL))
-                        //{
-                        //    field = Regex.Split(col, C.cEQUAL)[0].Trim();
-                        //    val = Regex.Split(col, C.cEQUAL)[1].Trim();
-
-                        //    newHeaderLine += field + C.cVALSEP;
-                        //}
+                        }                        
                         else
                         {
                             field = col.Trim();
                             val = C.cEMPTY;
-
                             newHeaderLine += field + C.cVALSEP;
                         }
 
@@ -916,7 +844,9 @@ namespace CompteResultat.BL
                 //Trim the header line if there is a trailing ;
                 if (newHeaderLine.EndsWith(C.cVALSEP))
                     newHeaderLine = newHeaderLine.Remove(newHeaderLine.Length - 1);
-                
+
+                List<string> headers = newHeaderLine.Split(';').ToList();
+
                 //read columns from csv file
                 StringBuilder sb = new StringBuilder();
                 string newLine = "";
@@ -928,7 +858,7 @@ namespace CompteResultat.BL
 
                 foreach (string line in File.ReadLines(inputFile))
                 {
-                    if (line != "" & cnt > 0)
+                    if (line != "" && cnt > 0 && line.Substring(0,5) != ";;;;;")
                     {
                         if (leadingIdField != "")
                             newLine = C.cVALSEP;
@@ -938,6 +868,8 @@ namespace CompteResultat.BL
 
                         // get cell values from the line
                         cols = Regex.Split(line, C.cVALSEP);
+                        
+                        int iContractId = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "contractid").Key;
 
                         foreach (KeyValuePair<int, int> entry in dictConfigMappings)
                         {
@@ -950,9 +882,9 @@ namespace CompteResultat.BL
 
                                 // if checkbox "Contrat sans entreprise et filiale" selected:
                                 if (forceCompanySubsid && (entry.Key == 2 || entry.Key == 3))
-                                {
-                                    //newLine += cols[1].Trim() + C.cVALSEP;
-                                    myValue = cols[1].Trim() + "_";
+                                {                                 
+                                    if(iContractId != -1)
+                                        myValue = cols[iContractId].Trim() + "_";
                                 }
                                 else
                                 {
@@ -962,8 +894,9 @@ namespace CompteResultat.BL
 
                                 //rename contract for PRODUCTS => add _ at the end
                                 if (forceCompanySubsid && (entry.Key == 1))
-                                {
-                                    myValue = cols[1].Trim() + "_";
+                                {                                    
+                                    if (iContractId != -1)
+                                        myValue = cols[iContractId].Trim() + "_";
                                 }
 
                                 //change to upper case
@@ -988,6 +921,25 @@ namespace CompteResultat.BL
                                     else
                                         myValue = myValue.ToUpper() + C.cASSTYPEENTERPRISE;
                                 }
+                                
+                                //change the value for the column CodeSinistre for all 4 PREV tables => This column was deleted in the Excel import files & no corresponding column is present in the DB : 11/10/2021
+                                //DB_FIELD=&gt;EXCEL_COLUMN; 
+                                //myKey = dictImportFileFields.FirstOrDefault(x => x.Value == "NatureSinistre").Key;
+                                //if ((impFile == C.eImportFile.CotisatPrev || impFile == C.eImportFile.DecompPrev || impFile == C.eImportFile.SinistrePrev || impFile == C.eImportFile.Provisions)
+                                //    && (entry.Value == myKey))
+                                //{
+                                //    TypePrevoyance tp = typePref.Find(p => p.LabelSinistre == myValue);
+
+                                //    if (tp != null)
+                                //    {
+                                //        myValue = tp.CodeSinistre;
+
+                                //    }
+                                //    else
+                                //    {
+                                //        myValue = "AUTRES";
+                                //    }
+                                //}
 
                                 //force nombreActe = 1 if it is 0
                                 myKey = dictImportFileFields.FirstOrDefault(x => x.Value == "NombreActe").Key; //10

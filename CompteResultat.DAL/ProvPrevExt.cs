@@ -105,7 +105,27 @@ namespace CompteResultat.DAL
             }
         }
 
+        public static List<string> GetSinistreLabels()
+        {
+            try
+            {
+                List<string> sinistreLabels;
 
+                using (var context = new CompteResultatEntities())
+                {
+                    sinistreLabels = context.Database
+                            .SqlQuery<string>("SELECT DISTINCT NatureSinistre FROM dbo.ProvPrev ORDER BY NatureSinistre")
+                            .ToList<string>();
+                }
+
+                return sinistreLabels;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
 
 
     }

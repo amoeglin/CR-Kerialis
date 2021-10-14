@@ -412,11 +412,13 @@ namespace CompteResultat.BL
                 ws.Row(1).Style.Font.Bold = true;
                 ws.Row(1).Style.Font.Size = 12;
 
-                //last column green
+                //last column Yellow et bold
                 for (int i = 1; i <= maxMonth + 1; i++)
                 {
                     ws.Cells[i, colCounter + 3].Style.Fill.PatternType = ExcelFillStyle.Solid;
                     //ws.Cells[i, colCounter + 3].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Green);
+                    ws.Cells[i, colCounter + 3].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
+                    ws.Cells[i, colCounter + 3].Style.Font.Bold = true;
                     ws.Cells[i, colCounter + 3].Style.Numberformat.Format = "0.0000";
                 }
 

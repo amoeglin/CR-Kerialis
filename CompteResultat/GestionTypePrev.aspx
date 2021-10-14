@@ -70,7 +70,7 @@
         </div>
 
         <div style="margin-top:5px; float:left;">
-            <asp:Button CssClass="ButtonBigBlue ButtonInline" style="margin-right:0px; width:320px;" ID="cmdRecreate" runat="server" Text="Mettre à jour à partir des SINISTRES" ClientIDMode="Static" OnClick="cmdRecreate_Click" />  
+            <asp:Button CssClass="ButtonBigBlue ButtonInline" style="margin-right:0px; " ID="cmdRecreate" runat="server" Text="Mettre à jour à partir des DECOMPTES et SINISTRES" ClientIDMode="Static" OnClick="cmdRecreate_Click" Width="355px" />  
         </div>
 
         <div runat="server" id="divLoading"  style="display:none" ClientIDMode="Static" >

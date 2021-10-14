@@ -24,24 +24,26 @@ namespace CompteResultat.DAL
                 List<ExcelGlobalDecompteData> decomptes = new List<ExcelGlobalDecompteData>();
 
                 using (var context = new CompteResultatEntities())
-                {
-                    string strDate = dateArret.ToString("dd/M/yyy");
+                {                   
+                    //string strDate = dateArret.ToString("dd/M/yyy");
+                    string strDate = dateArret.ToString("yyy-M-dd");
                     string strYears = String.Join(",", years.ToArray());
                     string strCompanies = String.Join(",", companyList.ToArray());
                     strCompanies = strCompanies.Replace("'", "''");
                     string companiesForSql = "'" + strCompanies.Replace(",", "','") + "'";
 
-                    string sql = $@"Select DP.AssureurName AS Assureur, DP.Company, YEAR(DP.DateSin) AS YearSurv, SUM(DP.Total) AS RNous
+                    string sql = $@"Select DP.AssureurName AS Assureur, DP.ContractId, DP.Company, YEAR(DP.DateSin) AS YearSurv, SUM(DP.Total) AS RNous
                         FROM DecomptePrev DP 
-                        INNER JOIN SinistrePrev SP on DP.Dossier = SP.Dossier AND DP.AssureurName = SP.AssureurName AND DP.DateSin = SP.DateSinistre                                                
+                        INNER JOIN SinistrePrev SP on DP.Dossier = SP.Dossier AND DP.AssureurName = SP.AssureurName AND DP.DateSin = SP.DateSinistre AND DP.CauseSinistre = SP.NatureSinistre                                                
                         WHERE YEAR(DP.DateSin) in ({strYears}) AND DP.Company in ({companiesForSql}) AND DP.DatePayement <= '{strDate}' 
-                        GROUP BY DP.AssureurName, DP.Company, YEAR(DP.DateSin)
+                        GROUP BY DP.AssureurName, DP.Company, YEAR(DP.DateSin), DP.ContractId
                         ORDER BY DP.Company, YEAR(DP.DateSin)";
 
                     decomptes = context.Database.SqlQuery<ExcelGlobalDecompteData>(sql)
                         .Select(d => new ExcelGlobalDecompteData
                         {
                             Assureur = d.Assureur,
+                            ContractId = d.ContractId,
                             Company = d.Company,
                             DateArret = dateArret,
                             RNous = d.RNous,
@@ -91,6 +93,51 @@ namespace CompteResultat.DAL
             }
         }
 
+        public static List<ExcelGlobalDecompteData> GetDecompteGlobalEntDataCompta(List<int> years, List<string> companyList, DateTime dateArret)
+        {
+            try
+            {
+                List<ExcelGlobalDecompteData> decomptes = new List<ExcelGlobalDecompteData>();
+
+                using (var context = new CompteResultatEntities())
+                {
+                    //string strDate = dateArret.ToString("dd/M/yyy");
+                    string strDate = dateArret.ToString("yyy-M-dd");
+                    string strYears = String.Join(",", years.ToArray());
+                    string strCompanies = String.Join(",", companyList.ToArray());
+                    strCompanies = strCompanies.Replace("'", "''");
+                    string companiesForSql = "'" + strCompanies.Replace(",", "','") + "'";
+
+                    string sql = $@"Select DP.AssureurName AS Assureur, DP.ContractId, DP.Company, YEAR(DP.DatePayement) AS YearSurv, SUM(DP.Total) AS RNous
+                        FROM DecomptePrev DP 
+                        INNER JOIN SinistrePrev SP on DP.Dossier = SP.Dossier AND DP.AssureurName = SP.AssureurName AND DP.DateSin = SP.DateSinistre AND DP.CauseSinistre = SP.NatureSinistre                                                
+                        WHERE YEAR(DP.DatePayement) in ({strYears}) AND DP.Company in ({companiesForSql}) AND DP.DatePayement <= '{strDate}' 
+                        GROUP BY DP.AssureurName, DP.Company, YEAR(DP.DatePayement), DP.ContractId, DP.CauseSinistre
+                        ORDER BY DP.Company, YEAR(DP.DatePayement)";
+
+                    decomptes = context.Database.SqlQuery<ExcelGlobalDecompteData>(sql)
+                        .Select(d => new ExcelGlobalDecompteData
+                        {
+                            Assureur = d.Assureur,
+                            ContractId = d.ContractId,
+                            Company = d.Company,
+                            DateArret = dateArret,
+                            RNous = d.RNous,
+                            YearSurv = d.YearSurv
+
+                        })
+                        .ToList<ExcelGlobalDecompteData>();
+                }
+              
+                return decomptes;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
         public static List<ExcelGlobalDecompteData> GetDecompteGlobalEntDataWithGarantie(List<int> years, List<string> companyList, DateTime dateArret)
         {
             try
@@ -99,19 +146,19 @@ namespace CompteResultat.DAL
 
                 using (var context = new CompteResultatEntities())
                 {
-                    string strDate = dateArret.ToString("dd/M/yyy");
+                    string strDate = dateArret.ToString("yyy-M-dd");
                     string strYears = String.Join(",", years.ToArray());
                     string strCompanies = String.Join(",", companyList.ToArray());
                     strCompanies = strCompanies.Replace("'", "''");
                     string companiesForSql = "'" + strCompanies.Replace(",", "','") + "'";
 
-                    string sql = $@"Select DP.AssureurName AS Assureur, DP.Company, YEAR(DP.DateSin) AS YearSurv, 
+                    string sql = $@"Select DP.AssureurName AS Assureur, DP.ContractId, DP.Company, YEAR(DP.DateSin) AS YearSurv, 
                         TP.CodeSinistre AS CodeGarantie, SUM(DP.Total) AS RNous
                         FROM DecomptePrev DP 
-                        INNER JOIN SinistrePrev SP on DP.Dossier = SP.Dossier AND DP.AssureurName = SP.AssureurName AND DP.DateSin = SP.DateSinistre
-                        INNER JOIN TypePrevoyance TP on TP.LabelSinistre = SP.NatureSinistre                         
+                        INNER JOIN SinistrePrev SP on DP.Dossier = SP.Dossier AND DP.AssureurName = SP.AssureurName AND DP.DateSin = SP.DateSinistre AND DP.CauseSinistre = SP.NatureSinistre
+                        INNER JOIN TypePrevoyance TP on TP.LabelSinistre = DP.CauseSinistre                         
                         WHERE YEAR(DP.DateSin) in ({strYears}) AND DP.Company in ({companiesForSql}) AND DP.DatePayement <= '{strDate}' 
-                        GROUP BY DP.AssureurName, DP.Company, YEAR(DP.DateSin), TP.CodeSinistre
+                        GROUP BY DP.AssureurName, DP.Company, YEAR(DP.DateSin), TP.CodeSinistre, DP.ContractId, DP.CauseSinistre
                         ORDER BY DP.Company, YEAR(DP.DateSin)";
 
                     decomptes = context.Database.SqlQuery<ExcelGlobalDecompteData>(sql)
@@ -119,11 +166,59 @@ namespace CompteResultat.DAL
                         {
                             Assureur = d.Assureur,
                             Company = d.Company,
+                            ContractId = d.ContractId,
                             DateArret = dateArret,
                             RNous = d.RNous,
                             YearSurv = d.YearSurv,
                             CodeGarantie = d.CodeGarantie
                             
+                        })
+                        .ToList<ExcelGlobalDecompteData>();
+                }
+
+                return decomptes;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
+        public static List<ExcelGlobalDecompteData> GetDecompteGlobalEntDataWithGarantieCompta(List<int> years, List<string> companyList, DateTime dateArret)
+        {
+            try
+            {
+                List<ExcelGlobalDecompteData> decomptes = new List<ExcelGlobalDecompteData>();
+
+                using (var context = new CompteResultatEntities())
+                {
+                    string strDate = dateArret.ToString("yyy-M-dd");
+                    string strYears = String.Join(",", years.ToArray());
+                    string strCompanies = String.Join(",", companyList.ToArray());
+                    strCompanies = strCompanies.Replace("'", "''");
+                    string companiesForSql = "'" + strCompanies.Replace(",", "','") + "'";
+
+                    string sql = $@"Select DP.AssureurName AS Assureur, DP.ContractId, DP.Company, YEAR(DP.DatePayement) AS YearSurv, 
+                        TP.CodeSinistre AS CodeGarantie, SUM(DP.Total) AS RNous
+                        FROM DecomptePrev DP
+                        INNER JOIN SinistrePrev SP on DP.Dossier = SP.Dossier AND DP.AssureurName = SP.AssureurName AND DP.DateSin = SP.DateSinistre AND DP.CauseSinistre = SP.NatureSinistre
+                        INNER JOIN TypePrevoyance TP on TP.LabelSinistre = DP.CauseSinistre                         
+                        WHERE YEAR(DP.DatePayement) in ({strYears}) AND DP.Company in ({companiesForSql}) AND DP.DatePayement <= '{strDate}' 
+                        GROUP BY DP.AssureurName, DP.Company, YEAR(DP.DatePayement), TP.CodeSinistre, DP.ContractId, DP.CauseSinistre
+                        ORDER BY DP.Company, YEAR(DP.DatePayement)";
+
+                    decomptes = context.Database.SqlQuery<ExcelGlobalDecompteData>(sql)
+                        .Select(d => new ExcelGlobalDecompteData
+                        {
+                            Assureur = d.Assureur,
+                            Company = d.Company,
+                            ContractId = d.ContractId,
+                            DateArret = dateArret,
+                            RNous = d.RNous,
+                            YearSurv = d.YearSurv,
+                            CodeGarantie = d.CodeGarantie
+
                         })
                         .ToList<ExcelGlobalDecompteData>();
                 }
@@ -145,17 +240,17 @@ namespace CompteResultat.DAL
 
                 using (var context = new CompteResultatEntities())
                 {
-                    string strDate = dateArret.ToString("dd/M/yyy");
+                    string strDate = dateArret.ToString("yyy-M-dd");
                     string strYears = String.Join(",", years.ToArray());
                     string strCompanies = String.Join(",", subsidList.ToArray());
                     strCompanies = strCompanies.Replace("'", "''");
                     string companiesForSql = "'" + strCompanies.Replace(",", "','") + "'";
 
-                    string sql = $@"Select DP.AssureurName AS Assureur, DP.Company, DP.Subsid, YEAR(DP.DateSin) AS YearSurv, SUM(DP.Total) AS RNous
+                    string sql = $@"Select DP.AssureurName AS Assureur, DP.ContractId, DP.Company, DP.Subsid, YEAR(DP.DateSin) AS YearSurv, SUM(DP.Total) AS RNous
                         FROM DecomptePrev DP 
-                        INNER JOIN SinistrePrev SP on DP.Dossier = SP.Dossier AND DP.AssureurName = SP.AssureurName AND DP.DateSin = SP.DateSinistre                                                
+                        INNER JOIN SinistrePrev SP on DP.Dossier = SP.Dossier AND DP.AssureurName = SP.AssureurName AND DP.DateSin = SP.DateSinistre AND DP.CauseSinistre = SP.NatureSinistre                                               
                         WHERE YEAR(DP.DateSin) in ({strYears}) AND DP.Company in ({companiesForSql}) AND DP.DatePayement <= '{strDate}' 
-                        GROUP BY DP.AssureurName, DP.Company, DP.Subsid, YEAR(DP.DateSin)
+                        GROUP BY DP.AssureurName, DP.Company, DP.Subsid, YEAR(DP.DateSin), DP.ContractId, DP.CauseSinistre
                         ORDER BY DP.Company, YEAR(DP.DateSin)";
 
                     decomptes = context.Database.SqlQuery<ExcelGlobalDecompteData>(sql)
@@ -163,6 +258,53 @@ namespace CompteResultat.DAL
                         {
                             Assureur = d.Assureur,
                             Company = d.Company,
+                            ContractId = d.ContractId,
+                            Subsid = d.Subsid,
+                            DateArret = dateArret,
+                            RNous = d.RNous,
+                            YearSurv = d.YearSurv
+
+                        })
+                        .ToList<ExcelGlobalDecompteData>();
+                }
+
+                return decomptes;
+
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
+        public static List<ExcelGlobalDecompteData> GetDecompteGlobalSubsidDataCompta(List<int> years, List<string> subsidList, DateTime dateArret)
+        {
+            try
+            {
+                List<ExcelGlobalDecompteData> decomptes = new List<ExcelGlobalDecompteData>();
+
+                using (var context = new CompteResultatEntities())
+                {
+                    string strDate = dateArret.ToString("yyy-M-dd");
+                    string strYears = String.Join(",", years.ToArray());
+                    string strCompanies = String.Join(",", subsidList.ToArray());
+                    strCompanies = strCompanies.Replace("'", "''");
+                    string companiesForSql = "'" + strCompanies.Replace(",", "','") + "'";
+
+                    string sql = $@"Select DP.AssureurName AS Assureur, DP.ContractId, DP.Company, DP.Subsid, YEAR(DP.DatePayement) AS YearSurv, SUM(DP.Total) AS RNous
+                        FROM DecomptePrev DP 
+                        INNER JOIN SinistrePrev SP on DP.Dossier = SP.Dossier AND DP.AssureurName = SP.AssureurName AND DP.DateSin = SP.DateSinistre AND DP.CauseSinistre = SP.NatureSinistre                                               
+                        WHERE YEAR(DP.DatePayement) in ({strYears}) AND DP.Company in ({companiesForSql}) AND DP.DatePayement <= '{strDate}' 
+                        GROUP BY DP.AssureurName, DP.Company, DP.Subsid, YEAR(DP.DatePayement), DP.ContractId, DP.CauseSinistre
+                        ORDER BY DP.Company, YEAR(DP.DatePayement)";
+
+                    decomptes = context.Database.SqlQuery<ExcelGlobalDecompteData>(sql)
+                        .Select(d => new ExcelGlobalDecompteData
+                        {
+                            Assureur = d.Assureur,
+                            Company = d.Company,
+                            ContractId = d.ContractId,
                             Subsid = d.Subsid,
                             DateArret = dateArret,
                             RNous = d.RNous,
@@ -190,19 +332,19 @@ namespace CompteResultat.DAL
 
                 using (var context = new CompteResultatEntities())
                 {
-                    string strDate = dateArret.ToString("dd/M/yyy");
+                    string strDate = dateArret.ToString("yyy-M-dd");
                     string strYears = String.Join(",", years.ToArray());
                     string strCompanies = String.Join(",", companyList.ToArray());
                     strCompanies = strCompanies.Replace("'", "''");
                     string companiesForSql = "'" + strCompanies.Replace(",", "','") + "'";
 
-                    string sql = $@"Select DP.AssureurName AS Assureur, DP.Company, DP.Subsid, YEAR(DP.DateSin) AS YearSurv, 
+                    string sql = $@"Select DP.AssureurName AS Assureur, DP.ContractId, DP.Company, DP.Subsid, YEAR(DP.DateSin) AS YearSurv, 
                         TP.CodeSinistre AS CodeGarantie, SUM(DP.Total) AS RNous
                         FROM DecomptePrev DP 
-                        INNER JOIN SinistrePrev SP on DP.Dossier = SP.Dossier AND DP.AssureurName = SP.AssureurName AND DP.DateSin = SP.DateSinistre 
-                        INNER JOIN TypePrevoyance TP on TP.LabelSinistre = SP.NatureSinistre                         
+                        INNER JOIN SinistrePrev SP on DP.Dossier = SP.Dossier AND DP.AssureurName = SP.AssureurName AND DP.DateSin = SP.DateSinistre AND DP.CauseSinistre = SP.NatureSinistre
+                        INNER JOIN TypePrevoyance TP on TP.LabelSinistre = DP.CauseSinistre                         
                         WHERE YEAR(DP.DateSin) in ({strYears}) AND DP.DatePayement <= '{strDate}'
-                        GROUP BY DP.AssureurName, DP.Company, DP.Subsid, YEAR(DP.DateSin), TP.CodeSinistre
+                        GROUP BY DP.AssureurName, DP.Company, DP.Subsid, YEAR(DP.DateSin), TP.CodeSinistre, DP.ContractId, DP.CauseSinistre
                         ORDER BY DP.Company, DP.Subsid, YEAR(DP.DateSin)";
 
                     decomptes = context.Database.SqlQuery<ExcelGlobalDecompteData>(sql)
@@ -210,12 +352,60 @@ namespace CompteResultat.DAL
                         {
                             Assureur = d.Assureur,
                             Company = d.Company,
+                            ContractId = d.ContractId,
                             Subsid = d.Subsid,
                             DateArret = dateArret,
                             RNous = d.RNous,
                             YearSurv = d.YearSurv,
                             CodeGarantie = d.CodeGarantie
 
+                        })
+                        .ToList<ExcelGlobalDecompteData>();
+                }
+
+                return decomptes;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
+        public static List<ExcelGlobalDecompteData> GetDecompteGlobalSubsidDataWithGarantieCompta(List<int> years, List<string> companyList, DateTime dateArret)
+        {
+            try
+            {
+                List<ExcelGlobalDecompteData> decomptes = new List<ExcelGlobalDecompteData>();
+
+                using (var context = new CompteResultatEntities())
+                {
+                    string strDate = dateArret.ToString("yyy-M-dd");
+                    string strYears = String.Join(",", years.ToArray());
+                    string strCompanies = String.Join(",", companyList.ToArray());
+                    strCompanies = strCompanies.Replace("'", "''");
+                    string companiesForSql = "'" + strCompanies.Replace(",", "','") + "'";
+
+                    string sql = $@"Select DP.AssureurName AS Assureur, DP.ContractId, DP.Company, DP.Subsid, YEAR(DP.DatePayement) AS YearSurv, 
+                        TP.CodeSinistre AS CodeGarantie, SUM(DP.Total) AS RNous
+                        FROM DecomptePrev DP 
+                        INNER JOIN SinistrePrev SP on DP.Dossier = SP.Dossier AND DP.AssureurName = SP.AssureurName AND DP.DateSin = SP.DateSinistre AND DP.CauseSinistre = SP.NatureSinistre
+                        INNER JOIN TypePrevoyance TP on TP.LabelSinistre = DP.CauseSinistre                         
+                        WHERE YEAR(DP.DatePayement) in ({strYears}) AND DP.DatePayement <= '{strDate}'
+                        GROUP BY DP.AssureurName, DP.Company, DP.Subsid, YEAR(DP.DatePayement), TP.CodeSinistre, DP.ContractId, DP.CauseSinistre
+                        ORDER BY DP.Company, DP.Subsid, YEAR(DP.DatePayement)";
+
+                    decomptes = context.Database.SqlQuery<ExcelGlobalDecompteData>(sql)
+                        .Select(d => new ExcelGlobalDecompteData
+                        {
+                            Assureur = d.Assureur,
+                            Company = d.Company,
+                            ContractId = d.ContractId,
+                            Subsid = d.Subsid,
+                            DateArret = dateArret,
+                            RNous = d.RNous,
+                            YearSurv = d.YearSurv,
+                            CodeGarantie = d.CodeGarantie
                         })
                         .ToList<ExcelGlobalDecompteData>();
                 }
@@ -266,7 +456,8 @@ namespace CompteResultat.DAL
                             DatePayement = dec.DatePayement,
                             DebSin = dec.DebSin,
                             FinSin = dec.FinSin,
-                            DateSin = dec.DateSin}).ToList();
+                            DateSin = dec.DateSin,
+                            CauseSinistre = dec.CauseSinistre}).ToList();
 
                 }
 
@@ -421,7 +612,27 @@ namespace CompteResultat.DAL
             }
         }
 
+        public static List<string> GetSinistreLabels()
+        {
+            try
+            {
+                List<string> sinistreLabels;
 
+                using (var context = new CompteResultatEntities())
+                {
+                    sinistreLabels = context.Database
+                            .SqlQuery<string>("SELECT DISTINCT CauseSinistre FROM dbo.DecomptePrev ORDER BY CauseSinistre")
+                            .ToList<string>();
+                }
+
+                return sinistreLabels;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
 
 
 

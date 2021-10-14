@@ -19,12 +19,11 @@ namespace CompteResultat.BL
     public class ExcelSheetHandler
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-
-        public string ReportTemplate { get; set; }
+        
+        #region SANTE
 
         public static void FillGlobalSheet(FileInfo excelFilePath, string companyList, string subsidList, DateTime debutPeriod,
-           DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, double TaxDef, double TaxAct, double TaxPer)
+           DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, C.eTypeComptes typeComptes, double TaxDef, double TaxAct, double TaxPer)
         {
             try
             {
@@ -35,7 +34,7 @@ namespace CompteResultat.BL
                 List<ExcelGlobalPrestaData> globalPresta = new List<ExcelGlobalPrestaData>();
                 List<ExcelGlobalPrestaData> globalCotisatCumul = new List<ExcelGlobalPrestaData>(); 
 
-                GetGlobalCotisatCumul(ref globalPresta, ref globalCotisatCumul, isGlobalEnt, companyList, subsidList, debutPeriod, finPeriod, dateArret, reportType, TaxDef, TaxAct, TaxPer);
+                GetGlobalCotisatCumul(ref globalPresta, ref globalCotisatCumul, isGlobalEnt, companyList, subsidList, debutPeriod, finPeriod, dateArret, reportType, typeComptes, TaxDef, TaxAct, TaxPer);
 
                 //create DATA_CUMUL table
                 foreach (ExcelGlobalPrestaData prest in globalCotisatCumul)
@@ -134,12 +133,12 @@ namespace CompteResultat.BL
         }
 
         public static void FillGlobalSheetSynthese(FileInfo excelFilePath, string companyList, string subsidList, DateTime debutPeriod,
-          DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, double TaxDef, double TaxAct, double TaxPer)
+          DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, C.eTypeComptes typeComptes, double TaxDef, double TaxAct, double TaxPer)
         {
             try
             {
-                DataTable syntheseTableProd = GetSyntheseTable(debutPeriod, finPeriod, dateArret, reportType, true, false); 
-                DataTable syntheseTableEnt = GetSyntheseTable(debutPeriod, finPeriod, dateArret, reportType, false, false);  
+                DataTable syntheseTableProd = GetSyntheseTable(debutPeriod, finPeriod, dateArret, reportType, typeComptes, true, false); 
+                DataTable syntheseTableEnt = GetSyntheseTable(debutPeriod, finPeriod, dateArret, reportType, typeComptes, false, false);  
 
                 using (ExcelPackage pck = new ExcelPackage(excelFilePath))
                 {
@@ -161,35 +160,7 @@ namespace CompteResultat.BL
             }
         }
 
-        public static void FillGlobalSheetSynthesePrev(FileInfo excelFilePath, string companyList, string subsidList, DateTime debutPeriod,
-          DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, double TaxDef, double TaxAct, double TaxPer)
-        {
-            try
-            {
-                DataTable syntheseTableProd = GetSyntheseTable(debutPeriod, finPeriod, dateArret, reportType, true, false);
-                DataTable syntheseTableEnt = GetSyntheseTable(debutPeriod, finPeriod, dateArret, reportType, false, false);
-
-                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
-                {
-                    pck.Workbook.Worksheets[C.cEXCELSYNTHESEPROD].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
-                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELSYNTHESEPROD];
-                    ws.Cells["A2"].LoadFromDataTable(syntheseTableProd, false);
-
-                    pck.Workbook.Worksheets[C.cEXCELSYNTHESEENT].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
-                    ws = pck.Workbook.Worksheets[C.cEXCELSYNTHESEENT];
-                    ws.Cells["A2"].LoadFromDataTable(syntheseTableEnt, false);
-
-                    pck.Save();
-                }
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error :: FillGlobalSheetSynthese : " + ex.Message);
-                throw ex;
-            }
-        }
-
-        public static DataTable GetSyntheseTable(DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, bool isProdTable, bool simpleMode=false)
+        public static DataTable GetSyntheseTable(DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, C.eTypeComptes typeComptes, bool isProdTable, bool simpleMode=false)
         {
             try
             {
@@ -209,7 +180,7 @@ namespace CompteResultat.BL
                 List<string> assurNames = new List<string>();
                 assurNames = Assureur.GetEnterpriseAssNamesByType(assurtype);
                 BLCompteResultat.GetCompSubsidValuesForAssur(ref comps, ref subsids, assurNames);
-                GetGlobalCotisatCumul(ref globalPresta, ref globalCotisatCumul, true, comps, subsids, debutPeriod, finPeriod, dateArret, reportType, 0, 0, 0);
+                GetGlobalCotisatCumul(ref globalPresta, ref globalCotisatCumul, true, comps, subsids, debutPeriod, finPeriod, dateArret, reportType, typeComptes, 0, 0, 0);
 
                 //create DATA_PRODUIT & DATA_ENTREPRISE table
                 foreach (ExcelGlobalPrestaData prest in globalPresta)
@@ -264,6 +235,8 @@ namespace CompteResultat.BL
                     DataRow newRow = syntheseTable.NewRow();
 
                     newRow["Assureur"] = prest.Assureur;
+                    // pas utilisé pour la Santé
+                    //newRow["ContractId"] = prest.Contract;
                     newRow["Company"] = prest.Company;
                     newRow["YearSurv"] = prest.YearSurv;
 
@@ -316,7 +289,7 @@ namespace CompteResultat.BL
         }
 
         public static void GetGlobalCotisatCumul(ref List<ExcelGlobalPrestaData> globalPresta, ref List<ExcelGlobalPrestaData> globalCotisatCumul, bool isGlobalEnt,
-            string companyList, string subsidList, DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, double TaxDef, double TaxAct, double TaxPer)
+            string companyList, string subsidList, DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, C.eTypeComptes typeComptes, double TaxDef, double TaxAct, double TaxPer)
         {
             try
             {
@@ -335,9 +308,26 @@ namespace CompteResultat.BL
                 //get presta data
                 //List<ExcelGlobalPrestaData> globalPresta = new List<ExcelGlobalPrestaData>();
                 if (isGlobalEnt)
-                    globalPresta = PrestSante.GetPrestaGlobalEntData(years, parentCompanyList);
+                {
+                    if (typeComptes == C.eTypeComptes.Comptable)
+                    {
+                        globalPresta = PrestSante.GetPrestaGlobalEntDataCompta(years, parentCompanyList);
+                    }
+                    else {
+                        globalPresta = PrestSante.GetPrestaGlobalEntData(years, parentCompanyList);
+                    }
+                }
                 else
-                    globalPresta = PrestSante.GetPrestaGlobalSubsidData(years, subsidiaryList);
+                {
+                    if (typeComptes == C.eTypeComptes.Comptable)
+                    {
+                        globalPresta = PrestSante.GetPrestaGlobalSubsidDataCompta(years, subsidiaryList);
+                    }
+                    else
+                    {
+                        globalPresta = PrestSante.GetPrestaGlobalSubsidData(years, subsidiaryList);
+                    }
+                }
 
                 //get cotisat data
                 List<ExcelGlobalCotisatData> globalCotisat = new List<ExcelGlobalCotisatData>();
@@ -379,22 +369,41 @@ namespace CompteResultat.BL
                     foreach (ExcelGlobalPrestaData dat in globalPresta)
                     {
                         ExcelGlobalCotisatData item = null;
+                        double cotBrute = 0;
+                        double cotNet = 0;
                         if (isGlobalEnt)
-                            item = globalCotisat.FirstOrDefault(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.YearSurv == dat.YearSurv);
+                        {                            
+                            globalCotisat
+                                .FindAll(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.YearSurv == dat.YearSurv)
+                                .ToList()
+                                .ForEach(cot =>
+                                    {
+                                        cotBrute += cot.CotisatBrute.HasValue ? cot.CotisatBrute.Value : 0;
+                                        cotNet += cot.Cotisat.HasValue ? cot.Cotisat.Value : 0;
+                                    });
+                        }
                         else
-                            item = globalCotisat.FirstOrDefault(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.Subsid == dat.Subsid && i.YearSurv == dat.YearSurv);
-
-                        dat.CotBrut = 0;
-                        dat.CotNet = 0;
-                        if (item != null)
                         {
-                            dat.CotBrut = item.CotisatBrute.HasValue ? item.CotisatBrute.Value : 0;
-                            dat.CotNet = item.Cotisat.HasValue ? item.Cotisat.Value : 0;
+                            //var allCot = globalCotisat.FindAll(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.Subsid == dat.Subsid && i.YearSurv == dat.YearSurv).ToList();
+                            //foreach (var cot in allCot)
+                            //{
+                            //    cotBrute += cot.CotisatBrute.HasValue ? cot.CotisatBrute.Value : 0;
+                            //    cotNet += cot.Cotisat.HasValue ? cot.Cotisat.Value : 0;
+                            //}
+
+                            globalCotisat
+                               .FindAll(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.Subsid == dat.Subsid && i.YearSurv == dat.YearSurv)
+                               .ToList()
+                               .ForEach(cot =>
+                               {
+                                   cotBrute += cot.CotisatBrute.HasValue ? cot.CotisatBrute.Value : 0;
+                                   cotNet += cot.Cotisat.HasValue ? cot.Cotisat.Value : 0;
+                               });
                         }
 
-                        double cotNet = dat.CotNet;
-                        double cotBrut = dat.CotBrut;
-
+                        dat.CotBrut = cotBrute; 
+                        dat.CotNet = cotNet; 
+                        
                         //calculate all remaining fields
                         DateTime dateDebutSurv = new DateTime(dat.YearSurv, 1, 1);
                         DateTime dateFinSurv = new DateTime(dat.YearSurv, 12, 31);
@@ -437,6 +446,7 @@ namespace CompteResultat.BL
 
                         ExcelGlobalPrestaData item = new ExcelGlobalPrestaData();
                         item.Assureur = dat.Assureur;
+                        item.Contract = dat.ContractId;
                         item.Company = dat.Company;
                         item.Subsid = dat.Subsid;
                         item.YearSurv = dat.YearSurv;
@@ -496,8 +506,608 @@ namespace CompteResultat.BL
             }
         }
 
+        public static void FillDemoSheet(FileInfo excelFilePath, string assurNameList, string parentCompanyNameList, string companyNameList, string contrNameList,
+            DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, int yearsToCalc, bool reportWithOption)
+        {
+            try
+            {
+                List<CDemoData> myDemoData = new List<CDemoData>();
+                List<CDemoData> yearDemoData;
+
+                List<CDemoDataWithoutOption> myDemoDataWO = new List<CDemoDataWithoutOption>();
+                List<CDemoDataWithoutOption> yearDemoDataWO;
+
+                //certain report templates will require data for more than 1 year, take this into account
+                DateTime debutNew;
+                DateTime finNew;
+
+                int years = 0;
+                //for (int years = 0; years < yearsToCalc; years++)
+                //{
+                debutNew = new DateTime(debutPeriod.Year - years, debutPeriod.Month, debutPeriod.Day);
+                finNew = new DateTime(finPeriod.Year - years, finPeriod.Month, finPeriod.Day);
+
+                if (!reportWithOption)
+                {
+                    //standard SP without option data
+                    yearDemoDataWO = Demography.GetDemoDataWithoutOptionFromSP(assurNameList, parentCompanyNameList, companyNameList, contrNameList, debutNew, finNew);
+                    myDemoDataWO.AddRange(yearDemoDataWO);
+                }
+                else
+                {
+                    yearDemoData = Demography.GetDemoDataFromSP(assurNameList, parentCompanyNameList, companyNameList, contrNameList, debutNew, finNew);
+                    myDemoData.AddRange(yearDemoData);
+                }
+                //}                               
+
+                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
+                {
+                    pck.Workbook.Worksheets[C.cEXCELDEMO].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+
+                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELDEMO];
+
+                    if (!reportWithOption)
+                    {
+                        ws.Cells["A2"].LoadFromCollection(myDemoDataWO);
+                    }
+                    else
+                    {
+                        ws.Cells["A2"].LoadFromCollection(myDemoData);
+                    }
+
+                    pck.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: FillDemoSheet : " + ex.Message);
+                throw ex;
+            }
+        }
+
+        public static void FillPrestSheet(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData, bool reportWithOption)
+        {
+            try
+            {
+                if (reportWithOption)
+                    CollectPrestaData2(excelFilePath, crp, myPrestData, C.eExcelSheetPrestaData.Prestation);
+                else
+                    CollectPrestaData(excelFilePath, crp, myPrestData, C.eExcelSheetPrestaData.Prestation);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: FillPrestSheet : " + ex.Message);
+                throw ex;
+            }
+        }
+
+        public static void FillExperienceSheet(FileInfo excelFilePath, DateTime debutPeriod, DateTime finPeriod)
+        {
+            try
+            {
+                //List<C_TempExpData> expData = new List<C_TempExpData>();
+                //expData = C_TempExpData.GetExpData(debutPeriod.Year);
+
+                List<C_TempExpData> expData = C_TempExpData.GetExpData(debutPeriod.Year, finPeriod.Year);
+
+                var expDataWithoutId = expData.Select(e => new
+                {
+                    Au = e.Au,
+                    Contrat = e.Contrat.Trim(),
+                    Codcol = e.CodCol.Trim(),
+                    AnneeExp = e.AnneeExp,
+                    Libacte = e.LibActe.Trim(),
+                    Libfam = e.LibFam.Trim(),
+                    TypeCas = e.TypeCas.Trim(),
+                    NbrActe = e.NombreActe,
+                    FR = e.Fraisreel,
+                    RSS = e.Rembss,
+                    Rannexe = e.RembAnnexe,
+                    Rnous = e.RembNous,
+                    Res = e.Reseau.Trim(),
+                    Minfr = e.MinFr,
+                    Maxfr = e.MaxFr,
+                    Minnous = e.MinNous,
+                    Maxnous = e.MaxNous
+                });
+
+                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
+                {
+                    pck.Workbook.Worksheets[C.cEXCELEXP].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+
+                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELEXP];
+
+                    ws.Cells["A2"].LoadFromCollection(expDataWithoutId);
+
+                    pck.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: FillExperienceSheet2 : " + ex.Message);
+                throw ex;
+            }
+        }
+
+        public static void FillProvisionSheet(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData)
+        {
+            try
+            {
+                CollectPrestaData(excelFilePath, crp, myPrestData, C.eExcelSheetPrestaData.Provision);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: FillProvisionSheet : " + ex.Message);
+                throw ex;
+            }
+        }
+
+        public static void FillQuartileSheet(FileInfo excelFilePath, List<PrestSante> myPrestData)
+        {
+            try
+            {
+                //create the table that holds the values for the quartiles
+                DataTable quartileTable = new DataTable();
+
+                DataColumn min = new DataColumn("MIN", typeof(decimal));
+                DataColumn max = new DataColumn("MAX", typeof(decimal));
+                DataColumn q1 = new DataColumn("Q1", typeof(decimal));
+                DataColumn q2 = new DataColumn("Q2", typeof(decimal));
+                DataColumn q3 = new DataColumn("Q3", typeof(decimal));
+                DataColumn q4 = new DataColumn("Q4", typeof(decimal));
+                DataColumn avg = new DataColumn("AVG", typeof(decimal));
+
+                quartileTable.Columns.AddRange(new DataColumn[] { min, max, q1, q2, q3, q4, avg });
+
+                //get garanty names to be treated
+                List<string> garantyList = new List<string>();
+                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
+                {
+                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELQUARTILE];
+
+                    //### get only values for Garanty Names: Second row, first column
+                    for (int row = 2; row <= ws.Dimension.End.Row; row++)
+                    {
+                        if (ws.Cells[row, 3].Value != null)
+                            garantyList.Add(ws.Cells[row, 3].Value.ToString());
+                    }
+                }
+
+                foreach (string gar in garantyList)
+                {
+                    DataRow newRow = quartileTable.NewRow();
+
+                    List<double> fraisReelList;
+
+                    //the first case is no longer needed
+                    if (gar.ToUpper().Contains("PROTHESES DENTAIRES ACCEPTEES  --- no longer needed"))
+                    {
+                        fraisReelList = myPrestData.Where(p => p.GarantyName.ToString().ToLower() == gar.ToLower() && p.FraisReel > 0 && p.PrixUnit == 107.5).
+                        OrderBy(p => p.FraisReel.Value).
+                        Select(p => p.FraisReel.Value / p.NombreActe.Value).ToList();
+                    }
+                    else
+                    {
+                        fraisReelList = myPrestData.Where(p => p.GarantyName.ToString().ToLower() == gar.ToLower() && p.FraisReel > 0).
+                        OrderBy(p => p.FraisReel.Value).
+                        Select(p => p.FraisReel.Value / p.NombreActe.Value).ToList();
+                    }
+
+                    int totalElements = fraisReelList.Count();
+                    if (totalElements > 0)
+                    {
+                        double maxVal = fraisReelList.Max();
+                        double minVal = fraisReelList.Min();
+                        double avgVal = fraisReelList.Average();
+
+                        int posQ1 = totalElements * C.cQuartile1 / 100;
+                        int posQ2 = totalElements * C.cQuartile2 / 100;
+                        int posQ3 = totalElements * C.cQuartile3 / 100;
+                        int posQ4 = totalElements * C.cQuartile4 / 100;
+
+                        newRow["MIN"] = minVal;
+                        newRow["MAX"] = maxVal;
+                        newRow["Q1"] = totalElements > posQ1 ? fraisReelList[posQ1] : 0;
+                        newRow["Q2"] = totalElements > posQ1 ? fraisReelList[posQ2] : 0;
+                        newRow["Q3"] = totalElements > posQ1 ? fraisReelList[posQ3] : 0;
+                        newRow["Q4"] = totalElements > posQ1 ? fraisReelList[posQ4] : 0;
+                        newRow["AVG"] = avgVal;
+
+                        quartileTable.Rows.Add(newRow);
+                    }
+                    else
+                    {
+                        //throw new Exception("THe Excel sheet for 'Quartiles' cannot be created, because no values were found for the following garanty: " + gar );
+
+                        newRow["MIN"] = 0;
+                        newRow["MAX"] = 0;
+                        newRow["Q1"] = 0;
+                        newRow["Q2"] = 0;
+                        newRow["Q3"] = 0;
+                        newRow["Q4"] = 0;
+                        newRow["AVG"] = 0;
+
+                        quartileTable.Rows.Add(newRow);
+                    }
+                }
+
+                //save data to Excel
+                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
+                {
+                    //pck.Workbook.Worksheets[C.cEXCELQUARTILE].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+
+                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELQUARTILE];
+                    ws.Cells["D2"].LoadFromDataTable(quartileTable, false);
+                    pck.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: FillQuartileSheet : " + ex.Message);
+                throw ex;
+            }
+        }
+
+        public static void FillAffichageSheet(FileInfo excelFilePath, string assur)
+        {
+            try
+            {
+                //create the table that holds the values for the quartiles
+                DataTable affTable = new DataTable();
+                DataTable affTable2 = new DataTable();
+
+                //DataColumn order = new DataColumn("ORDER", typeof(int));
+                DataColumn assureur = new DataColumn("ASSUREUR", typeof(string));
+                DataColumn group = new DataColumn("GROUP", typeof(string));
+                DataColumn garanty = new DataColumn("GARANTY", typeof(string));
+                DataColumn assureur2 = new DataColumn("ASSUREUR", typeof(string));
+                DataColumn group2 = new DataColumn("GROUP", typeof(string));
+
+                affTable.Columns.AddRange(new DataColumn[] { assureur, group, garanty });
+                affTable2.Columns.AddRange(new DataColumn[] { assureur2, group2 });
+
+                var uniqueGGList = GroupGarantySante.GetUniqueGroupsAndGarantiesForAssureur(assur);
+                var uniqueAGList = GroupGarantySante.GetUniqueAssureurAndGroups(assur);
+
+                if (uniqueGGList.Any())
+                {
+                    foreach (var elem in uniqueGGList)
+                    {
+                        DataRow newRow = affTable.NewRow();
+
+                        newRow["ASSUREUR"] = elem.AssureurName;
+                        newRow["GROUP"] = elem.GroupName;
+                        newRow["GARANTY"] = elem.GarantyName;
+
+                        affTable.Rows.Add(newRow);
+                    }
+                }
+
+                if (uniqueAGList.Any())
+                {
+                    foreach (var elem in uniqueAGList)
+                    {
+                        DataRow newRow2 = affTable2.NewRow();
+
+                        newRow2["ASSUREUR"] = elem.AssureurName;
+                        newRow2["GROUP"] = elem.GroupName;
+
+                        affTable2.Rows.Add(newRow2);
+                    }
+                }
+
+                //save data to Excel
+                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
+                {
+                    pck.Workbook.Worksheets[C.cEXCELGROUPGARANT].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+
+                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELGROUPGARANT];
+                    ws.Cells["A2"].LoadFromDataTable(affTable, false);
+                    ws.Cells["E2"].LoadFromDataTable(affTable2, false);
+                    pck.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: FillPrevSheet : " + ex.Message);
+                throw ex;
+            }
+        }
+
+        //### this is almost a duplicate of the Method: CollectPrestaData this needs to be cleaned up and improved
+        private static void CollectPrestaData2(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData, C.eExcelSheetPrestaData excelSheet)
+        {
+            try
+            {
+                string myExcelSheet = C.cEXCELPRESTWITHOPTION;
+                List<Cadencier> cadencierAll = new List<Cadencier>();
+
+                DataTable prestaTable = CreatePrestaPrevExpTable(myExcelSheet);
+
+                //CodeCol = p.Select(pr=>pr.CodeCol).First(),
+                List<ExcelPrestaSheet> excelPrestDataSmall = myPrestData
+                           .GroupBy(p => new
+                           {
+                               DateSoinsYear = p.DateSoins.Value.Year,
+                               p.GroupName,
+                               p.GarantyName,
+                               CAS2 = p.CAS.ToLower() == "true" ? "VRAI" : "FAUX",
+                               RES = String.IsNullOrEmpty(p.Reseau) ? "FAUX" : "VRAI"
+                           })
+                           .Select(p => new ExcelPrestaSheet
+                           {
+                               DateVision = new DateTime(1900, 01, 01),
+                               ContractId = "XXXXX",
+                               CodeCol = "XXXXX", // p.Select(pr=>pr.CodeCol).First(),
+                               DateSoins = new DateTime(p.Key.DateSoinsYear, 1, 1),
+                               GroupName = p.Key.GroupName,
+                               GarantyName = p.Key.GarantyName,
+                               CAS = p.Key.CAS2,
+                               NombreActe = p.Sum(pr => pr.NombreActe),  //.Where(pr => pr.NombreActe >= 0)
+                               FraisReel = p.Sum(pr => pr.FraisReel),
+                               RembSS = p.Sum(pr => pr.RembSS),
+                               RembAnnexe = p.Sum(pr => pr.RembAnnexe),
+                               RembNous = p.Sum(pr => pr.RembNous),
+                               Reseau = p.Key.RES,
+                               MinFR = p.Where(pr => pr.FraisReel >= 0).Min(pr => pr.FraisReel / pr.NombreActe),
+                               MaxFR = p.Where(pr => pr.FraisReel >= 0).Max(pr => pr.FraisReel / pr.NombreActe),
+                               MinNous = p.Where(pr => pr.RembNous >= 0).Min(pr => pr.RembNous / pr.NombreActe),
+                               MaxNous = p.Where(pr => pr.RembNous >= 0).Max(pr => pr.RembNous / pr.NombreActe)
+                           })
+                           //.Where(p => p.GarantyName == "LENTILLES")
+                           .OrderBy(gr => gr.GroupName).ThenBy(ga => ga.GarantyName)
+                           .ToList();
+
+                List<ExcelPrestaSheet> excelPrestDataLarge = myPrestData
+                           .GroupBy(p => new
+                           {
+                               p.DateVision,
+                               p.ContractId,
+                               p.CodeCol,
+                               DateSoinsYear = p.DateSoins.Value.Year,
+                               p.GroupName,
+                               p.GarantyName,
+                               CAS2 = p.CAS.ToLower() == "true" ? "VRAI" : "FAUX",
+                               RES = String.IsNullOrEmpty(p.Reseau) ? "FAUX" : "VRAI",
+                               p.BO1,
+                               p.BO2
+                           })
+                           .Select(p => new ExcelPrestaSheet
+                           {
+                               DateVision = p.Key.DateVision,
+                               ContractId = p.Key.ContractId,
+                               CodeCol = p.Key.CodeCol,
+                               DateSoins = new DateTime(p.Key.DateSoinsYear, 1, 1),
+                               GroupName = p.Key.GroupName,
+                               GarantyName = p.Key.GarantyName,
+                               CAS = p.Key.CAS2,
+                               NombreActe = p.Sum(pr => pr.NombreActe),  //.Where(pr => pr.NombreActe >= 0)
+                               FraisReel = p.Sum(pr => pr.FraisReel),
+                               RembSS = p.Sum(pr => pr.RembSS),
+                               RembAnnexe = p.Sum(pr => pr.RembAnnexe),
+                               RembNous = p.Sum(pr => pr.RembNous),
+                               Reseau = p.Key.RES,
+                               MinFR = p.Where(pr => pr.FraisReel >= 0).Min(pr => pr.FraisReel / pr.NombreActe),
+                               MaxFR = p.Where(pr => pr.FraisReel >= 0).Max(pr => pr.FraisReel / pr.NombreActe),
+                               MinNous = p.Where(pr => pr.RembNous >= 0).Min(pr => pr.RembNous / pr.NombreActe),
+                               MaxNous = p.Where(pr => pr.RembNous >= 0).Max(pr => pr.RembNous / pr.NombreActe),
+                               BO1 = p.Key.BO1,
+                               BO2 = p.Key.BO2
+                           })
+                           //.Where(p => p.GarantyName == "LENTILLES")
+                           .OrderBy(gr => gr.GroupName).ThenBy(ga => ga.GarantyName)
+                           .ToList();
+
+
+                //### create 2 lists => iterate through large list (with college) and replace all calc fields (min, max...) with calc fields from 
+                // corresponding line in small list (use 5 key fields)
+                // var item = smallList.FirstOrDefault(o => o.GroupName == groupName && ...);
+                //if (item != null)
+                //    item.value = "Value";
+
+                foreach (ExcelPrestaSheet dat in excelPrestDataLarge)
+                {
+                    var item = excelPrestDataSmall.FirstOrDefault(i => i.DateSoins == dat.DateSoins && i.GroupName == dat.GroupName && i.GarantyName == dat.GarantyName
+                        && i.CAS == dat.CAS && i.Reseau == dat.Reseau);
+
+                    if (item != null)
+                    {
+                        dat.MinFR = item.MinFR;
+                        dat.MaxFR = item.MaxFR;
+                        dat.MinNous = item.MinNous;
+                        dat.MaxNous = item.MaxNous;
+                    }
+                }
+
+                //foreach (PrestSante prest in myPrestData)
+                foreach (ExcelPrestaSheet prest in excelPrestDataLarge)
+                {
+                    DataRow newRow = prestaTable.NewRow();
+
+                    newRow["ANNEESOIN"] = prest.DateSoins.HasValue ? prest.DateSoins.Value.Year : 0;
+                    newRow["AU"] = prest.DateVision.HasValue ? prest.DateVision.Value : (object)DBNull.Value;
+                    newRow["CONTRAT"] = prest.ContractId;
+                    newRow["CODCOL"] = prest.CodeCol;
+                    newRow["LIBACTE"] = prest.GarantyName;
+                    newRow["LIBFAM"] = prest.GroupName;
+
+                    newRow["NBREACTE"] = prest.NombreActe.HasValue ? prest.NombreActe : 0;
+                    newRow["FRAISREELS"] = prest.FraisReel.HasValue ? prest.FraisReel.Value : 0;
+                    newRow["REMBSS"] = prest.RembSS.HasValue ? prest.RembSS.Value : 0;
+                    newRow["REMBANNEXE"] = prest.RembAnnexe.HasValue ? prest.RembAnnexe.Value : 0;
+                    newRow["REMBNOUS"] = prest.RembNous.HasValue ? prest.RembNous.Value : 0;
+                    newRow["CASNONCAS"] = prest.CAS;
+                    newRow["RESEAU"] = prest.Reseau;
+                    newRow["MINFR"] = prest.MinFR.HasValue ? prest.MinFR.Value : 0;
+                    newRow["MAXFR"] = prest.MaxFR.HasValue ? prest.MaxFR.Value : 0;
+                    newRow["MINNOUS"] = prest.MinNous.HasValue ? prest.MinNous.Value : 0;
+                    newRow["MAXNOUS"] = prest.MaxNous.HasValue ? prest.MaxNous.Value : 0;
+
+                    newRow["BO1"] = prest.BO1;
+                    newRow["BO2"] = prest.BO2;
+
+
+                    prestaTable.Rows.Add(newRow);
+                }
+
+                //save to Excel
+                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
+                {
+                    pck.Workbook.Worksheets[C.cEXCELPREST].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+
+                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELPREST];
+                    ws.Cells["A2"].LoadFromDataTable(prestaTable, false);
+                    pck.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: CollectPrestaData2 : " + ex.Message);
+                throw ex;
+            }
+        }
+
+        private static double GetCoefCadencier(int anneeSoins, DateTime dateArret, DateTime dateDebutPeriode,
+            DateTime dateFinPeriode, List<Cadencier> myCad, string assur)
+        {
+            try
+            {
+                double cumul = 0;
+                int month = 0;
+
+                //double rembNous = prest.RembNous.HasValue ? prest.RembNous.Value : 0;
+                //int anneeSoins = prest.DateSoins.HasValue ? prest.DateSoins.Value.Year : 0;
+
+                DateTime date1;
+                DateTime dateDebutPeriodeAdjusted;
+                DateTime dateFinPeriodeAdjusted;
+
+                if (anneeSoins != 0 && dateArret != DateTime.MinValue && dateFinPeriode != DateTime.MinValue)
+                {
+                    date1 = new DateTime(anneeSoins, dateDebutPeriode.Month, dateDebutPeriode.Day);
+                    //month = ((dateArret.Year - date1.Year) * 12) + dateArret.Month - date1.Month;
+
+                    TimeSpan span = dateArret.Subtract(date1);
+                    double monthDouble = span.TotalDays / 30.25;
+                    month = (int)Math.Round(monthDouble, MidpointRounding.AwayFromZero);
+
+                    dateDebutPeriodeAdjusted = new DateTime(anneeSoins, dateDebutPeriode.Month, dateDebutPeriode.Day);
+                    dateFinPeriodeAdjusted = new DateTime(anneeSoins, dateFinPeriode.Month, dateFinPeriode.Day);
+
+                    var res = myCad.Where(c => c.Month == month && c.Year == dateArret.Year && c.DebutSurvenance == dateDebutPeriodeAdjusted
+                        && c.FinSurvenance == dateFinPeriodeAdjusted);
+                    if (res.Any())
+                    {
+                        //choose the value according to the provided Assureur
+                        if (string.IsNullOrWhiteSpace(assur))
+                            cumul = res.ToList()[0].Cumul.Value;
+                        else
+                        {
+                            var cadVal = res.Where(c => c.AssureurName.ToLower() == assur.ToLower()).First();
+                            if (cadVal != null)
+                                cumul = cadVal.Cumul.Value;
+                            else
+                                cumul = 0;
+                        }
+                    }
+                    else
+                    {
+                        cumul = 0;
+                    }
+                }
+                else
+                {
+                    //we have  aproblem => log an error message                            
+                    throw new Exception("A value for 'Provision' cannot be calculated! Provided values: Annee Soins: " + anneeSoins
+                            + " date fin péeriode: " + dateFinPeriode.ToShortDateString() + " date arret: " + dateArret.ToShortDateString());
+                }
+
+                return cumul;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: GetCoefCadencier : " + ex.Message);
+                throw ex;
+            }
+        }
+
+        private static DataTable CreateGlobalTable(C.eReportTypes reportType)
+        {
+            try
+            {
+                DataTable myTable = new DataTable();
+
+                DataColumn Assureur = new DataColumn("Assureur", typeof(string));
+                DataColumn Company = new DataColumn("Company", typeof(string));
+                DataColumn Subsid = new DataColumn("Subsid", typeof(string));
+                DataColumn YearSurv = new DataColumn("YearSurv", typeof(int));
+                DataColumn RNous = new DataColumn("RNous", typeof(decimal));
+                DataColumn Provisions = new DataColumn("Provisions", typeof(decimal));
+                DataColumn CotBrut = new DataColumn("CotBrut", typeof(decimal));
+                DataColumn TauxChargement = new DataColumn("TauxChargement", typeof(decimal));
+                //DataColumn TaxTotal = new DataColumn("TaxTotal", typeof(string));
+                DataColumn CotNet = new DataColumn("CotNet", typeof(decimal));
+                DataColumn Ratio = new DataColumn("Ratio", typeof(decimal));
+                DataColumn GainLoss = new DataColumn("GainLoss", typeof(decimal));
+                DataColumn CoeffCad = new DataColumn("CoeffCad", typeof(decimal));
+                DataColumn FR = new DataColumn("FR", typeof(decimal));
+                DataColumn RSS = new DataColumn("RSS", typeof(decimal));
+                DataColumn RAnnexe = new DataColumn("RAnnexe", typeof(decimal));
+                //DataColumn TaxDefault = new DataColumn("TaxDefault", typeof(string));
+                //DataColumn TaxActive = new DataColumn("TaxActive", typeof(string));
+                DataColumn DateArret = new DataColumn("DateArret", typeof(DateTime));
+
+                DataColumn NumbEnt = new DataColumn("NumbEnt", typeof(int));
+                DataColumn NumbProd = new DataColumn("NumbProd", typeof(int));
+                DataColumn Prods = new DataColumn("Prods", typeof(string));
+                DataColumn NumbAssur = new DataColumn("NumbAssur", typeof(int));
+                DataColumn NumbConjoints = new DataColumn("NumbConjoints", typeof(int));
+                DataColumn NumbEnfants = new DataColumn("NumbEnfants", typeof(int));
+                DataColumn Comment = new DataColumn("Comment", typeof(string));
+
+
+                //myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, Subsid, YearSurv, FR, RSS, RAnnexe, RNous, Provisions, CoeffCad, CotBrut, TaxTotal, TaxDefault, TaxActive,
+                //    CotNet, Ratio, GainLoss, DateArret });
+
+                //with taxes
+                //myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, Subsid, YearSurv, RNous, Provisions, CotBrut, TaxTotal, CotNet, Ratio, GainLoss, CoeffCad,
+                //    FR, RSS, RAnnexe, TaxDefault, TaxActive, DateArret });
+                //without Taxes
+                if (reportType == C.eReportTypes.GlobalSynthese)
+                {
+                    myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, YearSurv, RNous, Provisions, CotBrut, TauxChargement, CotNet, Ratio, GainLoss, CoeffCad,
+                    FR, RSS, RAnnexe, DateArret, NumbEnt, NumbProd, Prods, NumbAssur, NumbConjoints, NumbEnfants, Comment });
+                }
+                else
+                {
+                    myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, Subsid, YearSurv, RNous, Provisions, CotBrut, TauxChargement, CotNet, Ratio, GainLoss, CoeffCad,
+                    FR, RSS, RAnnexe, DateArret });
+                }
+
+                //if (reportType == C.eReportTypes.GlobalEnt)
+                //    myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, YearSurv, FR, RSS, RAnnexe, RNous, Provisions, CoeffCad, CotBrut, TaxTotal, TaxDefault, TaxActive,
+                //    CotNet, Ratio, GainLoss, DateArret });
+                //else if (reportType == C.eReportTypes.GlobalSubsid)
+                //    myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, Subsid, YearSurv, FR, RSS, RAnnexe, RNous, Provisions, CoeffCad, CotBrut, TaxTotal, TaxDefault, TaxActive,
+                //    CotNet, Ratio, GainLoss, DateArret });
+
+                return myTable;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: CreatePrestaPrevExpTable : " + ex.Message);
+                throw ex;
+            }
+
+        }
+
+        #endregion
+
+
+        #region PREVOYANCE
+
         public static void FillGlobalSheetPrev(FileInfo excelFilePath, string companyList, string subsidList, DateTime debutPeriod,
-           DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, double TaxDef, double TaxAct, double TaxPer)
+           DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, C.eTypeComptes TypeComptes, double TaxDef, double TaxAct, double TaxPer)
         {
             try
             {
@@ -521,13 +1131,29 @@ namespace CompteResultat.BL
                 List<ExcelGlobalDecompteData> globalDecompteWithGarantie = new List<ExcelGlobalDecompteData>();
                 if (isGlobalEnt)
                 {
-                    globalDecompte = DecomptePrev.GetDecompteGlobalEntData(years, parentCompanyList, dateArret);
-                    globalDecompteWithGarantie = DecomptePrev.GetDecompteGlobalEntDataWithGarantie(years, parentCompanyList, dateArret);
+                    if (TypeComptes == C.eTypeComptes.Comptable)
+                    {
+                        globalDecompte = DecomptePrev.GetDecompteGlobalEntDataCompta(years, parentCompanyList, dateArret);
+                        globalDecompteWithGarantie = DecomptePrev.GetDecompteGlobalEntDataWithGarantieCompta(years, parentCompanyList, dateArret);
+                    }
+                    else
+                    {
+                        globalDecompte = DecomptePrev.GetDecompteGlobalEntData(years, parentCompanyList, dateArret);
+                        globalDecompteWithGarantie = DecomptePrev.GetDecompteGlobalEntDataWithGarantie(years, parentCompanyList, dateArret);
+                    }                        
                 }
                 else
                 {
-                    globalDecompte = DecomptePrev.GetDecompteGlobalSubsidData(years, subsidiaryList, dateArret);                    
-                    globalDecompteWithGarantie = DecomptePrev.GetDecompteGlobalSubsidDataWithGarantie(years, subsidiaryList, dateArret);
+                    if (TypeComptes == C.eTypeComptes.Comptable)
+                    {
+                        globalDecompte = DecomptePrev.GetDecompteGlobalSubsidDataCompta(years, subsidiaryList, dateArret);
+                        globalDecompteWithGarantie = DecomptePrev.GetDecompteGlobalSubsidDataWithGarantieCompta(years, subsidiaryList, dateArret);
+                    }
+                    else
+                    {
+                        globalDecompte = DecomptePrev.GetDecompteGlobalSubsidData(years, subsidiaryList, dateArret);
+                        globalDecompteWithGarantie = DecomptePrev.GetDecompteGlobalSubsidDataWithGarantie(years, subsidiaryList, dateArret);
+                    }                        
                 }
 
                 //get cotisat data
@@ -543,23 +1169,82 @@ namespace CompteResultat.BL
                 
                 //Some values from the Cot table may be missing => because we don't have a corresponding entry in the Presta table for certain PK's (Assur-Comp-Year...)
                 //we need to add those missing values from the Cot Table
-                globalDecompte = AddFromCotisatToGlobalDecompte(isGlobalEnt, globalDecompte, globalCotisat);
-                globalDecompte = AddFromProvisToGlobalDecompte(isGlobalEnt, globalDecompte, allProvPrevData);
+                globalDecompte = AddFromCotisatToGlobalDecompte(isGlobalEnt, false, globalDecompte, globalCotisat);
+                globalDecompte = AddFromProvisToGlobalDecompte(isGlobalEnt, false, globalDecompte, allProvPrevData);
 
-                globalDecompteWithGarantie = AddFromCotisatToGlobalDecompte(isGlobalEnt, globalDecompteWithGarantie, globalCotisat);
-                globalDecompteWithGarantie = AddFromProvisToGlobalDecompte(isGlobalEnt, globalDecompteWithGarantie, allProvPrevData);
+                globalDecompteWithGarantie = AddFromCotisatToGlobalDecompte(isGlobalEnt, true, globalDecompteWithGarantie, globalCotisat);
+                globalDecompteWithGarantie = AddFromProvisToGlobalDecompte(isGlobalEnt, true, globalDecompteWithGarantie, allProvPrevData);
 
-
-                //CUMUL
-                List<ExcelGlobalDecompteData> globalCotisatCumul = globalDecompte
-                   .GroupBy(p => new { p.Assureur, p.YearSurv })
+                
+                List<ExcelGlobalDecompteData> globalDecompteGroup = globalDecompte
+                   .GroupBy(p => new { p.Assureur, p.Company, p.YearSurv, p.ContractId })
                    .Select(g => new ExcelGlobalDecompteData
                    {
                        Assureur = g.Key.Assureur,
+                       ContractId = g.Key.ContractId,
+                       Company = g.Key.Company,
+                       Subsid = "",
+                       YearSurv = g.Key.YearSurv,
+                       RNous = g.Sum(i => i.RNous),
+                       PSI = g.Sum(i => i.PSI),
+                       Provisions = g.Sum(i => i.Provisions),
+                       CotBrute = g.Sum(i => i.CotBrute),
+                       TaxActive = TaxAct.ToString(),
+                       TaxDefault = TaxDef.ToString(),
+                       TaxTotal = "",
+                       CotNet = g.Sum(i => i.CotNet),
+                       Ratio = 0,
+                       GainLoss = 0,                       
+                       Coef = 0,
+                       FR = 0,
+                       RSS = 0,
+                       RAnnexe = 0,
+                       DateArret = dateArret
+                   })
+                   .OrderBy(ga => ga.YearSurv)
+                   .ToList();
+                
+                List<ExcelGlobalDecompteData> globalDecompteGroupwithGarantie = globalDecompteWithGarantie
+                   .GroupBy(p => new { p.Assureur, p.Company, p.YearSurv, p.ContractId, p.CodeGarantie })
+                   .Select(g => new ExcelGlobalDecompteData
+                   {
+                       Assureur = g.Key.Assureur,
+                       ContractId = g.Key.ContractId,
+                       Company = g.Key.Company,
+                       CodeGarantie = g.Key.CodeGarantie,
+                       Subsid = "",
+                       YearSurv = g.Key.YearSurv,
+                       RNous = g.Sum(i => i.RNous),
+                       PSI = g.Sum(i => i.PSI),
+                       Provisions = g.Sum(i => i.Provisions),
+                       CotBrute = g.Sum(i => i.CotBrute),
+                       TaxActive = TaxAct.ToString(),
+                       TaxDefault = TaxDef.ToString(),
+                       TaxTotal = "",
+                       CotNet = g.Sum(i => i.CotNet),
+                       Ratio = 0,
+                       GainLoss = 0,
+                       Coef = 0,
+                       FR = 0,
+                       RSS = 0,
+                       RAnnexe = 0,
+                       DateArret = dateArret
+                   })
+                   .OrderBy(ga => ga.YearSurv)
+                   .ToList();
+
+                //CUMUL
+                List<ExcelGlobalDecompteData> globalCotisatCumul = globalDecompte
+                   .GroupBy(p => new { p.Assureur, p.YearSurv, p.ContractId })
+                   .Select(g => new ExcelGlobalDecompteData
+                   {
+                       Assureur = g.Key.Assureur,
+                       ContractId = g.Key.ContractId,
                        Company = "",
                        Subsid = "",
                        YearSurv = g.Key.YearSurv,
                        RNous = g.Sum(i => i.RNous),
+                       PSI = g.Sum(i => i.PSI),
                        Provisions = g.Sum(i => i.Provisions),
                        CotBrute = g.Sum(i => i.CotBrute),
                        TaxActive = TaxAct.ToString(),
@@ -579,14 +1264,16 @@ namespace CompteResultat.BL
 
                 //CUMUL with Garantie
                 List<ExcelGlobalDecompteData> globalCotisatWithGarantieCumul = globalDecompteWithGarantie
-                   .GroupBy(p => new { p.Assureur, p.YearSurv, p.CodeGarantie })
+                   .GroupBy(p => new { p.Assureur, p.YearSurv, p.CodeGarantie, p.ContractId })
                    .Select(g => new ExcelGlobalDecompteData
                    {
                        Assureur = g.Key.Assureur,
+                       ContractId = g.Key.ContractId,
                        Company = "",
                        Subsid = "",
                        YearSurv = g.Key.YearSurv,
                        RNous = g.Sum(i => i.RNous),
+                       PSI = g.Sum(i => i.PSI),
                        Provisions = g.Sum(i => i.Provisions),
                        CotBrute = g.Sum(i => i.CotBrute),
                        TaxActive = TaxAct.ToString(),
@@ -606,8 +1293,8 @@ namespace CompteResultat.BL
                    .ToList();
 
                 //create DATA table
-                foreach (ExcelGlobalDecompteData decompte in globalDecompte)
-                {
+                foreach (ExcelGlobalDecompteData decompte in globalDecompteGroup)
+                { 
                     double tauxChargement = 0;
                     if (decompte.CotBrute != 0)
                     {
@@ -620,6 +1307,7 @@ namespace CompteResultat.BL
                     DataRow newRow = globalTable.NewRow();
 
                     newRow["Assureur"] = decompte.Assureur;
+                    newRow["ContractId"] = decompte.ContractId;
                     newRow["Company"] = decompte.Company;
 
                     if (!isGlobalEnt)
@@ -630,14 +1318,20 @@ namespace CompteResultat.BL
                     newRow["YearSurv"] = decompte.YearSurv;
                     newRow["TypeSinistre"] = "";
                     newRow["Prestations"] = decompte?.RNous ?? 0;
-                    newRow["Provisions"] = Math.Round(decompte.Provisions, 2);
+
+                    double totalProv = Math.Round(decompte.Provisions, 2);
+                    double psi = Math.Round(decompte.PSI, 2);
+                    newRow["Provisions"] = totalProv - psi;
+                    newRow["PSI"] = psi;
+                    newRow["TotalProvisions"] = totalProv;                    
+
                     newRow["CotBrute"] = decompte?.CotBrute ?? 0;
                     //newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
                     newRow["TauxChargement"] = Math.Round(tauxChargement, 4);
                     newRow["CotNet"] = decompte?.CotNet ?? 0;
                     newRow["Ratio"] = Math.Round(decompte.Ratio, 4);
                     newRow["GainLoss"] = gainLoss;
-                    newRow["DateArret"] = dateArret;
+                    newRow["DateArret"] = dateArret;                    
 
                     globalTable.Rows.Add(newRow);
                 }
@@ -661,12 +1355,19 @@ namespace CompteResultat.BL
                     DataRow newRow = globalTableCumul.NewRow();
 
                     newRow["Assureur"] = decompte.Assureur;
+                    newRow["ContractId"] = decompte.ContractId;
                     newRow["Company"] = "";
                     newRow["Subsid"] = "";
                     newRow["YearSurv"] = decompte.YearSurv;
                     newRow["TypeSinistre"] = "";
                     newRow["Prestations"] = decompte?.RNous ?? 0;
-                    newRow["Provisions"] = Math.Round(decompte.Provisions, 2);
+
+                    double totalProv = Math.Round(decompte.Provisions, 2);
+                    double psi = Math.Round(decompte.PSI, 2);
+                    newRow["Provisions"] = totalProv - psi;
+                    newRow["PSI"] = psi;
+                    newRow["TotalProvisions"] = totalProv;
+
                     newRow["CotBrute"] = decompte?.CotBrute ?? 0;
                     //newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
                     newRow["TauxChargement"] = Math.Round(tauxChargement, 4);
@@ -679,7 +1380,7 @@ namespace CompteResultat.BL
                 }                
 
                 //create DATA_GARANTIE table
-                foreach (ExcelGlobalDecompteData decompte in globalDecompteWithGarantie)
+                foreach (ExcelGlobalDecompteData decompte in globalDecompteGroupwithGarantie)
                 {
                     double tauxChargement = 0;
                     if (decompte.CotBrute != 0)
@@ -693,6 +1394,7 @@ namespace CompteResultat.BL
                     DataRow newRow = globalGarantieTable.NewRow();
 
                     newRow["Assureur"] = decompte.Assureur;
+                    newRow["ContractId"] = decompte.ContractId;
                     newRow["Company"] = decompte.Company;
 
                     if (!isGlobalEnt)
@@ -703,7 +1405,13 @@ namespace CompteResultat.BL
                     newRow["YearSurv"] = decompte.YearSurv;
                     newRow["TypeSinistre"] = decompte.CodeGarantie;
                     newRow["Prestations"] = decompte?.RNous ?? 0;
-                    newRow["Provisions"] = Math.Round(decompte.Provisions, 2);
+
+                    double totalProv = Math.Round(decompte.Provisions, 2);
+                    double psi = Math.Round(decompte.PSI, 2);
+                    newRow["Provisions"] = totalProv - psi;
+                    newRow["PSI"] = psi;
+                    newRow["TotalProvisions"] = totalProv;
+
                     newRow["CotBrute"] = decompte?.CotBrute ?? 0;
                     //newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
                     newRow["TauxChargement"] = Math.Round(tauxChargement, 4);
@@ -734,12 +1442,19 @@ namespace CompteResultat.BL
                     DataRow newRow = globalGarantieTableCumul.NewRow();
 
                     newRow["Assureur"] = decompte.Assureur;
+                    newRow["ContractId"] = decompte.ContractId;
                     newRow["Company"] = "";
                     newRow["Subsid"] = "";
                     newRow["YearSurv"] = decompte.YearSurv;
                     newRow["TypeSinistre"] = decompte.CodeGarantie;
                     newRow["Prestations"] = decompte?.RNous ?? 0;
-                    newRow["Provisions"] = Math.Round(decompte.Provisions, 2);
+
+                    double totalProv = Math.Round(decompte.Provisions, 2);
+                    double psi = Math.Round(decompte.PSI, 2);
+                    newRow["Provisions"] = totalProv - psi;
+                    newRow["PSI"] = psi;
+                    newRow["TotalProvisions"] = totalProv;
+
                     newRow["CotBrute"] = decompte?.CotBrute ?? 0;
                    //newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
                     newRow["TauxChargement"] = Math.Round(tauxChargement, 4);
@@ -779,122 +1494,119 @@ namespace CompteResultat.BL
             }
         }
 
-        private static List<ExcelGlobalDecompteData> AddFromCotisatToGlobalDecompte(bool isGlobalEnt, List<ExcelGlobalDecompteData> globalDecompte, List<ExcelGlobalCotisatData> globalCotisat)
-        {
+        private static List<ExcelGlobalDecompteData> AddFromCotisatToGlobalDecompte(bool isGlobalEnt, bool isGarantie, List<ExcelGlobalDecompteData> globalDecompte, List<ExcelGlobalCotisatData> globalCotisat)
+        {            
             foreach (ExcelGlobalCotisatData dat in globalCotisat)
-            {               
-                ExcelGlobalDecompteData item = new ExcelGlobalDecompteData();
-                item.Assureur = dat.Assureur;
-                item.Company = dat.Company;
-                item.Subsid = dat.Subsid;
-                item.YearSurv = dat.YearSurv;
-                item.CotNet = dat.Cotisat.HasValue ? dat.Cotisat.Value : 0;
-                item.CotBrute = dat.CotisatBrute.HasValue ? dat.CotisatBrute.Value : 0;                
-                item.GainLoss = item.CotNet;                
-                item.CodeGarantie = dat.CodeGarantie;
+            {
+                ExcelGlobalDecompteData decomptItem = null;
+                if (isGarantie)
+                {
+                    decomptItem = globalDecompte.FirstOrDefault(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.YearSurv == dat.YearSurv && i.ContractId == dat.ContractId
+                        && i.CodeGarantie == dat.CodeGarantie);                    
+                }
+                else
+                {
+                    decomptItem = globalDecompte.FirstOrDefault(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.YearSurv == dat.YearSurv && i.ContractId == dat.ContractId);
+                }                
 
-                DateTime dateDebutSurv = new DateTime(dat.YearSurv, 1, 1);
-                DateTime dateFinSurv = new DateTime(dat.YearSurv, 12, 31);
-                
-                globalDecompte.Add(item);                
+                //try to do a merge => update existing line in Decompte
+                if (decomptItem != null)
+                {
+                    double rnous = decomptItem.RNous.HasValue ? decomptItem.RNous.Value : 0;
+
+                    decomptItem.CotNet = decomptItem.CotNet + (dat.Cotisat.HasValue ? dat.Cotisat.Value : 0);
+                    decomptItem.CotBrute = decomptItem.CotBrute + (dat.CotisatBrute.HasValue ? dat.CotisatBrute.Value : 0);                    
+                    decomptItem.GainLoss = decomptItem.CotNet - rnous - decomptItem.Provisions;
+                    decomptItem.CodeGarantie = dat.CodeGarantie;
+                }
+                //if we don't have an existing line, add a new line to decompte
+                else
+                {                    
+                    ExcelGlobalDecompteData item = new ExcelGlobalDecompteData();
+                    item.Assureur = dat.Assureur;
+                    item.ContractId = dat.ContractId;
+                    item.Company = dat.Company;
+                    item.Subsid = dat.Subsid;
+                    item.YearSurv = dat.YearSurv;
+                    item.CotNet = dat.Cotisat.HasValue ? dat.Cotisat.Value : 0;
+                    item.CotBrute = dat.CotisatBrute.HasValue ? dat.CotisatBrute.Value : 0;                    
+                    item.CodeGarantie = dat.CodeGarantie;
+                    item.GainLoss = item.CotNet;
+
+                    DateTime dateDebutSurv = new DateTime(dat.YearSurv, 1, 1);
+                    DateTime dateFinSurv = new DateTime(dat.YearSurv, 12, 31);
+
+                    globalDecompte.Add(item); 
+                }
             }
 
             return globalDecompte;
         }
 
-        private static List<ExcelGlobalDecompteData> AddFromProvisToGlobalDecompte(bool isGlobalEnt, List<ExcelGlobalDecompteData> globalDecompte, List<ProvPrev> allProvPrevData)
+        private static List<ExcelGlobalDecompteData> AddFromProvisToGlobalDecompte(bool isGlobalEnt, bool isGarantie, List<ExcelGlobalDecompteData> globalDecompte, List<ProvPrev> allProvPrevData)
         {
             foreach (ProvPrev dat in allProvPrevData)
-            {                
-                ExcelGlobalDecompteData item = new ExcelGlobalDecompteData();
-                item.Assureur = dat.AssureurName;
-                item.Company = dat.Company;
-                item.Subsid = dat.Subsid;
-                item.YearSurv = dat.DateSinistre.Value.Year;
-                item.CotNet = 0;
-                item.CotBrute = 0;
-
+            {
+                ExcelGlobalDecompteData decomptItem = null;
+                if(isGarantie)
+                {
+                    decomptItem = globalDecompte.FirstOrDefault(i => i.Assureur == dat.AssureurName && i.Company == dat.Company && i.YearSurv == dat.DateSinistre.Value.Year
+                    && i.ContractId == dat.ContractId && i.CodeGarantie == dat.NatureSinistre && i.Dossier == dat.Dossier);
+                }
+                else
+                {
+                    decomptItem = globalDecompte.FirstOrDefault(i => i.Assureur == dat.AssureurName && i.Company == dat.Company && i.YearSurv == dat.DateSinistre.Value.Year
+                    && i.ContractId == dat.ContractId && i.Dossier == dat.Dossier);
+                }
+                
                 double dPm = dat.Pm.HasValue ? dat.Pm.Value : 0;
                 double dPmPassage = dat.PmPassage.HasValue ? dat.PmPassage.Value : 0;
                 double dPsap = dat.Psap.HasValue ? dat.Psap.Value : 0;
                 double dPmMgdc = dat.PmMgdc.HasValue ? dat.PmMgdc.Value : 0;
                 double dPsi = dat.Psi.HasValue ? dat.Psi.Value : 0;
 
-                item.Provisions = dPm + dPmPassage + dPsap + dPmMgdc + dPsi;
-                item.GainLoss = item.Provisions;
-                item.CodeGarantie = dat.NatureSinistre;
+                //try to do a merge => update existing line in Decompte
+                if (decomptItem != null)
+                {
+                    double rnous = decomptItem.RNous.HasValue ? decomptItem.RNous.Value : 0;
 
-                DateTime dateDebutSurv = new DateTime(dat.DateSinistre.Value.Year, 1, 1);
-                DateTime dateFinSurv = new DateTime(dat.DateSinistre.Value.Year, 12, 31);
-                double coeffCad = 0;
-                item.Coef = coeffCad;
+                    decomptItem.PSI += dPsi;
+                    decomptItem.Provisions += dPm + dPmPassage + dPsap + dPmMgdc + dPsi;
+                    decomptItem.GainLoss = decomptItem.CotNet - rnous - decomptItem.Provisions;
+                    decomptItem.CodeGarantie = dat.NatureSinistre;                    
+                }
+                //if we don't have an existing line, add a new line to decompte
+                else
+                {
+                    ExcelGlobalDecompteData item = new ExcelGlobalDecompteData();
+                    item.Assureur = dat.AssureurName;
+                    item.ContractId = dat.ContractId;
+                    item.Company = dat.Company;
+                    item.Subsid = dat.Subsid;
+                    item.YearSurv = dat.DateSinistre.Value.Year;
+                    item.CotNet = 0;
+                    item.CotBrute = 0;
+                    item.Dossier = dat.Dossier;
+                    
+                    item.PSI = dPsi;
+                    item.Provisions = dPm + dPmPassage + dPsap + dPmMgdc + dPsi;                    
+                    item.CodeGarantie = dat.NatureSinistre;
+                    //item.GainLoss = 0;
 
-                globalDecompte.Add(item);
+                    DateTime dateDebutSurv = new DateTime(dat.DateSinistre.Value.Year, 1, 1);
+                    DateTime dateFinSurv = new DateTime(dat.DateSinistre.Value.Year, 12, 31);
+                    double coeffCad = 0;
+                    item.Coef = coeffCad;
+
+                    globalDecompte.Add(item);
+                }                
             }
 
             return globalDecompte;
         }
 
-        private static List<ExcelGlobalDecompteData> UpdateGlobalDecompteWithCotisat(bool isGlobalEnt, List<ExcelGlobalDecompteData> globalDecompte, List<ExcelGlobalCotisatData> globalCotisat)
-        {
-            List<ExcelGlobalDecompteData> globDec = null;
-
-            foreach (ExcelGlobalDecompteData dat in globalDecompte)
-            {
-                ExcelGlobalCotisatData item = null;
-                if (isGlobalEnt)
-                    item = globalCotisat.FirstOrDefault(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.YearSurv == dat.YearSurv);
-                else
-                    item = globalCotisat.FirstOrDefault(i => i.Assureur == dat.Assureur && i.Company == dat.Company && i.Subsid == dat.Subsid && i.YearSurv == dat.YearSurv);
-
-                if (item != null)
-                {
-                    dat.CotBrute = item.CotisatBrute.HasValue ? item.CotisatBrute.Value : 0;
-                    dat.CotNet = item.Cotisat.HasValue ? item.Cotisat.Value : 0;
-                }
-
-                dat.Provisions = 0;
-
-                //calculate all remaining fields
-                //calculate new dates for dateDebut == 1/1/YearSurv && dateFin == 31/12/YearSurv
-                DateTime dateDebutSurv = new DateTime(dat.YearSurv, 1, 1);
-                DateTime dateFinSurv = new DateTime(dat.YearSurv, 12, 31);
-                double presta = dat.RNous.HasValue ? dat.RNous.Value : 0;
-                double coeffCad = 0;
-
-                double provision = 0;
-                provision = Math.Round(provision, 2);
-
-                double cotNet = 0;
-                cotNet = dat.CotNet;
-
-                double cotBrute = 0;
-                cotBrute = dat.CotBrute;
-                //if ((1 + (TaxDef / 100)) != 0)
-                //    cotNet = (dat.CotBrut * (1 - (TaxAct / 100))) / (1 + (TaxDef / 100));
-                cotNet = Math.Round(cotNet, 2);
-                cotBrute = Math.Round(cotBrute, 2);
-
-                double ratio = 0;
-                if (cotNet != 0)
-                    ratio = (presta + provision) / cotNet;
-
-                double gainLoss = cotNet - presta - provision;
-
-                dat.RNous = presta;
-                dat.Coef = 0;
-                //dat.Provisions = provision;
-                dat.CotNet = cotNet;
-                dat.CotBrute = cotBrute;
-                dat.Ratio = ratio;
-                dat.GainLoss = gainLoss;
-            }
-
-            return globDec;
-        }
-
-        public static void FillPrevProvSheet(C.ePrevProv prevProvSheet, FileInfo excelFilePath, string assurNameList, string parentCompanyNameList, string companyNameList, string contrNameList, string college, 
-            DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, int yearsToCalc)
+        public static void FillPrevProvSheet(C.ePrevProv prevProvSheet, FileInfo excelFilePath, string assurNameList, string parentCompanyNameList, string companyNameList, string contrNameList, string college,
+            DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, int yearsToCalc, C.eTypeComptes typeComptes)
         {
             try
             {
@@ -906,7 +1618,7 @@ namespace CompteResultat.BL
                 List<string> companyList = Regex.Split(companyNameList, C.cVALSEP).ToList();
                 List<string> assurList = Regex.Split(assurNameList, C.cVALSEP).ToList();
 
-                List<SinistrePrev> allSinistreData = new List<SinistrePrev>();                
+                List<SinistrePrev> allSinistreData = new List<SinistrePrev>();
                 List<ProvPrev> allProvPrevData = new List<ProvPrev>();
                 List<SinistreEtProv> sinistreEtProv = new List<SinistreEtProv>();
                 List<CotisatPrev> allCotisatData = new List<CotisatPrev>();
@@ -919,10 +1631,10 @@ namespace CompteResultat.BL
                 int years = 0;
                 //for (int years = 0; years < yearsToCalc; years++)
                 //{
-                    debutNew = new DateTime(debutPeriod.Year - years, debutPeriod.Month, debutPeriod.Day);
-                    finNew = new DateTime(finPeriod.Year - years, finPeriod.Month, finPeriod.Day);
+                debutNew = new DateTime(debutPeriod.Year - years, debutPeriod.Month, debutPeriod.Day);
+                finNew = new DateTime(finPeriod.Year - years, finPeriod.Month, finPeriod.Day);
 
-                
+
                 allProvPrevData = ProvPrev.GetProvPrevForContracts(assurList, parentCompanyList, companyList, contrList, college, debutNew, finNew, dateArret);
                 List<string> dossierListPrevProv = allProvPrevData.Select(s => s.Dossier).ToList();
 
@@ -958,7 +1670,7 @@ namespace CompteResultat.BL
                                 DateRechute = dat.DateRechute,
                                 DateClo = dat.DateClo,
                                 MotifClo = dat.MotifClo,
-                                DatePayment = dat.DatePayment                                
+                                DatePayment = dat.DatePayment
                             });
                         }
                     }
@@ -967,9 +1679,9 @@ namespace CompteResultat.BL
                 {
                     //allProvPrevData = ProvPrev.GetProvPrevForContracts(assurList, parentCompanyList, companyList, contrList, college, debutNew, finNew, dateArret);                    
 
-                    if(allProvPrevData.Any())
+                    if (allProvPrevData.Any())
                     {
-                        foreach(ProvPrev dat in allProvPrevData)
+                        foreach (ProvPrev dat in allProvPrevData)
                         {
                             sinistreEtProv.Add(new SinistreEtProv
                             {
@@ -988,20 +1700,20 @@ namespace CompteResultat.BL
                                 DateSinistre = dat.DateSinistre,
                                 NatureSinistre = dat.NatureSinistre,
                                 CauseSinistre = dat.CauseSinistre,
-                                DebVal= dat.DebVal,
-                                FinVal= dat.FinVal,
-                                DateRecep= dat.DateRecep,
-                                DateRechute= dat.DateRechute,
-                                DateClo= dat.DateClo,
-                                MotifClo= dat.MotifClo,
-                                DatePayment= dat.DatePayment,
-                                DateProvision= dat.DateProvision,
-                                Matricule= dat.Matricule,
-                                Pm= dat.Pm,
-                                PmPassage= dat.PmPassage,
-                                Psap= dat.Psap,
-                                PmMgdc= dat.PmMgdc,
-                                Psi= dat.Psi
+                                DebVal = dat.DebVal,
+                                FinVal = dat.FinVal,
+                                DateRecep = dat.DateRecep,
+                                DateRechute = dat.DateRechute,
+                                DateClo = dat.DateClo,
+                                MotifClo = dat.MotifClo,
+                                DatePayment = dat.DatePayment,
+                                DateProvision = dat.DateProvision,
+                                Matricule = dat.Matricule,
+                                Pm = dat.Pm,
+                                PmPassage = dat.PmPassage,
+                                Psap = dat.Psap,
+                                PmMgdc = dat.PmMgdc,
+                                Psi = dat.Psi
                             });
 
                         }
@@ -1040,7 +1752,7 @@ namespace CompteResultat.BL
                 DataColumn ageEntreeInval = new DataColumn("AGE ENTREE INVAL", typeof(int));
                 DataColumn nbJoursInval = new DataColumn("Nbj Inval", typeof(int));
                 DataColumn prestaTotal = new DataColumn("PRESTATION", typeof(double));
-                DataColumn provision = new DataColumn("PROVISION", typeof(decimal));   
+                DataColumn provision = new DataColumn("PROVISION", typeof(decimal));
                 DataColumn dossier1 = new DataColumn("DOSSIER", typeof(string));
                 DataColumn lastname = new DataColumn("Nom", typeof(string));
                 DataColumn firstname = new DataColumn("Prénom", typeof(string));
@@ -1079,7 +1791,7 @@ namespace CompteResultat.BL
                         prevTableIncap.Columns.Add(col.ColumnName, col.DataType);
                         prevTableInval.Columns.Add(col.ColumnName, col.DataType);
                         prevTableDeces.Columns.Add(col.ColumnName, col.DataType);
-                        prevTableAutres.Columns.Add(col.ColumnName, col.DataType);                        
+                        prevTableAutres.Columns.Add(col.ColumnName, col.DataType);
                     }
                 }
                 else if (prevProvSheet == C.ePrevProv.Prov)
@@ -1090,7 +1802,7 @@ namespace CompteResultat.BL
                     dateProv, matricule, pm, pmPassage, psap, pmMgdc, psi});
 
                     foreach (DataColumn col in prevTableProv.Columns)
-                    {                        
+                    {
                         prevTableProvIncap.Columns.Add(col.ColumnName, col.DataType);
                         prevTableProvInval.Columns.Add(col.ColumnName, col.DataType);
                         prevTableProvDeces.Columns.Add(col.ColumnName, col.DataType);
@@ -1124,12 +1836,12 @@ namespace CompteResultat.BL
                     bool motifClotureIsInval = false;
                     bool natureSinistreIsInval = false;
 
-                    if (sin.MotifClo !=null)
+                    if (sin.MotifClo != null)
                         motifClotureIsInval = sin.MotifClo.ToLower().Contains("inval") ? true : false;
 
                     newRow["CLIENT"] = sin.Company;
-                    newRow["CONTRAT"] = sin.ContractId;                    
-                    newRow["LIBCOL"] = sin.CodeCol;                    
+                    newRow["CONTRAT"] = sin.ContractId;
+                    newRow["LIBCOL"] = sin.CodeCol;
 
                     newRow["Date Sinistre"] = sin.DateSinistre.HasValue ? sin.DateSinistre.Value : (object)DBNull.Value;
                     newRow["ANNESIN"] = sin.DateSinistre.HasValue ? sin.DateSinistre.Value.Year : (object)DBNull.Value;
@@ -1160,7 +1872,7 @@ namespace CompteResultat.BL
                         newRow["TRANCHE AGE"] = al.Label;
 
                     string title = sin.Title != null ? sin.Title : "mr";
-                    if (title.ToLower() == "mr" || title.ToLower()=="m") title = "Masculin"; else title = "Féminin";
+                    if (title.ToLower() == "mr" || title.ToLower() == "m") title = "Masculin"; else title = "Féminin";
 
                     newRow["SEXE"] = title;
 
@@ -1171,7 +1883,7 @@ namespace CompteResultat.BL
                     int days = 0;
                     if (sin.DateClo.HasValue && sin.DateSinistre.HasValue)
                     {
-                        days = (int)(sin.DateClo.Value - sin.DateSinistre.Value).TotalDays;                        
+                        days = (int)(sin.DateClo.Value - sin.DateSinistre.Value).TotalDays;
                     }
                     // AM le 14 01 2019
                     if (days < 0)
@@ -1222,7 +1934,7 @@ namespace CompteResultat.BL
                     else
                         newRow["Nbj Inval"] = (object)DBNull.Value;
 
-                    
+
                     //Test Code 
                     //if (dossier == "8954")
                     //{
@@ -1231,11 +1943,11 @@ namespace CompteResultat.BL
 
                     //decimal presta1 = DecomptePrev.GetSumPrestaForDossier(dossier, dateArret);
                     //presta = DecomptePrev.GetSumPrestaForDossierFromSP(dossier, dateArret);
-                    var res = decPrevReduced.Where(d => d.Dossier == dossier && d.DatePayement <= dateArret && d.DateSin == sin.DateSinistre).Sum(d => d.Total);                    
+                    var res = decPrevReduced.Where(d => d.Dossier == dossier && d.DatePayement <= dateArret && d.DateSin == sin.DateSinistre && d.CauseSinistre == sin.NatureSinistre).Sum(d => d.Total);
                     presta = res.HasValue ? res.Value : 0;
 
-                    newRow["PRESTATION"] = presta; 
-                    
+                    newRow["PRESTATION"] = presta;
+
                     newRow["PROVISION"] = (object)DBNull.Value;
 
                     newRow["DOSSIER"] = dossier;
@@ -1244,21 +1956,21 @@ namespace CompteResultat.BL
                     newRow["Prénom"] = sin.Firstname;
 
                     if (title.ToLower() == "masculin") title = "H"; else title = "F";
-                    newRow["Sexe (H/F)"] = title;                    
-                    
-                    newRow["Date de Resiliation"] = dateArret;                     
+                    newRow["Sexe (H/F)"] = title;
+
+                    newRow["Date de Resiliation"] = dateArret;
                     newRow["Date de Naissance2"] = sin.Birthdate.HasValue ? sin.Birthdate.Value : (object)DBNull.Value;
-                    newRow["Date d'entrée en Incapacité"] = sin.DateSinistre.HasValue ? sin.DateSinistre.Value : (object)DBNull.Value;                                        
+                    newRow["Date d'entrée en Incapacité"] = sin.DateSinistre.HasValue ? sin.DateSinistre.Value : (object)DBNull.Value;
                     newRow["Franchise en Mois pour l'incapacité"] = 0;
                     newRow["Durée de la prestation d'incapacité en mois"] = 36;
                     newRow["incapacité avec Passage en invalidité Oui/Non (O/N)"] = "O";
 
-                    
+
                     if (motifClotureIsInval)
                         // AM le 14 01 2019
                         //newRow["Date d'entrée en Invalidité"] = sin.DateClo.HasValue ? sin.DateClo.Value : (object)DBNull.Value;
                         // AM le 14 01 2019
-                        newRow["Date d'entrée en Invalidité"] = sin.DateSinistre.HasValue ? sin.DateSinistre.Value : (object)DBNull.Value; 
+                        newRow["Date d'entrée en Invalidité"] = sin.DateSinistre.HasValue ? sin.DateSinistre.Value : (object)DBNull.Value;
                     else
                         newRow["Date d'entrée en Invalidité"] = (object)DBNull.Value;
 
@@ -1269,17 +1981,17 @@ namespace CompteResultat.BL
                     //presta = res.HasValue ? res.Value : 0;
 
                     double? sumTotals = decPrevReduced.Where(d => d.Dossier == dossier && d.DatePayement < dateArret && d.FinSin.HasValue && d.DebSin.HasValue && d.Total.HasValue)
-                        .Sum(d => d.Total );
+                        .Sum(d => d.Total);
 
                     int sumDays = decPrevReduced.Where(d => d.Dossier == dossier && d.DatePayement < dateArret && d.FinSin.HasValue && d.DebSin.HasValue && d.Total.HasValue)
                         .Sum(d => (int)((d.FinSin.Value - d.DebSin.Value).TotalDays + 1));
 
                     if (sumTotals.HasValue && sumDays > 0 && sumTotals > 0)
-                        presta = sumTotals.Value / sumDays * 365;                    
+                        presta = sumTotals.Value / sumDays * 365;
 
                     newRow["Prestation annualisée pour l'incapacité ou l'invalidité"] = presta;
-                   
-                    
+
+
                     newRow["Franchise en années pour l'invalidité"] = 0;
 
                     newRow["Montant du Capital Décès"] = 0;
@@ -1288,9 +2000,9 @@ namespace CompteResultat.BL
                         newRow["Montant du Capital Décès"] = 0;
                         newRow["Prestation annualisée pour l'incapacité ou l'invalidité"] = 0;
                     }
-                                        
+
                     newRow["Catégorie d'invalidité(1 , 2 ou 3)"] = 1;
-                    
+
                     //var maxDate = DecomptePrev.GetDateMaxForDossier(dossier, dateArret);                    
                     //var maxDate = DecomptePrev.GetDateMaxForDossierFromSP(dossier, dateArret);
 
@@ -1357,10 +2069,10 @@ namespace CompteResultat.BL
 
                             newRow["Date Provision"] = sin.DateProvision;
                             newRow["Matricule"] = sin.Matricule;
-                            newRow["Pm"] = dPm; 
+                            newRow["Pm"] = dPm;
                             newRow["PmPassage"] = dPmPassage;  // sin.PmPassage;
-                            newRow["Psap"] = dPsap; 
-                            newRow["PmMgdc"] = dPmMgdc; 
+                            newRow["Psap"] = dPsap;
+                            newRow["PmMgdc"] = dPmMgdc;
                             newRow["Psi"] = dPsi;
 
                             newRow["PROVISION"] = dPm + dPmPassage + dPsap + dPmMgdc + dPsi;
@@ -1404,7 +2116,7 @@ namespace CompteResultat.BL
                             }
                         }
                     }
-                } 
+                }
 
                 using (ExcelPackage pck = new ExcelPackage(excelFilePath))
                 {
@@ -1484,67 +2196,51 @@ namespace CompteResultat.BL
             }
         }
 
-        public static void FillDemoSheet(FileInfo excelFilePath, string assurNameList, string parentCompanyNameList, string companyNameList, string contrNameList, 
-            DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, int yearsToCalc, bool reportWithOption)
+        private static DataTable CreateGlobalTablePrev(C.eReportTypes reportType)
         {
             try
             {
-                List<CDemoData> myDemoData = new List<CDemoData>();
-                List<CDemoData> yearDemoData;
+                DataTable myTable = new DataTable();
 
-                List<CDemoDataWithoutOption> myDemoDataWO = new List<CDemoDataWithoutOption>();
-                List<CDemoDataWithoutOption> yearDemoDataWO;
+                DataColumn Assureur = new DataColumn("Assureur", typeof(string));
+                DataColumn ContractId = new DataColumn("ContractId", typeof(string));
+                DataColumn Company = new DataColumn("Company", typeof(string));
+                DataColumn Subsid = new DataColumn("Subsid", typeof(string));
+                DataColumn YearSurv = new DataColumn("YearSurv", typeof(int));
+                DataColumn TypeSinistre = new DataColumn("TypeSinistre", typeof(string));
+                DataColumn Prestations = new DataColumn("Prestations", typeof(decimal));
 
-                //certain report templates will require data for more than 1 year, take this into account
-                DateTime debutNew;
-                DateTime finNew;
+                DataColumn Provisions = new DataColumn("Provisions", typeof(decimal));
+                DataColumn PSI = new DataColumn("PSI", typeof(decimal));
+                DataColumn TotalProvisions = new DataColumn("TotalProvisions", typeof(decimal));
 
-                int years = 0;
-                //for (int years = 0; years < yearsToCalc; years++)
-                //{
-                    debutNew = new DateTime(debutPeriod.Year - years, debutPeriod.Month, debutPeriod.Day);
-                    finNew = new DateTime(finPeriod.Year - years, finPeriod.Month, finPeriod.Day);
+                DataColumn CotBrute = new DataColumn("CotBrute", typeof(decimal));
+                DataColumn TauxChargement = new DataColumn("TauxChargement", typeof(decimal));
+                DataColumn CotNet = new DataColumn("CotNet", typeof(decimal));
+                DataColumn Ratio = new DataColumn("Ratio", typeof(decimal));
+                DataColumn GainLoss = new DataColumn("GainLoss", typeof(decimal));
+                DataColumn DateArret = new DataColumn("DateArret", typeof(DateTime));
 
-                    if (!reportWithOption)
-                    {
-                        //standard SP without option data
-                        yearDemoDataWO = Demography.GetDemoDataWithoutOptionFromSP(assurNameList, parentCompanyNameList, companyNameList, contrNameList, debutNew, finNew);
-                        myDemoDataWO.AddRange(yearDemoDataWO);
-                    }
-                    else
-                    {
-                        yearDemoData = Demography.GetDemoDataFromSP(assurNameList, parentCompanyNameList, companyNameList, contrNameList, debutNew, finNew);
-                        myDemoData.AddRange(yearDemoData);
-                    }
-                //}                               
+                myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, Subsid, YearSurv, TypeSinistre, Prestations, Provisions, PSI, TotalProvisions, CotBrute, TauxChargement, CotNet, Ratio, GainLoss,
+                    DateArret, ContractId });
 
-                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
-                {
-                    pck.Workbook.Worksheets[C.cEXCELDEMO].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
-
-                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELDEMO];
-
-                    if (!reportWithOption)
-                    {
-                        ws.Cells["A2"].LoadFromCollection(myDemoDataWO);
-                    }
-                    else
-                    {
-                        ws.Cells["A2"].LoadFromCollection(myDemoData);
-                    }
-
-                    pck.Save();
-                }
+                return myTable;
             }
             catch (Exception ex)
             {
-                log.Error("Error :: FillDemoSheet : " + ex.Message);
+                log.Error("Error :: CreatePrestaPrevExpTable : " + ex.Message);
                 throw ex;
             }
+
         }
 
+        #endregion
+
+
+        #region COMMON TABS SANTE PREVOYANCE
+
         public static void FillCotSheet(FileInfo excelFilePath, string assurNameList, string parentCompanyNameList, string companyNameList, string contrNameList, string college, DateTime debutPeriod, 
-            DateTime finPeriod, DateTime dateArret, int yearsToCalc, C.eReportTemplateTypes templateType)
+            DateTime finPeriod, DateTime dateArret, int yearsToCalc, C.eReportTemplateTypes templateType, C.eTypeComptes typeComptes)
         {
             try
             {                
@@ -1649,270 +2345,7 @@ namespace CompteResultat.BL
                 throw ex;
             }
         }
-
-        public static void FillPrestSheet(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData, bool reportWithOption)
-        {
-            try
-            {
-                if(reportWithOption)
-                    CollectPrestaData2(excelFilePath, crp, myPrestData, C.eExcelSheetPrestaData.Prestation);
-                else
-                    CollectPrestaData(excelFilePath, crp, myPrestData, C.eExcelSheetPrestaData.Prestation);
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error :: FillPrestSheet : " + ex.Message);
-                throw ex;
-            }
-        }
-
-        public static void FillExperienceSheet(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData)
-        {
-            try
-            {                
-                CollectPrestaData(excelFilePath, crp, myPrestData, C.eExcelSheetPrestaData.Experience);
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error :: FillExperienceSheet : " + ex.Message);
-                throw ex;
-            }
-        }
-
-        //this is a temporary solution => get data from table _TempExpData and send them to excel
-        public static void FillExperienceSheet2(FileInfo excelFilePath, DateTime debutPeriod, DateTime finPeriod)
-        {
-            try
-            {
-                //List<C_TempExpData> expData = new List<C_TempExpData>();
-                //expData = C_TempExpData.GetExpData(debutPeriod.Year);
-
-                List<C_TempExpData> expData = C_TempExpData.GetExpData(debutPeriod.Year, finPeriod.Year);
-
-                var expDataWithoutId = expData.Select(e => new
-                {
-                    Au = e.Au,
-                    Contrat = e.Contrat.Trim(),
-                    Codcol = e.CodCol.Trim(),
-                    AnneeExp = e.AnneeExp,
-                    Libacte = e.LibActe.Trim(),
-                    Libfam = e.LibFam.Trim(),
-                    TypeCas = e.TypeCas.Trim(),
-                    NbrActe = e.NombreActe,
-                    FR = e.Fraisreel,
-                    RSS = e.Rembss,
-                    Rannexe = e.RembAnnexe,
-                    Rnous = e.RembNous,
-                    Res = e.Reseau.Trim(),
-                    Minfr = e.MinFr,
-                    Maxfr = e.MaxFr,
-                    Minnous = e.MinNous,
-                    Maxnous = e.MaxNous
-                });
-
-                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
-                {
-                    pck.Workbook.Worksheets[C.cEXCELEXP].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
-
-                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELEXP];
-
-                    ws.Cells["A2"].LoadFromCollection(expDataWithoutId);
-
-                    pck.Save();
-                }
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error :: FillExperienceSheet2 : " + ex.Message);
-                throw ex;
-            }
-        }
-
-        public static void FillProvisionSheet(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData)
-        {
-            try
-            {
-                CollectPrestaData(excelFilePath, crp, myPrestData, C.eExcelSheetPrestaData.Provision);
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error :: FillProvisionSheet : " + ex.Message);
-                throw ex;
-            }
-        }
-
-        public static void FillQuartileSheet(FileInfo excelFilePath, List<PrestSante> myPrestData)
-        {
-            try
-            {
-                //create the table that holds the values for the quartiles
-                DataTable quartileTable = new DataTable();
-
-                DataColumn min = new DataColumn("MIN", typeof(decimal));
-                DataColumn max = new DataColumn("MAX", typeof(decimal));
-                DataColumn q1 = new DataColumn("Q1", typeof(decimal));
-                DataColumn q2 = new DataColumn("Q2", typeof(decimal));
-                DataColumn q3 = new DataColumn("Q3", typeof(decimal));
-                DataColumn q4 = new DataColumn("Q4", typeof(decimal));
-                DataColumn avg = new DataColumn("AVG", typeof(decimal));
-
-                quartileTable.Columns.AddRange(new DataColumn[] { min, max, q1, q2, q3, q4, avg });
-
-                //get garanty names to be treated
-                List<string> garantyList = new List<string>();
-                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
-                {
-                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELQUARTILE];
-
-                    //### get only values for Garanty Names: Second row, first column
-                    for (int row = 2; row <= ws.Dimension.End.Row; row++)
-                    {
-                        if(ws.Cells[row, 3].Value != null)
-                            garantyList.Add(ws.Cells[row, 3].Value.ToString());
-                    }
-                }
-
-                foreach (string gar in garantyList)
-                {
-                    DataRow newRow = quartileTable.NewRow();
-
-                    List<double> fraisReelList;
-
-                    //the first case is no longer needed
-                    if (gar.ToUpper().Contains("PROTHESES DENTAIRES ACCEPTEES  --- no longer needed"))
-                    {
-                       fraisReelList = myPrestData.Where(p => p.GarantyName.ToString().ToLower() == gar.ToLower() && p.FraisReel > 0 && p.PrixUnit == 107.5).
-                       OrderBy(p => p.FraisReel.Value).
-                       Select(p => p.FraisReel.Value / p.NombreActe.Value).ToList();
-                    }
-                    else
-                    {
-                       fraisReelList = myPrestData.Where(p => p.GarantyName.ToString().ToLower() == gar.ToLower() && p.FraisReel > 0 ).
-                       OrderBy(p => p.FraisReel.Value).
-                       Select(p => p.FraisReel.Value / p.NombreActe.Value).ToList();
-                    }                    
-
-                    int totalElements = fraisReelList.Count();
-                    if (totalElements > 0)
-                    {
-                        double maxVal = fraisReelList.Max();
-                        double minVal = fraisReelList.Min();
-                        double avgVal = fraisReelList.Average();
-
-                        int posQ1 = totalElements * C.cQuartile1 / 100;
-                        int posQ2 = totalElements * C.cQuartile2 / 100;
-                        int posQ3 = totalElements * C.cQuartile3 / 100;
-                        int posQ4 = totalElements * C.cQuartile4 / 100;
-                        
-                        newRow["MIN"] = minVal;
-                        newRow["MAX"] = maxVal;
-                        newRow["Q1"] = totalElements > posQ1 ? fraisReelList[posQ1] : 0;
-                        newRow["Q2"] = totalElements > posQ1 ? fraisReelList[posQ2] : 0;
-                        newRow["Q3"] = totalElements > posQ1 ? fraisReelList[posQ3] : 0;
-                        newRow["Q4"] = totalElements > posQ1 ? fraisReelList[posQ4] : 0;
-                        newRow["AVG"] = avgVal;
-
-                        quartileTable.Rows.Add(newRow);
-                    }
-                    else
-                    {
-                        //throw new Exception("THe Excel sheet for 'Quartiles' cannot be created, because no values were found for the following garanty: " + gar );
-
-                        newRow["MIN"] = 0;
-                        newRow["MAX"] = 0;
-                        newRow["Q1"] = 0;
-                        newRow["Q2"] = 0;
-                        newRow["Q3"] = 0;
-                        newRow["Q4"] = 0;
-                        newRow["AVG"] = 0;
-
-                        quartileTable.Rows.Add(newRow);
-                    }
-                }
-
-                //save data to Excel
-                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
-                {
-                    //pck.Workbook.Worksheets[C.cEXCELQUARTILE].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
-
-                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELQUARTILE];
-                    ws.Cells["D2"].LoadFromDataTable(quartileTable, false);
-                    pck.Save();
-                }
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error :: FillQuartileSheet : " + ex.Message);
-                throw ex;
-            }
-        }
-
-        public static void FillAffichageSheet(FileInfo excelFilePath, string assur)
-        {
-            try
-            {
-                //create the table that holds the values for the quartiles
-                DataTable affTable = new DataTable();
-                DataTable affTable2 = new DataTable();
-
-                //DataColumn order = new DataColumn("ORDER", typeof(int));
-                DataColumn assureur = new DataColumn("ASSUREUR", typeof(string));
-                DataColumn group = new DataColumn("GROUP", typeof(string));
-                DataColumn garanty = new DataColumn("GARANTY", typeof(string));
-                DataColumn assureur2 = new DataColumn("ASSUREUR", typeof(string));
-                DataColumn group2 = new DataColumn("GROUP", typeof(string));
-
-                affTable.Columns.AddRange(new DataColumn[] { assureur, group, garanty });
-                affTable2.Columns.AddRange(new DataColumn[] { assureur2, group2 });
-
-                var uniqueGGList = GroupGarantySante.GetUniqueGroupsAndGarantiesForAssureur(assur);
-                var uniqueAGList = GroupGarantySante.GetUniqueAssureurAndGroups(assur);
-
-                if (uniqueGGList.Any())
-                {
-                    foreach (var elem in uniqueGGList)
-                    {
-                        DataRow newRow = affTable.NewRow();
-
-                        newRow["ASSUREUR"] = elem.AssureurName;
-                        newRow["GROUP"] = elem.GroupName;
-                        newRow["GARANTY"] = elem.GarantyName;
-                        
-                        affTable.Rows.Add(newRow);
-                    }
-                }
-
-                if (uniqueAGList.Any())
-                {
-                    foreach (var elem in uniqueAGList)
-                    {
-                        DataRow newRow2 = affTable2.NewRow();
-
-                        newRow2["ASSUREUR"] = elem.AssureurName;
-                        newRow2["GROUP"] = elem.GroupName;
-                        
-                        affTable2.Rows.Add(newRow2);
-                    }
-                }
-
-                //save data to Excel
-                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
-                {
-                    pck.Workbook.Worksheets[C.cEXCELGROUPGARANT].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
-
-                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELGROUPGARANT];
-                    ws.Cells["A2"].LoadFromDataTable(affTable, false);
-                    ws.Cells["E2"].LoadFromDataTable(affTable2, false);
-                    pck.Save();
-                }
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error :: FillPrevSheet : " + ex.Message);
-                throw ex;
-            }
-        }
-
+       
         public static void FillDates(FileInfo excelFilePath, DateTime dateArret, DateTime debutPeriode, DateTime finPeriode,
             double? TaxDef, double? TaxAct, double? TaxPer, bool? calculProvision, int numberTopPerteLoss = 0)
         {
@@ -2017,161 +2450,10 @@ namespace CompteResultat.BL
             }
         }
 
+        #endregion
 
-        //### this is almost a duplicate of the Method: CollectPrestaData
-        // this needs to be cleaned up and improved
-        private static void CollectPrestaData2(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData, C.eExcelSheetPrestaData excelSheet)
-        {
-            try
-            {
-                string myExcelSheet = C.cEXCELPRESTWITHOPTION;
-                List<Cadencier> cadencierAll = new List<Cadencier>();               
-
-                DataTable prestaTable = CreatePrestaPrevExpTable(myExcelSheet);
-
-                //CodeCol = p.Select(pr=>pr.CodeCol).First(),
-                List<ExcelPrestaSheet> excelPrestDataSmall = myPrestData
-                           .GroupBy(p => new
-                           {
-                               DateSoinsYear = p.DateSoins.Value.Year,
-                               p.GroupName,
-                               p.GarantyName,
-                               CAS2 = p.CAS.ToLower() == "true" ? "VRAI" : "FAUX",
-                               RES = String.IsNullOrEmpty(p.Reseau) ? "FAUX" : "VRAI"
-                           })
-                           .Select(p => new ExcelPrestaSheet
-                           {
-                               DateVision = new DateTime(1900, 01, 01),
-                               ContractId = "XXXXX",
-                               CodeCol = "XXXXX", // p.Select(pr=>pr.CodeCol).First(),
-                               DateSoins = new DateTime(p.Key.DateSoinsYear, 1, 1),
-                               GroupName = p.Key.GroupName,
-                               GarantyName = p.Key.GarantyName,
-                               CAS = p.Key.CAS2,
-                               NombreActe = p.Sum(pr => pr.NombreActe),  //.Where(pr => pr.NombreActe >= 0)
-                               FraisReel = p.Sum(pr => pr.FraisReel),
-                               RembSS = p.Sum(pr => pr.RembSS),
-                               RembAnnexe = p.Sum(pr => pr.RembAnnexe),
-                               RembNous = p.Sum(pr => pr.RembNous),
-                               Reseau = p.Key.RES,
-                               MinFR = p.Where(pr => pr.FraisReel >= 0).Min(pr => pr.FraisReel / pr.NombreActe),
-                               MaxFR = p.Where(pr => pr.FraisReel >= 0).Max(pr => pr.FraisReel / pr.NombreActe),
-                               MinNous = p.Where(pr => pr.RembNous >= 0).Min(pr => pr.RembNous / pr.NombreActe),
-                               MaxNous = p.Where(pr => pr.RembNous >= 0).Max(pr => pr.RembNous / pr.NombreActe)                               
-                           })
-                           //.Where(p => p.GarantyName == "LENTILLES")
-                           .OrderBy(gr => gr.GroupName).ThenBy(ga => ga.GarantyName)
-                           .ToList();
-
-                List<ExcelPrestaSheet> excelPrestDataLarge = myPrestData
-                           .GroupBy(p => new
-                           {
-                               p.DateVision,
-                               p.ContractId,
-                               p.CodeCol,
-                               DateSoinsYear = p.DateSoins.Value.Year,
-                               p.GroupName,
-                               p.GarantyName,
-                               CAS2 = p.CAS.ToLower() == "true" ? "VRAI" : "FAUX",
-                               RES = String.IsNullOrEmpty(p.Reseau) ? "FAUX" : "VRAI",
-                               p.BO1,
-                               p.BO2
-                           })
-                           .Select(p => new ExcelPrestaSheet
-                           {
-                               DateVision = p.Key.DateVision,
-                               ContractId = p.Key.ContractId,
-                               CodeCol = p.Key.CodeCol,
-                               DateSoins = new DateTime(p.Key.DateSoinsYear, 1, 1),
-                               GroupName = p.Key.GroupName,
-                               GarantyName = p.Key.GarantyName,
-                               CAS = p.Key.CAS2,
-                               NombreActe = p.Sum(pr => pr.NombreActe),  //.Where(pr => pr.NombreActe >= 0)
-                               FraisReel = p.Sum(pr => pr.FraisReel),
-                               RembSS = p.Sum(pr => pr.RembSS),
-                               RembAnnexe = p.Sum(pr => pr.RembAnnexe),
-                               RembNous = p.Sum(pr => pr.RembNous),
-                               Reseau = p.Key.RES,
-                               MinFR = p.Where(pr => pr.FraisReel >= 0).Min(pr => pr.FraisReel / pr.NombreActe),
-                               MaxFR = p.Where(pr => pr.FraisReel >= 0).Max(pr => pr.FraisReel / pr.NombreActe),
-                               MinNous = p.Where(pr => pr.RembNous >= 0).Min(pr => pr.RembNous / pr.NombreActe),
-                               MaxNous = p.Where(pr => pr.RembNous >= 0).Max(pr => pr.RembNous / pr.NombreActe),
-                               BO1 = p.Key.BO1,
-                               BO2 = p.Key.BO2
-                           })
-                           //.Where(p => p.GarantyName == "LENTILLES")
-                           .OrderBy(gr => gr.GroupName).ThenBy(ga => ga.GarantyName)
-                           .ToList();
-
-
-                //### create 2 lists => iterate through large list (with college) and replace all calc fields (min, max...) with calc fields from 
-                // corresponding line in small list (use 5 key fields)
-                // var item = smallList.FirstOrDefault(o => o.GroupName == groupName && ...);
-                //if (item != null)
-                //    item.value = "Value";
-
-                foreach (ExcelPrestaSheet dat in excelPrestDataLarge)
-                {
-                    var item = excelPrestDataSmall.FirstOrDefault(i => i.DateSoins == dat.DateSoins && i.GroupName == dat.GroupName && i.GarantyName == dat.GarantyName
-                        && i.CAS == dat.CAS && i.Reseau == dat.Reseau);
-
-                    if (item != null)
-                    {
-                        dat.MinFR = item.MinFR;
-                        dat.MaxFR = item.MaxFR;
-                        dat.MinNous = item.MinNous;
-                        dat.MaxNous = item.MaxNous;
-
-                    }
-                }
-
-                //foreach (PrestSante prest in myPrestData)
-                foreach (ExcelPrestaSheet prest in excelPrestDataLarge)
-                {                    
-                    DataRow newRow = prestaTable.NewRow();
-
-                    newRow["ANNEESOIN"] = prest.DateSoins.HasValue ? prest.DateSoins.Value.Year : 0;
-                    newRow["AU"] = prest.DateVision.HasValue ? prest.DateVision.Value : (object)DBNull.Value;
-                    newRow["CONTRAT"] = prest.ContractId;
-                    newRow["CODCOL"] = prest.CodeCol;
-                    newRow["LIBACTE"] = prest.GarantyName;
-                    newRow["LIBFAM"] = prest.GroupName;
-                    
-                    newRow["NBREACTE"] = prest.NombreActe.HasValue ? prest.NombreActe : 0;
-                    newRow["FRAISREELS"] = prest.FraisReel.HasValue ? prest.FraisReel.Value : 0;
-                    newRow["REMBSS"] = prest.RembSS.HasValue ? prest.RembSS.Value : 0;
-                    newRow["REMBANNEXE"] = prest.RembAnnexe.HasValue ? prest.RembAnnexe.Value : 0;
-                    newRow["REMBNOUS"] = prest.RembNous.HasValue ? prest.RembNous.Value : 0;
-                    newRow["CASNONCAS"] = prest.CAS;
-                    newRow["RESEAU"] = prest.Reseau;
-                    newRow["MINFR"] = prest.MinFR.HasValue ? prest.MinFR.Value : 0;
-                    newRow["MAXFR"] = prest.MaxFR.HasValue ? prest.MaxFR.Value : 0;
-                    newRow["MINNOUS"] = prest.MinNous.HasValue ? prest.MinNous.Value : 0;
-                    newRow["MAXNOUS"] = prest.MaxNous.HasValue ? prest.MaxNous.Value : 0;
-
-                    newRow["BO1"] = prest.BO1;
-                    newRow["BO2"] = prest.BO2;
-
-
-                    prestaTable.Rows.Add(newRow);
-                }
-
-                //save to Excel
-                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
-                {
-                    pck.Workbook.Worksheets[C.cEXCELPREST].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
-
-                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELPREST];
-                    ws.Cells["A2"].LoadFromDataTable(prestaTable, false);
-                    pck.Save();
-                }
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error :: CollectPrestaData2 : " + ex.Message);
-                throw ex;
-            }
-        }
+                
+        #region PRESTA => SANTE
 
         public static List<ExcelPrestaSheet> GenerateModifiedPrestDataComplete()
         {
@@ -2229,117 +2511,7 @@ namespace CompteResultat.BL
             }
 
         }
-
-        public static List<ExcelPrestaSheet> GenerateModifiedPrestData(List<PrestSante> myPrestData)
-        {
-            try
-            {
-                //CodeCol = p.Select(pr=>pr.CodeCol).First(),
-                List<ExcelPrestaSheet> excelPrestDataSmall = myPrestData
-                           .GroupBy(p => new
-                           {
-                               DateSoinsYear = p.DateSoins.Value.Year,
-                               p.GroupName,
-                               p.GarantyName,
-                               CAS2 = p.CAS.ToLower() == "true" ? "VRAI" : "FAUX",
-                               RES = String.IsNullOrEmpty(p.Reseau) ? "FAUX" : "VRAI"
-                           })
-                           .Select(p => new ExcelPrestaSheet
-                           {
-                               //add assureur
-                               AssureurName = p.Select(pr=>pr.AssureurName).First(),
-                               DateVision = new DateTime(1900, 01, 01),
-                               ContractId = "XXXXX",
-                               CodeCol = "XXXXX", // p.Select(pr=>pr.CodeCol).First(),
-                               DateSoins = new DateTime(p.Key.DateSoinsYear, 1, 1),
-                               GroupName = p.Key.GroupName,
-                               GarantyName = p.Key.GarantyName,
-                               CAS = p.Key.CAS2,
-                               NombreActe = p.Sum(pr => pr.NombreActe),  //.Where(pr => pr.NombreActe >= 0)
-                               FraisReel = p.Sum(pr => pr.FraisReel),
-                               RembSS = p.Sum(pr => pr.RembSS),
-                               RembAnnexe = p.Sum(pr => pr.RembAnnexe),
-                               RembNous = p.Sum(pr => pr.RembNous),
-                               Reseau = p.Key.RES,
-                               MinFR = p.Where(pr => pr.FraisReel >= 0).Min(pr => pr.FraisReel / pr.NombreActe),
-                               MaxFR = p.Where(pr => pr.FraisReel >= 0).Max(pr => pr.FraisReel / pr.NombreActe),
-                               MinNous = p.Where(pr => pr.RembNous >= 0).Min(pr => pr.RembNous / pr.NombreActe),
-                               MaxNous = p.Where(pr => pr.RembNous >= 0).Max(pr => pr.RembNous / pr.NombreActe)
-                           })
-                           //.Where(p => p.GarantyName == "LENTILLES")
-                           .OrderBy(gr => gr.GroupName).ThenBy(ga => ga.GarantyName)
-                           .ToList();
-
-                List<ExcelPrestaSheet> excelPrestDataLarge = myPrestData
-                           .GroupBy(p => new
-                           {
-                               p.DateVision,
-                               p.ContractId,
-                               p.CodeCol,
-                               DateSoinsYear = p.DateSoins.Value.Year,
-                               p.GroupName,
-                               p.GarantyName,
-                               CAS2 = p.CAS.ToLower() == "true" ? "VRAI" : "FAUX",
-                               RES = String.IsNullOrEmpty(p.Reseau) ? "FAUX" : "VRAI"
-                           })
-                           .Select(p => new ExcelPrestaSheet
-                           {
-                               AssureurName = p.Select(pr => pr.AssureurName).First(),
-                               DateVision = p.Key.DateVision,
-                               ContractId = p.Key.ContractId,
-                               CodeCol = p.Key.CodeCol,
-                               DateSoins = new DateTime(p.Key.DateSoinsYear, 1, 1),
-                               GroupName = p.Key.GroupName,
-                               GarantyName = p.Key.GarantyName,
-                               CAS = p.Key.CAS2,
-                               NombreActe = p.Sum(pr => pr.NombreActe),  //.Where(pr => pr.NombreActe >= 0)
-                               FraisReel = p.Sum(pr => pr.FraisReel),
-                               RembSS = p.Sum(pr => pr.RembSS),
-                               RembAnnexe = p.Sum(pr => pr.RembAnnexe),
-                               RembNous = p.Sum(pr => pr.RembNous),
-                               Reseau = p.Key.RES,
-                               MinFR = p.Where(pr => pr.FraisReel >= 0).Min(pr => pr.FraisReel / pr.NombreActe),
-                               MaxFR = p.Where(pr => pr.FraisReel >= 0).Max(pr => pr.FraisReel / pr.NombreActe),
-                               MinNous = p.Where(pr => pr.RembNous >= 0).Min(pr => pr.RembNous / pr.NombreActe),
-                               MaxNous = p.Where(pr => pr.RembNous >= 0).Max(pr => pr.RembNous / pr.NombreActe)
-                           })
-                           //.Where(p => p.GarantyName == "LENTILLES")
-                           .OrderBy(gr => gr.GroupName).ThenBy(ga => ga.GarantyName)
-                           .ToList();
-
-
-                //### create 2 lists => iterate through large list (with college) and replace all calc fields (min, max...) with calc fields from 
-                // corresponding line in small list (use 5 key fields)
-                // var item = smallList.FirstOrDefault(o => o.GroupName == groupName && ...);
-                //if (item != null)
-                //    item.value = "Value";
-
-                foreach (ExcelPrestaSheet dat in excelPrestDataLarge)
-                {
-                    var item = excelPrestDataSmall.FirstOrDefault(i => i.DateSoins == dat.DateSoins && i.GroupName == dat.GroupName && i.GarantyName == dat.GarantyName
-                        && i.CAS == dat.CAS && i.Reseau == dat.Reseau);
-
-                    if (item != null)
-                    {
-                        dat.MinFR = item.MinFR;
-                        dat.MaxFR = item.MaxFR;
-                        dat.MinNous = item.MinNous;
-                        dat.MaxNous = item.MaxNous;
-
-                    }
-                }
-
-                return excelPrestDataLarge;
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error :: GenerateModifiedPrestData : " + ex.Message);
-                throw ex;
-            }
-
-        }
-                 
-
+        
         private static void CollectPrestaData(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData, C.eExcelSheetPrestaData excelSheet)
         {
             try
@@ -2457,6 +2629,115 @@ namespace CompteResultat.BL
             }
         }
 
+        private static List<ExcelPrestaSheet> GenerateModifiedPrestData(List<PrestSante> myPrestData)
+        {
+            try
+            {
+                //CodeCol = p.Select(pr=>pr.CodeCol).First(),
+                List<ExcelPrestaSheet> excelPrestDataSmall = myPrestData
+                           .GroupBy(p => new
+                           {
+                               DateSoinsYear = p.DateSoins.Value.Year,
+                               p.GroupName,
+                               p.GarantyName,
+                               CAS2 = p.CAS.ToLower() == "true" ? "VRAI" : "FAUX",
+                               RES = String.IsNullOrEmpty(p.Reseau) ? "FAUX" : "VRAI"
+                           })
+                           .Select(p => new ExcelPrestaSheet
+                           {
+                               //add assureur
+                               AssureurName = p.Select(pr => pr.AssureurName).First(),
+                               DateVision = new DateTime(1900, 01, 01),
+                               ContractId = "XXXXX",
+                               CodeCol = "XXXXX", // p.Select(pr=>pr.CodeCol).First(),
+                               DateSoins = new DateTime(p.Key.DateSoinsYear, 1, 1),
+                               GroupName = p.Key.GroupName,
+                               GarantyName = p.Key.GarantyName,
+                               CAS = p.Key.CAS2,
+                               NombreActe = p.Sum(pr => pr.NombreActe),  //.Where(pr => pr.NombreActe >= 0)
+                               FraisReel = p.Sum(pr => pr.FraisReel),
+                               RembSS = p.Sum(pr => pr.RembSS),
+                               RembAnnexe = p.Sum(pr => pr.RembAnnexe),
+                               RembNous = p.Sum(pr => pr.RembNous),
+                               Reseau = p.Key.RES,
+                               MinFR = p.Where(pr => pr.FraisReel >= 0).Min(pr => pr.FraisReel / pr.NombreActe),
+                               MaxFR = p.Where(pr => pr.FraisReel >= 0).Max(pr => pr.FraisReel / pr.NombreActe),
+                               MinNous = p.Where(pr => pr.RembNous >= 0).Min(pr => pr.RembNous / pr.NombreActe),
+                               MaxNous = p.Where(pr => pr.RembNous >= 0).Max(pr => pr.RembNous / pr.NombreActe)
+                           })
+                           //.Where(p => p.GarantyName == "LENTILLES")
+                           .OrderBy(gr => gr.GroupName).ThenBy(ga => ga.GarantyName)
+                           .ToList();
+
+                List<ExcelPrestaSheet> excelPrestDataLarge = myPrestData
+                           .GroupBy(p => new
+                           {
+                               p.DateVision,
+                               p.ContractId,
+                               p.CodeCol,
+                               DateSoinsYear = p.DateSoins.Value.Year,
+                               p.GroupName,
+                               p.GarantyName,
+                               CAS2 = p.CAS.ToLower() == "true" ? "VRAI" : "FAUX",
+                               RES = String.IsNullOrEmpty(p.Reseau) ? "FAUX" : "VRAI"
+                           })
+                           .Select(p => new ExcelPrestaSheet
+                           {
+                               AssureurName = p.Select(pr => pr.AssureurName).First(),
+                               DateVision = p.Key.DateVision,
+                               ContractId = p.Key.ContractId,
+                               CodeCol = p.Key.CodeCol,
+                               DateSoins = new DateTime(p.Key.DateSoinsYear, 1, 1),
+                               GroupName = p.Key.GroupName,
+                               GarantyName = p.Key.GarantyName,
+                               CAS = p.Key.CAS2,
+                               NombreActe = p.Sum(pr => pr.NombreActe),  //.Where(pr => pr.NombreActe >= 0)
+                               FraisReel = p.Sum(pr => pr.FraisReel),
+                               RembSS = p.Sum(pr => pr.RembSS),
+                               RembAnnexe = p.Sum(pr => pr.RembAnnexe),
+                               RembNous = p.Sum(pr => pr.RembNous),
+                               Reseau = p.Key.RES,
+                               MinFR = p.Where(pr => pr.FraisReel >= 0).Min(pr => pr.FraisReel / pr.NombreActe),
+                               MaxFR = p.Where(pr => pr.FraisReel >= 0).Max(pr => pr.FraisReel / pr.NombreActe),
+                               MinNous = p.Where(pr => pr.RembNous >= 0).Min(pr => pr.RembNous / pr.NombreActe),
+                               MaxNous = p.Where(pr => pr.RembNous >= 0).Max(pr => pr.RembNous / pr.NombreActe)
+                           })
+                           //.Where(p => p.GarantyName == "LENTILLES")
+                           .OrderBy(gr => gr.GroupName).ThenBy(ga => ga.GarantyName)
+                           .ToList();
+
+
+                //### create 2 lists => iterate through large list (with college) and replace all calc fields (min, max...) with calc fields from 
+                // corresponding line in small list (use 5 key fields)
+                // var item = smallList.FirstOrDefault(o => o.GroupName == groupName && ...);
+                //if (item != null)
+                //    item.value = "Value";
+
+                foreach (ExcelPrestaSheet dat in excelPrestDataLarge)
+                {
+                    var item = excelPrestDataSmall.FirstOrDefault(i => i.DateSoins == dat.DateSoins && i.GroupName == dat.GroupName && i.GarantyName == dat.GarantyName
+                        && i.CAS == dat.CAS && i.Reseau == dat.Reseau);
+
+                    if (item != null)
+                    {
+                        dat.MinFR = item.MinFR;
+                        dat.MaxFR = item.MaxFR;
+                        dat.MinNous = item.MinNous;
+                        dat.MaxNous = item.MaxNous;
+
+                    }
+                }
+
+                return excelPrestDataLarge;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: GenerateModifiedPrestData : " + ex.Message);
+                throw ex;
+            }
+
+        }
+
         private static DataTable CreatePrestaPrevExpTable(string myExcelSheet)
         {
             try
@@ -2507,234 +2788,8 @@ namespace CompteResultat.BL
 
         }
 
-        private static DataTable CreateGlobalTable(C.eReportTypes reportType)
-        {
-            try
-            {
-                DataTable myTable = new DataTable();
-
-                DataColumn Assureur = new DataColumn("Assureur", typeof(string));
-                DataColumn Company = new DataColumn("Company", typeof(string));
-                DataColumn Subsid = new DataColumn("Subsid", typeof(string));
-                DataColumn YearSurv = new DataColumn("YearSurv", typeof(int));
-                DataColumn RNous = new DataColumn("RNous", typeof(decimal));
-                DataColumn Provisions = new DataColumn("Provisions", typeof(decimal));
-                DataColumn CotBrut = new DataColumn("CotBrut", typeof(decimal));
-                DataColumn TauxChargement = new DataColumn("TauxChargement", typeof(decimal));                
-                //DataColumn TaxTotal = new DataColumn("TaxTotal", typeof(string));
-                DataColumn CotNet = new DataColumn("CotNet", typeof(decimal));
-                DataColumn Ratio = new DataColumn("Ratio", typeof(decimal));
-                DataColumn GainLoss = new DataColumn("GainLoss", typeof(decimal));
-                DataColumn CoeffCad = new DataColumn("CoeffCad", typeof(decimal));
-                DataColumn FR = new DataColumn("FR", typeof(decimal));
-                DataColumn RSS = new DataColumn("RSS", typeof(decimal));
-                DataColumn RAnnexe = new DataColumn("RAnnexe", typeof(decimal));                
-                //DataColumn TaxDefault = new DataColumn("TaxDefault", typeof(string));
-                //DataColumn TaxActive = new DataColumn("TaxActive", typeof(string));
-                DataColumn DateArret = new DataColumn("DateArret", typeof(DateTime));
-
-                DataColumn NumbEnt = new DataColumn("NumbEnt", typeof(int));
-                DataColumn NumbProd = new DataColumn("NumbProd", typeof(int));
-                DataColumn Prods = new DataColumn("Prods", typeof(string));
-                DataColumn NumbAssur = new DataColumn("NumbAssur", typeof(int));
-                DataColumn NumbConjoints = new DataColumn("NumbConjoints", typeof(int));
-                DataColumn NumbEnfants = new DataColumn("NumbEnfants", typeof(int));
-                DataColumn Comment = new DataColumn("Comment", typeof(string));
-
-
-                //myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, Subsid, YearSurv, FR, RSS, RAnnexe, RNous, Provisions, CoeffCad, CotBrut, TaxTotal, TaxDefault, TaxActive,
-                //    CotNet, Ratio, GainLoss, DateArret });
-
-                //with taxes
-                //myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, Subsid, YearSurv, RNous, Provisions, CotBrut, TaxTotal, CotNet, Ratio, GainLoss, CoeffCad,
-                //    FR, RSS, RAnnexe, TaxDefault, TaxActive, DateArret });
-                //without Taxes
-                if (reportType == C.eReportTypes.GlobalSynthese)
-                {
-                    myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, YearSurv, RNous, Provisions, CotBrut, TauxChargement, CotNet, Ratio, GainLoss, CoeffCad,
-                    FR, RSS, RAnnexe, DateArret, NumbEnt, NumbProd, Prods, NumbAssur, NumbConjoints, NumbEnfants, Comment });
-                }
-                else
-                {
-                    myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, Subsid, YearSurv, RNous, Provisions, CotBrut, TauxChargement, CotNet, Ratio, GainLoss, CoeffCad,
-                    FR, RSS, RAnnexe, DateArret });
-                }
-
-                //if (reportType == C.eReportTypes.GlobalEnt)
-                //    myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, YearSurv, FR, RSS, RAnnexe, RNous, Provisions, CoeffCad, CotBrut, TaxTotal, TaxDefault, TaxActive,
-                //    CotNet, Ratio, GainLoss, DateArret });
-                //else if (reportType == C.eReportTypes.GlobalSubsid)
-                //    myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, Subsid, YearSurv, FR, RSS, RAnnexe, RNous, Provisions, CoeffCad, CotBrut, TaxTotal, TaxDefault, TaxActive,
-                //    CotNet, Ratio, GainLoss, DateArret });
-
-                return myTable;
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error :: CreatePrestaPrevExpTable : " + ex.Message);
-                throw ex;
-            }
-
-        }
-
-        private static DataTable CreateGlobalTablePrev(C.eReportTypes reportType)
-        {
-            try
-            {
-                DataTable myTable = new DataTable();
-
-                DataColumn Assureur = new DataColumn("Assureur", typeof(string));
-                DataColumn Company = new DataColumn("Company", typeof(string));
-                DataColumn Subsid = new DataColumn("Subsid", typeof(string));
-                DataColumn YearSurv = new DataColumn("YearSurv", typeof(int));
-                DataColumn TypeSinistre = new DataColumn("TypeSinistre", typeof(string));
-                DataColumn Prestations = new DataColumn("Prestations", typeof(decimal));
-                DataColumn Provisions = new DataColumn("Provisions", typeof(decimal));
-                DataColumn CotBrute = new DataColumn("CotBrute", typeof(decimal));
-                DataColumn TauxChargement = new DataColumn("TauxChargement", typeof(decimal));
-                DataColumn CotNet = new DataColumn("CotNet", typeof(decimal));
-                DataColumn Ratio = new DataColumn("Ratio", typeof(decimal));
-                DataColumn GainLoss = new DataColumn("GainLoss", typeof(decimal));
-                DataColumn DateArret = new DataColumn("DateArret", typeof(DateTime));
-                
-                myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, Subsid, YearSurv, TypeSinistre, Prestations, Provisions, CotBrute, TauxChargement, CotNet, Ratio, GainLoss, 
-                    DateArret });
-
-                return myTable;
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error :: CreatePrestaPrevExpTable : " + ex.Message);
-                throw ex;
-            }
-
-        }
-
-        private static double GetCoefCadencier(int anneeSoins, DateTime dateArret, DateTime dateDebutPeriode,
-            DateTime dateFinPeriode, List<Cadencier> myCad, string assur)
-        {
-            try
-            {
-                double cumul = 0;
-                int month = 0;
-
-                //double rembNous = prest.RembNous.HasValue ? prest.RembNous.Value : 0;
-                //int anneeSoins = prest.DateSoins.HasValue ? prest.DateSoins.Value.Year : 0;
-
-                DateTime date1;
-                DateTime dateDebutPeriodeAdjusted;
-                DateTime dateFinPeriodeAdjusted;
-
-                if (anneeSoins != 0 && dateArret != DateTime.MinValue && dateFinPeriode != DateTime.MinValue)
-                {
-                    date1 = new DateTime(anneeSoins, dateDebutPeriode.Month, dateDebutPeriode.Day);
-                    //month = ((dateArret.Year - date1.Year) * 12) + dateArret.Month - date1.Month;
-
-                    TimeSpan span = dateArret.Subtract(date1);
-                    double monthDouble = span.TotalDays / 30.25;
-                    month = (int)Math.Round(monthDouble, MidpointRounding.AwayFromZero);
-
-                    dateDebutPeriodeAdjusted = new DateTime(anneeSoins, dateDebutPeriode.Month, dateDebutPeriode.Day);
-                    dateFinPeriodeAdjusted = new DateTime(anneeSoins, dateFinPeriode.Month, dateFinPeriode.Day);
-
-                    var res = myCad.Where(c => c.Month == month && c.Year == dateArret.Year && c.DebutSurvenance == dateDebutPeriodeAdjusted
-                        && c.FinSurvenance == dateFinPeriodeAdjusted);
-                    if (res.Any())
-                    {
-                        //choose the value according to the provided Assureur
-                        if (string.IsNullOrWhiteSpace(assur))
-                            cumul = res.ToList()[0].Cumul.Value;
-                        else
-                        {
-                            var cadVal = res.Where(c => c.AssureurName.ToLower() == assur.ToLower()).First();
-                            if (cadVal != null)
-                                cumul = cadVal.Cumul.Value;
-                            else
-                                cumul = 0;
-                        }
-                    }
-                    else
-                    {
-                        cumul = 0;
-                    }
-                }
-                else
-                {
-                    //we have  aproblem => log an error message                            
-                    throw new Exception("A value for 'Provision' cannot be calculated! Provided values: Annee Soins: " + anneeSoins
-                            + " date fin péeriode: " + dateFinPeriode.ToShortDateString() + " date arret: " + dateArret.ToShortDateString());
-                }
-
-                return cumul;
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error :: GetCoefCadencier : " + ex.Message);
-                throw ex;
-            }
-        }        
-
-        private static double CalculateProvision(double rembNous, int anneeSoins, DateTime dateArret, DateTime dateDebutPeriode,
-            DateTime dateFinPeriode, List<Cadencier> myCad, string assur)
-        {
-            try
-            {
-                double cumul = GetCoefCadencier(anneeSoins, dateArret, dateDebutPeriode, dateFinPeriode, myCad, assur);
-                return cumul * rembNous; 
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error :: CalculateProvision : " + ex.Message);
-                throw ex;
-            }
-        }
-        
-
-        #region OLD METHODS
-
-        //private static GroupGarantyPair GetGroupGarantyPairForCodeActe(List<GroupSante> groupSanteListForCompany, string codeActe)
-        //{
-        //    try
-        //    {
-        //        GroupGarantyPair ggPair = new GroupGarantyPair();
-        //        string garName = "";
-        //        string groupName = "";
-
-        //        List<GroupSante> myGroupSante = groupSanteListForCompany.Where(gr => gr.GarantySantes.Any(gar => gar.CodeActe == codeActe)).ToList();
-
-        //        if (myGroupSante.Any())
-        //        {
-        //            //we simply take the first element
-        //            groupName = myGroupSante[0].Name;
-
-        //            if (myGroupSante[0].GarantySantes.Count > 0)
-        //                garName = myGroupSante[0].GarantySantes.ToList()[0].Name;
-        //            else
-        //                garName = "";
-        //        }
-        //        else
-        //        {
-        //            garName = "";
-        //            groupName = "";
-        //        }
-
-        //        ggPair.GroupName = groupName;
-        //        ggPair.GarantyName = garName;
-
-        //        return ggPair;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        log.Error(ex.Message);
-        //        throw ex;
-        //    }
-        //}
-
-
         #endregion
 
-        
+
     }
-
-
 }

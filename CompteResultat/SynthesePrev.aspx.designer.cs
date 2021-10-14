@@ -121,6 +121,24 @@ namespace CompteResultat {
         protected global::System.Web.UI.WebControls.CheckBox chk1An;
         
         /// <summary>
+        /// lblReportType control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lblReportType;
+        
+        /// <summary>
+        /// radioTypeComptes control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButtonList radioTypeComptes;
+        
+        /// <summary>
         /// cmdCreate control.
         /// </summary>
         /// <remarks>

@@ -22,31 +22,38 @@ namespace CompteResultat
         {
             try
             {  
-                HttpCookie cookie = Request.Cookies["txtNumberEnt"];
-                string numberEntCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
-                if (txtNumberEnt.Text == "")
-                    txtNumberEnt.Text = numberEntCookieVal != "" ? numberEntCookieVal : WebConfigurationManager.AppSettings["SyntheseNumberofCompaniesToDisplay"];
-
-                //get date values
-                cookie = Request.Cookies["txtStartPeriode"];
-                string startPeriodeCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
-                if (txtStartPeriode.Text == "")
-                    txtStartPeriode.Text = startPeriodeCookieVal != "" ? startPeriodeCookieVal : "01/01/2020";
-
-                cookie = Request.Cookies["txtEndPeriode"];
-                string endPeriodeCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
-                if (txtEndPeriode.Text == "")
-                    txtEndPeriode.Text = endPeriodeCookieVal != "" ? endPeriodeCookieVal : "2020-01-01";
-
-                cookie = Request.Cookies["txtArretCompte"];
-                string arretCompteCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
-                if (txtArretCompte.Text == "")
-                    txtArretCompte.Text = arretCompteCookieVal != "" ? arretCompteCookieVal : "2020-01-01";
-
                 lblHeaderSynthese.Text = txtNumberEnt.Text + " Comptes de resultats sante avec les prestations triees par ordre decroissant :";
 
                 if (!IsPostBack)
-                {                    
+                {
+                    HttpCookie cookie = Request.Cookies["txtNumberEnt"];
+                    string numberEntCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
+                    if (txtNumberEnt.Text == "")
+                        txtNumberEnt.Text = numberEntCookieVal != "" ? numberEntCookieVal : WebConfigurationManager.AppSettings["SyntheseNumberofCompaniesToDisplay"];
+
+                    //get date values
+                    cookie = Request.Cookies["txtStartPeriode"];
+                    string startPeriodeCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
+                    if (txtStartPeriode.Text == "")
+                        txtStartPeriode.Text = startPeriodeCookieVal != "" ? startPeriodeCookieVal : "2020-01-01";
+
+                    cookie = Request.Cookies["txtEndPeriode"];
+                    string endPeriodeCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
+                    if (txtEndPeriode.Text == "")
+                        txtEndPeriode.Text = endPeriodeCookieVal != "" ? endPeriodeCookieVal : "2020-01-01";
+
+                    cookie = Request.Cookies["txtArretCompte"];
+                    string arretCompteCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
+                    if (txtArretCompte.Text == "")
+                        txtArretCompte.Text = arretCompteCookieVal != "" ? arretCompteCookieVal : "2020-01-01";
+
+                    cookie = Request.Cookies["typeCompte"];
+                    string typeCompteCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
+                    int iTypeCompteVal = 0;
+                    if (int.TryParse(typeCompteCookieVal, out iTypeCompteVal))
+                        radioTypeComptes.SelectedIndex = iTypeCompteVal;
+                    else
+                        radioTypeComptes.SelectedIndex = 0;
                 }
             }
             catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "SyntheseSante::Page_Load"); }
@@ -278,11 +285,19 @@ namespace CompteResultat
                 cookie.Values["txtArretCompte"] = txtArretCompte.Text;
                 Response.Cookies.Add(cookie);
             }
+
+            HttpCookie cookieTC = new HttpCookie("typeCompte");
+            cookieTC.Values["typeCompte"] = radioTypeComptes.SelectedIndex.ToString();
+            Response.Cookies.Add(cookieTC);
         }
 
         protected void cmdcreate_Click(object sender, EventArgs e)
         {
             SaveParams();
+
+            C.eTypeComptes typeComptes = C.eTypeComptes.Survenance;            
+            if (radioTypeComptes.SelectedIndex == 1)
+                typeComptes = C.eTypeComptes.Comptable;
 
             //verify if Cadencier is up to date
             //List<int> missingYears = new List<int>();
@@ -314,7 +329,7 @@ namespace CompteResultat
                 C.eReportTemplateTypes repTemplate = C.eReportTemplateTypes.PREV_SYNTH;
                 assurNames = Assureur.GetEnterpriseAssNamesByType(C.cASSTYPEENTERPRISEPREV);
 
-                myCR = SetCRDetails(repType, repTemplate, reportName);
+                myCR = SetCRDetails(repType, repTemplate, reportName, typeComptes);
                 SetGenericCRParams(ref myCR, assurNames);
 
                 myCR.CreateNewCompteResultat(true);
@@ -328,7 +343,7 @@ namespace CompteResultat
                 C.eReportTemplateTypes repTemplate = C.eReportTemplateTypes.PREV_GLOBAL;
                 assurNames = Assureur.GetEnterpriseAssNamesByType(C.cASSTYPEENTERPRISEPREV);
 
-                myCR = SetCRDetails(repType, repTemplate, reportName);
+                myCR = SetCRDetails(repType, repTemplate, reportName, typeComptes);
                 SetGenericCRParams(ref myCR, assurNames);
                 myCR.CreateNewCompteResultat(true);
             }
@@ -340,7 +355,7 @@ namespace CompteResultat
                 C.eReportTemplateTypes repTemplate = C.eReportTemplateTypes.PREV;
                 assurNames = Assureur.GetEnterpriseAssNamesByType(C.cASSTYPEPRODUCT);
 
-                myCR = SetCRDetails(repType, repTemplate, reportName);
+                myCR = SetCRDetails(repType, repTemplate, reportName, typeComptes);
                 SetGenericCRParams(ref myCR, assurNames);
                 myCR.CreateNewCompteResultat(true);
 
@@ -391,7 +406,7 @@ namespace CompteResultat
             myCR.ContractNames = string.Join(C.cVALSEP, contractNames);
         }
 
-        public BLCompteResultat SetCRDetails(C.eReportTypes repType, C.eReportTemplateTypes templateType, string reportName)
+        public BLCompteResultat SetCRDetails(C.eReportTypes repType, C.eReportTemplateTypes templateType, string reportName, C.eTypeComptes typeComptes)
         {
             BLCompteResultat myCR = new BLCompteResultat();
             
@@ -406,6 +421,7 @@ namespace CompteResultat
             });
 
             myCR.ReportType = repType;
+            myCR.TypeComptes = typeComptes;
             myCR.ReportLevelId = reportLevelId;
             myCR.UserName = User.Identity.Name;
             myCR.IsActive = true;
@@ -439,6 +455,7 @@ namespace CompteResultat
         protected void txtArretCompte_TextChanged(object sender, EventArgs e)
         {
             //SaveParams();
-        }
+        }       
+       
     }
 }

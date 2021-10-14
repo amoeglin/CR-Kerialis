@@ -55,19 +55,58 @@ namespace CompteResultat.BL
             }
         }
 
-        public static void RecreateTypePrevoyanceFromSinistre()
+        public static void RecreateTypePrevoyance()
         {
             try
             {               
-                //Update table TypePrevoyance => search for new entries in SinistrePrev and add the with CodeSinistre: "AUTRES"
+                //Update table TypePrevoyance => search for new entries in SinistrePrev and DecomptePrev and add the with CodeSinistre: "AUTRES"
                 List<string> sinLabelsFromTypePrev = TypePrevoyance.GetSinistreLabels();
                 List<string> sinLabelsFromSinPrev = SinistrePrev.GetSinistreLabels();
+                List<string> sinLabelsFromDecomptePrev = DecomptePrev.GetSinistreLabels();
+                List<string> sinLabelsFromCotisatPrev = CotisatPrev.GetSinistreLabels();
+                List<string> sinLabelsFromProvPrev = ProvPrev.GetSinistreLabels();
 
                 //add data to GroupGarantySante
                 // ### Paramètres par défaut
                 foreach (string item in sinLabelsFromSinPrev)
                 {
                     if(!sinLabelsFromTypePrev.Contains(item))
+                    {
+                        int id = TypePrevoyance.InsertTypePrev(new TypePrevoyance
+                        {
+                            CodeSinistre = "AUTRES",
+                            LabelSinistre = item
+                        });
+                    }
+                }
+
+                foreach (string item in sinLabelsFromDecomptePrev)
+                {
+                    if (!sinLabelsFromTypePrev.Contains(item))
+                    {
+                        int id = TypePrevoyance.InsertTypePrev(new TypePrevoyance
+                        {
+                            CodeSinistre = "AUTRES",
+                            LabelSinistre = item
+                        });
+                    }
+                }
+
+                foreach (string item in sinLabelsFromCotisatPrev)
+                {
+                    if (!sinLabelsFromTypePrev.Contains(item))
+                    {
+                        int id = TypePrevoyance.InsertTypePrev(new TypePrevoyance
+                        {
+                            CodeSinistre = "AUTRES",
+                            LabelSinistre = item
+                        });
+                    }
+                }
+
+                foreach (string item in sinLabelsFromProvPrev)
+                {
+                    if (!sinLabelsFromTypePrev.Contains(item))
                     {
                         int id = TypePrevoyance.InsertTypePrev(new TypePrevoyance
                         {

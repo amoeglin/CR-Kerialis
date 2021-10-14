@@ -237,6 +237,18 @@
              <asp:CheckBox style="margin-right: 20px" Visible="true" class="element" ID="chkSelectAll" runat="server" Text="Sélectionner tous les entreprises et filiales" Font-Size="Medium"   />  
             <asp:CheckBox Enabled="false" Visible="true" class="element" ID="chkPrev" runat="server" Text="Prevoyance" Font-Size="Medium" /> 
         </div>
+
+        <div style="margin-top: 20px; font-weight: 500; font-size: 20px;" >
+            <label id="Label1" class="element" style="display:inline; margin-right:5px; vertical-align:top; font-size: 20px;" runat="server" >TYPE DE COMPTES : 
+                <%--<asp:Image visible="false" style="display:inline; margin-left: 10px" ID="imgReport" runat="server" />--%>
+            </label>
+            <asp:RadioButtonList ValidateRequestMode="Disabled" AutoPostBack="false" style="display:inline; margin-top:10px" RepeatDirection="Horizontal" 
+                ID="radioTypeComptes" runat="server">
+                <asp:ListItem style="margin-right:10px" Selected>&nbsp;Survenance</asp:ListItem>
+                <asp:ListItem style="margin-right:10px">&nbsp;Comptable</asp:ListItem>                                 
+            </asp:RadioButtonList>
+        </div>
+
     <br />
     
     <asp:Button Visible="false" id="cmdTest" Text="TEST" runat="server" OnClick="cmdTest_Click" ClientIDMode="Static" />

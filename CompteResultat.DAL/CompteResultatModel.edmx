@@ -173,6 +173,7 @@ warning 6002: The table/view 'CompteResultat.dbo._TempOtherFields' does not have
           <Property Name="Cotisation" Type="float" />
           <Property Name="WithOption" Type="nvarchar" MaxLength="10" />
           <Property Name="CotisationBrute" Type="float" />
+          <Property Name="CodeSinistre" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="CRPlanning">
           <Key>
@@ -208,6 +209,7 @@ warning 6002: The table/view 'CompteResultat.dbo._TempOtherFields' does not have
           <Property Name="FinSin" Type="date" />
           <Property Name="DateExtraction" Type="date" />
           <Property Name="Total" Type="float" />
+          <Property Name="CauseSinistre" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Demography">
           <Key>
@@ -865,6 +867,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="Subsid" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="WithOption" Type="String" MaxLength="10" Unicode="true" FixedLength="false" />
           <Property Name="CotisationBrute" Type="Double" />
+          <Property Name="CodeSinistre" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="CRPlanning">
           <Key>
@@ -1244,6 +1247,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="FinSin" Type="DateTime" Precision="0" />
           <Property Name="DateExtraction" Type="DateTime" Precision="0" />
           <Property Name="Total" Type="Double" />
+          <Property Name="CauseSinistre" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="SinistrePrev">
           <Key>
@@ -1480,6 +1484,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySetMapping Name="CotisatSantes">
             <EntityTypeMapping TypeName="CompteResultatModel.CotisatSante">
               <MappingFragment StoreEntitySet="CotisatSante">
+                <ScalarProperty Name="CodeSinistre" ColumnName="CodeSinistre" />
                 <ScalarProperty Name="CotisationBrute" ColumnName="CotisationBrute" />
                 <ScalarProperty Name="WithOption" ColumnName="WithOption" />
                 <ScalarProperty Name="Subsid" ColumnName="Subsid" />
@@ -1731,6 +1736,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySetMapping Name="DecomptePrevs">
             <EntityTypeMapping TypeName="CompteResultatModel.DecomptePrev">
               <MappingFragment StoreEntitySet="DecomptePrev">
+                <ScalarProperty Name="CauseSinistre" ColumnName="CauseSinistre" />
                 <ScalarProperty Name="Total" ColumnName="Total" />
                 <ScalarProperty Name="DateExtraction" ColumnName="DateExtraction" />
                 <ScalarProperty Name="FinSin" ColumnName="FinSin" />

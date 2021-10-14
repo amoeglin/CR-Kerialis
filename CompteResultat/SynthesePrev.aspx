@@ -88,11 +88,21 @@
                
         <div>         
             <asp:CheckBox ID="chk1An" class="element" runat="server" Checked="true" style="display:inline-block;margin-top:00px;" Text="&nbsp;Compte de résultats pour une année de survenance et pour tous les produits" /><br />
+        </div>  
 
-        </div>        
+        <div style="margin-top: 20px; font-weight: 500; font-size: 20px;" >
+            <label id="lblReportType" class="element" style="display:inline; margin-right:5px; vertical-align:top; font-size: 20px;" runat="server" >TYPE DE COMPTES : 
+                <%--<asp:Image visible="false" style="display:inline; margin-left: 10px" ID="imgReport" runat="server" />--%>
+            </label>
+            <asp:RadioButtonList ValidateRequestMode="Disabled" AutoPostBack="false" style="display:inline; margin-top:10px" RepeatDirection="Horizontal" 
+                ID="radioTypeComptes" runat="server">
+                <asp:ListItem style="margin-right:10px" Selected>&nbsp;Survenance</asp:ListItem>
+                <asp:ListItem style="margin-right:10px">&nbsp;Comptable</asp:ListItem>                                 
+            </asp:RadioButtonList>
+        </div>
+        
+
     </div>
-
-
     
         
     <div class="itemCreateSynthese">

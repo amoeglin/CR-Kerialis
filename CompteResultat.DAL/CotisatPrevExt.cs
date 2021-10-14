@@ -26,10 +26,11 @@ namespace CompteResultat.DAL
                 {
                     cotisat = context.CotisatPrevs
                     .Where(d => years.Contains((d.Year.HasValue ? d.Year.Value : 0)) && companyList.Contains(d.Company))
-                    .GroupBy(p => new { p.AssureurName, p.Company, AnnSurv = p.Year, p.CodeGarantie })
+                    .GroupBy(p => new { p.AssureurName, p.Company, AnnSurv = p.Year, p.CodeGarantie, p.ContractId })
                     .Select(g => new ExcelGlobalCotisatData
                     {
                         Assureur = g.Key.AssureurName,
+                        ContractId = g.Key.ContractId,
                         Company = g.Key.Company,
                         Subsid = "",
                         YearSurv = g.Key.AnnSurv.HasValue ? g.Key.AnnSurv.Value : 0,
@@ -61,10 +62,11 @@ namespace CompteResultat.DAL
                 {
                     cotisat = context.CotisatPrevs
                     .Where(d => years.Contains((d.Year.HasValue ? d.Year.Value : 0)) && subsidList.Contains(d.Subsid))
-                    .GroupBy(p => new { p.AssureurName, p.Company, p.Subsid, AnnSurv = p.Year })
+                    .GroupBy(p => new { p.AssureurName, p.Company, p.Subsid, AnnSurv = p.Year, p.ContractId })
                     .Select(g => new ExcelGlobalCotisatData
                     {
                         Assureur = g.Key.AssureurName,
+                        ContractId = g.Key.ContractId,
                         Company = g.Key.Company,
                         Subsid = g.Key.Subsid,
                         YearSurv = g.Key.AnnSurv.HasValue ? g.Key.AnnSurv.Value : 0,
@@ -104,6 +106,28 @@ namespace CompteResultat.DAL
 
                 return cotisat;
 
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
+        public static List<string> GetSinistreLabels()
+        {
+            try
+            {
+                List<string> sinistreLabels;
+
+                using (var context = new CompteResultatEntities())
+                {
+                    sinistreLabels = context.Database
+                            .SqlQuery<string>("SELECT DISTINCT CodeGarantie FROM dbo.CotisatPrev ORDER BY CodeGarantie")
+                            .ToList<string>();
+                }
+
+                return sinistreLabels;
             }
             catch (Exception ex)
             {

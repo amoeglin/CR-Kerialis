@@ -35,15 +35,16 @@ namespace CompteResultat.DAL
     public class ExcelGlobalDecompteData
     {
         public string Assureur { get; set; }
+        public string ContractId { get; set; }
         public string Company { get; set; }
-        public string Subsid { get; set; }
+        public string Subsid { get; set; }        
         public int YearSurv { get; set; }
         public double? FR { get; set; }
-
         public double? RSS { get; set; }
         public double? RAnnexe { get; set; }
         public double? RNous { get; set; }
-        public double Provisions { get; set; }
+        public double PSI { get; set; }
+        public double Provisions { get; set; }        
         public double CotBrute { get; set; }
         public string TaxTotal { get; set; }
         public string TaxDefault { get; set; }
@@ -54,11 +55,13 @@ namespace CompteResultat.DAL
         public DateTime DateArret { get; set; }
         public double? Coef { get; set; }
         public string CodeGarantie { get; set; }
+        public string Dossier { get; set; }
     }
 
     public class ExcelGlobalSinistreData
     {
         public string Assureur { get; set; }
+        public string ContractId { get; set; }
         public string Company { get; set; }
         public string Subsid { get; set; }
         public int YearSurv { get; set; }
@@ -87,7 +90,7 @@ namespace CompteResultat.DAL
 
     public class ExcelGlobalPrestaData
     {
-        public string Assureur { get; set; }        
+        public string Assureur { get; set; }
         public string Company { get; set; }
         public string Subsid { get; set; }
         public string Contract { get; set; }
@@ -112,6 +115,7 @@ namespace CompteResultat.DAL
     public class Synthese
     {
         public string Assur { get; set; }
+        public string ContractId { get; set; }
         public string Company { get; set; }
         public int Annee { get; set; }
         public string Prestations { get; set; }
@@ -145,12 +149,14 @@ namespace CompteResultat.DAL
     public class ExcelGlobalCotisatData
     {
         public string Assureur { get; set; }
+        public string ContractId { get; set; }
         public string Company { get; set; }
         public string Subsid { get; set; }
         public int YearSurv { get; set; }
         public double? Cotisat { get; set; }
         public double? CotisatBrute { get; set; }
         public string CodeGarantie { get; set; }
+        public string Dossier { get; set; }
     }
 
     public class IMAssurContrIDPair : IEquatable<IMAssurContrIDPair>
@@ -300,6 +306,7 @@ namespace CompteResultat.DAL
         public DateTime? DebSin { get; set; }
         public DateTime? FinSin { get; set; }
         public DateTime? DateSin { get; set; }
+        public string CauseSinistre { get; set; }
     }
 
     public class DemoSanteWithOptionInfo
@@ -324,7 +331,6 @@ namespace CompteResultat.DAL
         public string AssureurName { get; set; }
         public int AnneeExp { get; set; }
         public int AnneeDateSoins { get; set; }
-
         public DateTime? DateVision { get; set; }
         public string ContractId { get; set; }
         public string CodeCol { get; set; }

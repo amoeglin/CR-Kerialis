@@ -140,7 +140,7 @@ namespace CompteResultat
         {
             try
             {
-                BLTypePrev.RecreateTypePrevoyanceFromSinistre();                
+                BLTypePrev.RecreateTypePrevoyance();                
             }
             catch (Exception ex)
             {

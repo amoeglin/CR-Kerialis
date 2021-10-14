@@ -31,5 +31,6 @@ namespace CompteResultat.DAL
         public Nullable<System.DateTime> FinSin { get; set; }
         public Nullable<System.DateTime> DateExtraction { get; set; }
         public Nullable<double> Total { get; set; }
+        public string CauseSinistre { get; set; }
     }
 }

@@ -30,22 +30,6 @@ namespace CompteResultat
         {              
             try
             { 
-                //get date values
-                HttpCookie cookie = Request.Cookies["txtStartPeriode"];
-                string startPeriodeCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
-                if(txtStartPeriode.Text=="")
-                    txtStartPeriode.Text = startPeriodeCookieVal != "" ? startPeriodeCookieVal : "01/01/2020";
-
-                cookie = Request.Cookies["txtEndPeriode"];
-                string endPeriodeCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
-                if (txtEndPeriode.Text == "")
-                    txtEndPeriode.Text = endPeriodeCookieVal != "" ? endPeriodeCookieVal : "01/01/2020";
-
-                cookie = Request.Cookies["txtArretCompte"];
-                string arretCompteCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
-                if (txtArretCompte.Text == "")
-                    txtArretCompte.Text = arretCompteCookieVal != "" ? arretCompteCookieVal : "01/01/2020";
-
                 radioReportType.Items[0].Enabled = false;
 
                 tvContracts.Enabled = true;
@@ -56,6 +40,30 @@ namespace CompteResultat
                 if (!IsPostBack)
                 {
                     PopulateTreeViewControl(C.cINVALIDID);
+
+                    //get date values
+                    HttpCookie cookie = Request.Cookies["txtStartPeriode"];
+                    string startPeriodeCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
+                    if (txtStartPeriode.Text == "")
+                        txtStartPeriode.Text = startPeriodeCookieVal != "" ? startPeriodeCookieVal : "01/01/2020";
+
+                    cookie = Request.Cookies["txtEndPeriode"];
+                    string endPeriodeCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
+                    if (txtEndPeriode.Text == "")
+                        txtEndPeriode.Text = endPeriodeCookieVal != "" ? endPeriodeCookieVal : "01/01/2020";
+
+                    cookie = Request.Cookies["txtArretCompte"];
+                    string arretCompteCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
+                    if (txtArretCompte.Text == "")
+                        txtArretCompte.Text = arretCompteCookieVal != "" ? arretCompteCookieVal : "01/01/2020";
+
+                    cookie = Request.Cookies["typeCompte"];
+                    string typeCompteCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
+                    int iTypeCompteVal = 0;
+                    if (int.TryParse(typeCompteCookieVal, out iTypeCompteVal))
+                        radioTypeComptes.SelectedIndex = iTypeCompteVal;
+                    else
+                        radioTypeComptes.SelectedIndex = 0;
                 }                             
             }
             catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::Page_Load"); }
@@ -663,9 +671,9 @@ namespace CompteResultat
         }
 
         protected void cmdCreateCR_Click(object sender, EventArgs e)
-        {
+        {  
             //RequiredFieldValidator1.ErrorMessage = "Le nom du rapport est obligatoire !";
-            if(txtNameReport.Value == "")
+            if (txtNameReport.Value == "")
             {
                 validateReportName.Visible = true;
             }
@@ -690,6 +698,10 @@ namespace CompteResultat
                 cookie.Values["txtArretCompte"] = txtArretCompte.Text;
                 Response.Cookies.Add(cookie);
             }
+
+            HttpCookie cookieTC = new HttpCookie("typeCompte");
+            cookieTC.Values["typeCompte"] = radioTypeComptes.SelectedIndex.ToString();
+            Response.Cookies.Add(cookieTC);
 
             //verify if Cadencier is up to date
             //CadencierIsUpToDate();
@@ -946,6 +958,10 @@ namespace CompteResultat
 
         public BLCompteResultat SetCRDetails(C.eReportTypes repType)
         {
+            C.eTypeComptes typeComptes = C.eTypeComptes.Survenance;
+            if (radioTypeComptes.SelectedIndex == 1)
+                typeComptes = C.eTypeComptes.Comptable;
+
             BLCompteResultat myCR = new BLCompteResultat();
 
             int reportLevelId = int.Parse(cmbDetailReport.SelectedItem.Value);
@@ -966,6 +982,7 @@ namespace CompteResultat
             });
 
             myCR.ReportType = repType;
+            myCR.TypeComptes = typeComptes;
             myCR.ReportLevelId = reportLevelId;
             myCR.CollegeId = int.Parse(cmbCollege.SelectedItem.Value);
             myCR.UserName = User.Identity.Name;

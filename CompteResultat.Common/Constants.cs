@@ -59,6 +59,12 @@ namespace CompteResultat.Common
             GlobalSynthese
         }
 
+        public enum eTypeComptes
+        {
+            Survenance,
+            Comptable                        
+        }
+
         public enum eUserRoles
         {
             Administrateur,
