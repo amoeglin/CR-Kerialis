@@ -90,6 +90,8 @@
                                 <asp:MenuItem NavigateUrl="~/GestionExperience.aspx" Text="Experience Santé" />
                                 <asp:MenuItem NavigateUrl="~/GestionCadencier.aspx" Text="Cadenciers Santé" />
                                 <asp:MenuItem NavigateUrl="~/GestionTypePrev.aspx" Text="Type Prevoyance" />
+                                <asp:MenuItem NavigateUrl="~/GestionFraisPrev.aspx" Text="Frais Prevoyance" />
+                                <asp:MenuItem NavigateUrl="~/GestionFraisSante.aspx" Text="Frais Sante" />
                                 <asp:MenuItem NavigateUrl="~/GestionEntreprises.aspx" Text="Paramètres des Entreprises" /> 
                             </asp:MenuItem>  
                             
@@ -122,6 +124,8 @@
                                 <asp:MenuItem NavigateUrl="~/GestionExperience.aspx" Text="Experience Santé" />
                                 <asp:MenuItem NavigateUrl="~/GestionCadencier.aspx" Text="Cadenciers Santé" />
                                 <asp:MenuItem NavigateUrl="~/GestionTypePrev.aspx" Text="Type Prevoyance" />
+                                <asp:MenuItem NavigateUrl="~/GestionFraisPrev.aspx" Text="Frais Prevoyance" />
+                                <asp:MenuItem NavigateUrl="~/GestionFraisSante.aspx" Text="Frais Sante" />
                                 <asp:MenuItem NavigateUrl="~/GestionEntreprises.aspx" Text="Paramètres des Entreprises" />
                             </asp:MenuItem> 
                             

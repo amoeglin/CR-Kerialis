@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SynthesePrev.aspx.cs" Inherits="CompteResultat.SynthesePrev" EnableViewState="false" %>
+﻿<%@ Page Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SynthesePrev.aspx.cs" Inherits="CompteResultat.SynthesePrev" EnableViewState="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     
@@ -31,7 +31,23 @@
             $("#cmdCreate").click(function (evt) {
                 //alert("eee")
                 $("#divLoading").css("display", "block");
-            });  
+            });
+
+            //$('#MainContent_radioTypeComptes').on('change', function () {
+            //    var val = $("input[type='radio']:checked").val().trim();
+            //    if (val == "Comptable") {
+            //        alert('ccc')
+            //        $('#dateArreteCompte').hide();
+            //        $('#lblDateDebut').text('Date comptable début :');
+            //        $('#lblDateFin').text('Date comptable fin :');
+            //    }
+            //    else {
+            //        alert('sss')
+            //        $('#dateArreteCompte').show();
+            //        $('#lblDateDebut').text('Date survenance début :');
+            //        $('#lblDateFin').text('Date survenance fin :');
+            //    }
+            //});
         }); 
      
    </script>
@@ -47,24 +63,24 @@
         <h1><asp:Literal  ID="Literal9" runat="server">Synthese Prevoyance :</asp:Literal> </h1> 
         
         <div>
-            <label class="element" style="margin-top:15px;">Assureur :</label>
+            <label id="assur" class="element" style="margin-top:15px;">Assureur :</label>
             <asp:DropDownList ID="cmbAssureur" CssClass="element" style="width: 250px; margin-right:10px;" runat="server" ClientIDMode="Static" AutoPostBack="true" 
                 SelectMethod="GetAssureurs" DataTextField="Name" DataValueField="Id" OnSelectedIndexChanged="cmbAssureur_SelectedIndexChanged" ></asp:DropDownList>                
         </div>
 
         <div >
-            <label class="element">Date survenance début :</label>
+            <label runat="server" id="lblDateDebut" class="element">Date survenance début :</label>
             <%--OnTextChanged="txtStartPeriode_TextChanged" AutoPostBack="true"--%>
             <asp:TextBox runat="server" ID="txtStartPeriode" TextMode="Date" width="250"   />
         </div>
         <div>
-            <label class="element">Date survenance fin :</label>
+            <label runat="server" id="lblDateFin" class="element">Date survenance fin :</label>
             <asp:TextBox runat="server" ID="txtEndPeriode" TextMode="Date" width="250"  />
         </div>
-        <div>
+        <div id="dateArreteCompte" runat="server">
             <label class="element">Arrêté des comptes :</label>
             <asp:TextBox runat="server" ID="txtArretCompte" TextMode="Date" width="250"  />
-        </div>
+        </div>       
 
         <div>         
             <asp:CheckBox Visible="false" ID="chkCalcProv" class="element" runat="server" Checked="true" style="display:inline-block;margin-bottom:15px; margin-top:15px;" Text="&nbsp;Calculer les provisions" /><br />
@@ -94,8 +110,8 @@
             <label id="lblReportType" class="element" style="display:inline; margin-right:5px; vertical-align:top; font-size: 20px;" runat="server" >TYPE DE COMPTES : 
                 <%--<asp:Image visible="false" style="display:inline; margin-left: 10px" ID="imgReport" runat="server" />--%>
             </label>
-            <asp:RadioButtonList ValidateRequestMode="Disabled" AutoPostBack="false" style="display:inline; margin-top:10px" RepeatDirection="Horizontal" 
-                ID="radioTypeComptes" runat="server">
+            <asp:RadioButtonList AutoPostBack="true" style="display:inline; margin-top:10px" RepeatDirection="Horizontal" 
+                ID="radioTypeComptes" runat="server" OnSelectedIndexChanged="radioTypeComptes_SelectedIndexChanged">
                 <asp:ListItem style="margin-right:10px" Selected>&nbsp;Survenance</asp:ListItem>
                 <asp:ListItem style="margin-right:10px">&nbsp;Comptable</asp:ListItem>                                 
             </asp:RadioButtonList>

@@ -43,6 +43,8 @@
         <EntityTypeShape EntityType="CompteResultatModel.TypePrevoyance" Width="1.5" PointX="6.375" PointY="13.25" />
         <EntityTypeShape EntityType="CompteResultatModel.C_TempExpData" Width="1.5" PointX="8.25" PointY="14" />
         <EntityTypeShape EntityType="CompteResultatModel.ProvPrev" Width="1.5" PointX="10.375" PointY="13.75" />
+        <EntityTypeShape EntityType="CompteResultatModel.FraisPrevoyance" Width="1.5" PointX="12.375" PointY="13.75" />
+        <EntityTypeShape EntityType="CompteResultatModel.FraisSante" Width="1.5" PointX="14.375" PointY="11.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

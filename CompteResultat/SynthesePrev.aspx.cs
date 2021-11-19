@@ -54,9 +54,40 @@ namespace CompteResultat
                         radioTypeComptes.SelectedIndex = iTypeCompteVal;
                     else
                         radioTypeComptes.SelectedIndex = 0;
+
+                    if(radioTypeComptes.SelectedIndex == 0)
+                    {
+                        dateArreteCompte.Visible = true;
+                        lblDateDebut.InnerText = "Date survenance début :";
+                        lblDateFin.InnerText = "Date survenance fin :";
+                    }
+                    else
+                    {
+                        dateArreteCompte.Visible = false;
+                        lblDateDebut.InnerText = "Date comptable début :";
+                        lblDateFin.InnerText = "Date comptable fin :";                      
+                    }
                 }
             }
             catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "SyntheseSante::Page_Load"); }
+        }
+
+        protected void radioTypeComptes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (radioTypeComptes.SelectedIndex == 0)
+            {
+                dateArreteCompte.Visible = true;
+                lblDateDebut.InnerText = "Date survenance début :";
+                lblDateFin.InnerText = "Date survenance fin :";
+            }
+            else
+            {
+                dateArreteCompte.Visible = false;
+                lblDateDebut.InnerText = "Date comptable début :";
+                lblDateFin.InnerText = "Date comptable fin :";
+            }
+
+            SaveParams();
         }
 
         public IEnumerable<Synthese> GetSynthese()
@@ -295,9 +326,14 @@ namespace CompteResultat
         {
             SaveParams();
 
-            C.eTypeComptes typeComptes = C.eTypeComptes.Survenance;            
+            string accType = "Survenance";
+
+            C.eTypeComptes typeComptes = C.eTypeComptes.Survenance;
             if (radioTypeComptes.SelectedIndex == 1)
+            {
                 typeComptes = C.eTypeComptes.Comptable;
+                accType = "Comptable";
+            }
 
             //verify if Cadencier is up to date
             //List<int> missingYears = new List<int>();
@@ -324,7 +360,7 @@ namespace CompteResultat
             if (chkSynthese.Checked)
             {
                 //GLOBAL SOCIETE PRODUIT
-                reportName = "SYNTHESE_PREV_" + dateTimeToday;
+                reportName = "_PREV_SYNTHESE_" + accType + "_" + dateTimeToday;
                 C.eReportTypes repType = C.eReportTypes.GlobalSynthese;
                 C.eReportTemplateTypes repTemplate = C.eReportTemplateTypes.PREV_SYNTH;
                 assurNames = Assureur.GetEnterpriseAssNamesByType(C.cASSTYPEENTERPRISEPREV);
@@ -338,7 +374,7 @@ namespace CompteResultat
             // GLOBAL SOCIETE ENTERPRISE => get all assureurs that end with _ENTREPRISE => get all Comps & Subsids for those Assur
             if (chkGlobalEnt.Checked)
             {
-                reportName = "_PREV_GLOBAL_SOCIETE_ENTREPRISE_" + dateTimeToday;
+                reportName = "_PREV_GLOBAL_SOCIETE_ENTREPRISE_" + accType + "_" + dateTimeToday;
                 C.eReportTypes repType = C.eReportTypes.GlobalEnt;
                 C.eReportTemplateTypes repTemplate = C.eReportTemplateTypes.PREV_GLOBAL;
                 assurNames = Assureur.GetEnterpriseAssNamesByType(C.cASSTYPEENTERPRISEPREV);
@@ -350,7 +386,7 @@ namespace CompteResultat
 
             if (chk1An.Checked)
             {
-                reportName = "_PREV_1AN_" + dateTimeToday;
+                reportName = "_PREV_1AN_" + accType + "_" + dateTimeToday;
                 C.eReportTypes repType = C.eReportTypes.Standard;
                 C.eReportTemplateTypes repTemplate = C.eReportTemplateTypes.PREV;
                 assurNames = Assureur.GetEnterpriseAssNamesByType(C.cASSTYPEPRODUCT);
@@ -410,14 +446,18 @@ namespace CompteResultat
         {
             BLCompteResultat myCR = new BLCompteResultat();
             
-            int reportLevelId = ReportTemplate.GetTemplateIdForType(templateType.ToString()); 
-            
+            int reportLevelId = ReportTemplate.GetTemplateIdForType(templateType.ToString());
+
+            DateTime dArret = DateTime.Parse(txtArretCompte.Text);
+            if (radioTypeComptes.SelectedIndex == 1)
+                dArret = DateTime.Parse(txtEndPeriode.Text);
+
             myCR.Name = reportName;                           
             myCR.CRPlannings.Add(new CRPlanning
             {
                 DebutPeriode = DateTime.Parse(txtStartPeriode.Text),
                 FinPeriode = DateTime.Parse(txtEndPeriode.Text),
-                DateArret = DateTime.Parse(txtArretCompte.Text)
+                DateArret = dArret
             });
 
             myCR.ReportType = repType;
@@ -455,7 +495,8 @@ namespace CompteResultat
         protected void txtArretCompte_TextChanged(object sender, EventArgs e)
         {
             //SaveParams();
-        }       
-       
+        }
+
+        
     }
 }

@@ -85,16 +85,16 @@
 
         <table>
         <tr style="height:50px; text-align:left; vertical-align:text-top">
-            <td colspan="2"> 
+            <td colspan="3" style="text-align:left; width: 180px;"> 
                 <h1><asp:Literal  ID="Literal2" runat="server">Import Prévoyance</asp:Literal> </h1>                                 
-            </td>            
+            </td>             
         </tr>
 
          <tr style="text-align:center">
             <td style="text-align:left; width: 180px;">
                 <label>Décomptes Prévoyance : </label>                  
-            </td>
-            <td style="text-align:left;">
+            </td>            
+            <td colspan="2" style="text-align:left;">
                 <div style="display:none;"><asp:FileUpload Width="150" ID="uplDecompPrev" runat="server" onchange="this.form.submit()" /></div>
                 <asp:TextBox style="margin-right:20px;" Width="500" ID="txtDecompPrevPath" runat="server" Enabled="false" ></asp:TextBox>
                 <asp:ImageButton style="margin-right:10px;" ImageUrl="~/Images/deletePath16.jpg" ID="imgSelectDecompPrev" runat="server" OnClick="imgSelectDecompPrev_Click" />   
@@ -106,7 +106,7 @@
             <td style="text-align:left;">
                 <label>Sinistres Prévoyance : </label>                  
             </td>
-            <td style="text-align:left;">
+            <td colspan="2" style="text-align:left;">
                 <div style="display:none;"><asp:FileUpload Width="150" ID="uplSinistrePrev" runat="server" onchange="this.form.submit()" /></div>
                 <asp:TextBox style="margin-right:20px;" Width="500" ID="txtSinistrePrevPath" runat="server" Enabled="false" ></asp:TextBox>   
                 <asp:ImageButton style="margin-right:10px; height: 16px;" ImageUrl="~/Images/deletePath16.jpg" ID="imgSelectSinistrePrev" runat="server" OnClick="imgSelectSinistrePrev_Click"  />
@@ -118,7 +118,7 @@
             <td style="text-align:left;">
                 <label>Cotisations Prévoyance : </label>                  
             </td>
-            <td style="text-align:left;">
+            <td colspan="2" style="text-align:left;">
                 <div style="display:none;"><asp:FileUpload Width="150" ID="uplCotPrev" runat="server" onchange="this.form.submit()" /></div>
                 <asp:TextBox style="margin-right:20px;" Width="500" ID="txtCotPrevPath" runat="server" Enabled="false" ></asp:TextBox> 
                 <asp:ImageButton style="margin-right:10px;" ImageUrl="~/Images/deletePath16.jpg" ID="imgSelectCotPrev" runat="server" OnClick="imgSelectCotPrev_Click"  />  
@@ -126,15 +126,30 @@
             </td>            
         </tr>
 
-            <tr style="text-align:center">
+        <tr style="text-align:center">
             <td style="text-align:left;">
-                <label>Provisions : </label>                  
+                <label>Provisions à la clôture : </label>                  
             </td>
-            <td style="text-align:left;">
+            <td colspan="2" style="text-align:left;">
                 <div style="display:none;"><asp:FileUpload Width="150" ID="uplProv" runat="server" onchange="this.form.submit()" /></div>
                 <asp:TextBox style="margin-right:20px;" Width="500" ID="txtProvPath" runat="server" Enabled="false" ></asp:TextBox> 
                 <asp:ImageButton style="margin-right:10px;" ImageUrl="~/Images/deletePath16.jpg" ID="ImageButton2" runat="server" OnClick="imgSelectProv_Click"  />  
                 <asp:Button CssClass="ButtonBigBlue" style="vertical-align:middle; display: inline; width: 105px; height: 23px; margin-top:0px; margin-bottom: 3px;" ID="cmdSelectProv" runat="server" Text="Sélectionner" />                  
+            </td>            
+        </tr>
+
+        <tr style="text-align:center">
+            <td style="text-align:left;">
+                <label>Provisions à l'ouverture : </label>                  
+            </td>            
+            <td colspan="2" style="text-align:left;">
+                <div style="display:none;"><asp:FileUpload Width="150" ID="uplProvOuverture" runat="server" onchange="this.form.submit()" /></div>
+                <asp:TextBox runat="server" ID="txtProvOuvertureDate" TextMode="Date" Width="200"   />
+                <asp:TextBox style="margin-right:20px;" Width="296" ID="txtProvOuverturePath" runat="server" Enabled="false" ></asp:TextBox> 
+                
+                <asp:ImageButton style="margin-right:10px;" ImageUrl="~/Images/deletePath16.jpg" ID="ImageButton3" runat="server" OnClick="imgSelectProvOuverture_Click"  />  
+                <asp:Button CssClass="ButtonBigBlue" style="vertical-align:middle; display: inline; width: 105px; height: 23px; margin-top:0px; margin-bottom: 3px;" 
+                    ID="cmdSelectProvOuverture" runat="server" Text="Sélectionner" />                  
             </td>            
         </tr>
 
@@ -197,8 +212,7 @@
 
                         <asp:TemplateField HeaderText="">
                             <ItemTemplate>
-
-                                <asp:ImageButton style="margin-right:10px;" ImageUrl="~/Images/deletePath16.jpg" ID="cmdDelete" runat="server" OnClick="imgSelectCotPrev_Click" 
+                                <asp:ImageButton style="margin-right:10px;" ImageUrl="~/Images/deletePath16.jpg" ID="cmdDelete" runat="server"  
                                     CommandName="DeleteImp" CommandArgument='<%# Bind("ID") %>'
                                     OnClientClick="return confirm('Confirmer la suppression du lot ?');"  /> 
                             </ItemTemplate>
@@ -228,7 +242,6 @@
     
     <div id="divImportSante"    >
         <table  border="0" >
-            <tr style="height:23px;" ></tr>
             <tr >
                 <td style="width: 30px;">
                 <td style="text-align:left; width: 400px;">

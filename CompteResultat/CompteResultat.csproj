@@ -246,6 +246,8 @@
     <Content Include="GestionExperience.aspx" />
     <Content Include="GestionCadencier.aspx" />
     <Content Include="GestionEntreprises.aspx" />
+    <Content Include="GestionFraisSante.aspx" />
+    <Content Include="GestionFraisPrev.aspx" />
     <Content Include="GestionTypePrev.aspx" />
     <Content Include="GestionGaranties.aspx" />
     <Content Include="GestionLots.aspx" />
@@ -409,6 +411,20 @@
     </Compile>
     <Compile Include="GestionEntreprises.aspx.designer.cs">
       <DependentUpon>GestionEntreprises.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="GestionFraisSante.aspx.cs">
+      <DependentUpon>GestionFraisSante.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="GestionFraisSante.aspx.designer.cs">
+      <DependentUpon>GestionFraisSante.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="GestionFraisPrev.aspx.cs">
+      <DependentUpon>GestionFraisPrev.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="GestionFraisPrev.aspx.designer.cs">
+      <DependentUpon>GestionFraisPrev.aspx</DependentUpon>
     </Compile>
     <Compile Include="GestionTypePrev.aspx.cs">
       <DependentUpon>GestionTypePrev.aspx</DependentUpon>

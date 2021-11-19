@@ -247,15 +247,8 @@ namespace CompteResultat.DAL
 
                 using (var context = new CompteResultatEntities())
                 {
-                    List<int> listOfContractIds = assur.Contracts.Select(c => c.Id).ToList();
-
-                    //use eager loading to get contract data related to each company                    
-                    parentComps = context.Companies
-                        .Where(c => (c.ParentId == null))
-                        .Include(c => c.Contracts)
-                        .OrderBy(c => c.Name)
-                        .ToList();
-
+                    List<int> listOfContractIds = assur.Contracts.Select(c => c.Id).ToList();         
+                    parentComps = GetParentCompaniesWithContracts();
 
                     foreach (Company c in parentComps)
                     {
@@ -282,17 +275,49 @@ namespace CompteResultat.DAL
             }
         }
 
+        private static List<Company> GetParentCompaniesWithContracts()
+        {
+            try
+            {
+                List<Company> parentComps;
+                using (var context = new CompteResultatEntities())
+                {
+                    //use eager loading to get contract data related to each company                    
+                    parentComps = context.Companies
+                        .Where(c => (c.ParentId == null))
+                        .Include(c => c.Contracts)
+                        .OrderBy(c => c.Name)
+                        .ToList();
+                }                
+
+                return parentComps;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
         public static List<string> GetParentCompanyIdsForAssureurId(int assurId)
         {
             try
             {
-                List<string> companies;
+                List<string> companies = new List<string>();
                 Assureur assur = Assureur.GetAssById(assurId);
 
                 using (var context = new CompteResultatEntities())
                 {
                     List<int> listOfContractIds = assur.Contracts.Select(c => c.Id).ToList();
 
+                    //List<Company> parentComps = GetParentCompaniesWithContracts();
+                    //foreach (Company c in parentComps)
+                    //{
+                    //    if (listOfContractIds.Intersect(c.Contracts.Select(cont => cont.Id).ToList()).Any())
+                    //        companies.Add(c.Id.ToString());
+                    //}
+
+                    //### this may cause problems - use code above
                     companies = context.Companies.Where(c => (c.ParentId == null &&
                     listOfContractIds.Intersect(c.Contracts.Select(cont => cont.Id).ToList()).Any())).Select(c => c.Id.ToString()).ToList();
                 }

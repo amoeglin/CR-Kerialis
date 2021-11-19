@@ -109,7 +109,7 @@ namespace CompteResultat.DAL
         }
 
         public static List<SinistrePrev> GetSinistresForContracts(List<string> assurList, List<string> parentCompanyList, List<string> companyList, 
-            List<string> contrIds, string college, DateTime debutPeriod, DateTime finPeriod, DateTime dateArret)
+            List<string> contrIds, string college, DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, C.eTypeComptes typeCompte)
         {
             try
             {
@@ -117,9 +117,17 @@ namespace CompteResultat.DAL
 
                 using (var context = new CompteResultatEntities())
                 {
-                    sinistres = context.SinistrePrevs.Where(sin => assurList.Contains(sin.AssureurName) && parentCompanyList.Contains(sin.Company)
-                        && companyList.Contains(sin.Subsid) && contrIds.Contains(sin.ContractId)
-                        && sin.DateSinistre >= debutPeriod && sin.DateSinistre <= finPeriod ).ToList();
+                    if (typeCompte == C.eTypeComptes.Survenance)
+                    {
+                        sinistres = context.SinistrePrevs.Where(sin => assurList.Contains(sin.AssureurName) && parentCompanyList.Contains(sin.Company)
+                            && companyList.Contains(sin.Subsid) && contrIds.Contains(sin.ContractId)
+                            && sin.DateSinistre >= debutPeriod && sin.DateSinistre <= finPeriod).ToList();
+                    }
+                    else
+                    {
+                        sinistres = context.SinistrePrevs.Where(sin => assurList.Contains(sin.AssureurName) && parentCompanyList.Contains(sin.Company)
+                            && companyList.Contains(sin.Subsid) && contrIds.Contains(sin.ContractId)).ToList();
+                    }
                 }
 
                 return sinistres; 

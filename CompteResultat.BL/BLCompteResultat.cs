@@ -346,7 +346,7 @@ namespace CompteResultat.BL
                 numberTopPerteLoss = NumberTopPerteLoss;
             }
 
-            ExcelSheetHandler.FillDates(fiExcelFile, dateArret, debutPeriod, finPeriod, TaxDef, TaxAct, TaxPer, null, numberTopPerteLoss);
+            ExcelSheetHandler.FillDates(fiExcelFile, dateArret, debutPeriod, finPeriod, TaxDef, TaxAct, TaxPer, null, numberTopPerteLoss, TypeComptes);
 
             ExcelSheetHandler.FillOUI(fiExcelFile);
 
@@ -371,7 +371,7 @@ namespace CompteResultat.BL
                 //Fill the DATA PROV Sheet
                 ExcelSheetHandler.FillPrevProvSheet(C.ePrevProv.Prov, fiExcelFile, assurNameList, parentCompanyNameList, companyNameList, contrNameList, college, debutPeriod, finPeriod, dateArret, yearsToCalc, TypeComptes);
 
-                ExcelSheetHandler.FillDates(fiExcelFile, dateArret, debutPeriod, finPeriod, null, null, null, calculateProvision);
+                ExcelSheetHandler.FillDates(fiExcelFile, dateArret, debutPeriod, finPeriod, null, null, null, calculateProvision, NumberTopPerteLoss, TypeComptes);
 
                 //Test - we no longer use Excel Macros
                 //ExcelSheetHandler.FillOUI(fiExcelFile);

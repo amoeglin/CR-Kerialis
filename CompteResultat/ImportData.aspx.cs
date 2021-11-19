@@ -22,11 +22,13 @@ namespace CompteResultat
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private string importName;
+        private string provOuverture; 
         private HttpPostedFile uploadPrestFile;
         private HttpPostedFile uploadCotFile;
         private HttpPostedFile uploadDemoFile;
         private HttpPostedFile uploadCotPrevFile;
         private HttpPostedFile uploadProvFile;
+        private HttpPostedFile uploadProvOuvertureFile;
         private HttpPostedFile uploadDecompPrevFile;
         private HttpPostedFile uploadSinistrePrevFile;
         private HttpPostedFile uploadExpFile;
@@ -43,11 +45,15 @@ namespace CompteResultat
                 cmdSelectSinistrePrev.Attributes.Add("onclick", "jQuery('#" + uplSinistrePrev.ClientID + "').click();return false;");
                 cmdSelectDecompPrev.Attributes.Add("onclick", "jQuery('#" + uplDecompPrev.ClientID + "').click();return false;");
                 cmdSelectProv.Attributes.Add("onclick", "jQuery('#" + uplProv.ClientID + "').click();return false;");
+                cmdSelectProvOuverture.Attributes.Add("onclick", "jQuery('#" + uplProvOuverture.ClientID + "').click();return false;");
 
                 cmdSelectExp.Attributes.Add("onclick", "jQuery('#" + uplExp.ClientID + "').click();return false;");
 
                 if (!IsPostBack)
                 {
+                    if(txtProvOuvertureDate.Text == "")
+                        txtProvOuvertureDate.Text = "2020-01-01";
+
                     gvImport.Sort("Date", SortDirection.Descending);
 
                     Session[C.eUploadSessionVar.UploadPrestFile.ToString()] = null;
@@ -58,6 +64,7 @@ namespace CompteResultat
                     Session[C.eUploadSessionVar.UploadDecompPrevFile.ToString()] = null;
                     Session[C.eUploadSessionVar.UploadSinistrePrevFile.ToString()] = null;
                     Session[C.eUploadSessionVar.UploadProvFile.ToString()] = null;
+                    Session[C.eUploadSessionVar.UploadProvOuvertureFile.ToString()] = null;
 
                     Session[C.eUploadSessionVar.UploadExpFile.ToString()] = null;
                 }
@@ -65,6 +72,7 @@ namespace CompteResultat
                 if (IsPostBack)
                 {
                     importName = txtNomImport.Text;
+                    provOuverture = txtProvOuvertureDate.Text;
 
                     if (uplPrest.PostedFile != null && uplPrest.PostedFile.FileName.Length > 0)
                     {
@@ -110,14 +118,18 @@ namespace CompteResultat
                         Session[C.eUploadSessionVar.UploadProvFile.ToString()] = uplProv.PostedFile;
                     }
 
+                    if (uplProvOuverture.PostedFile != null && uplProvOuverture.PostedFile.FileName.Length > 0)
+                    {
+                        txtProvOuverturePath.Text = Path.GetFileName(uplProvOuverture.PostedFile.FileName);
+                        Session[C.eUploadSessionVar.UploadProvOuvertureFile.ToString()] = uplProvOuverture.PostedFile;
+                    }
+
                     if (uplExp.PostedFile != null && uplExp.PostedFile.FileName.Length > 0)
                     {
                         txtExpPath.Text = Path.GetFileName(uplExp.PostedFile.FileName);
                         Session[C.eUploadSessionVar.UploadExpFile.ToString()] = uplExp.PostedFile;
                     }
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -127,8 +139,7 @@ namespace CompteResultat
                 Page.Validators.Add(myCustomValidator);
             }
         }
-
-
+        
         public class RowTemplate : ITemplate
         {
             public void InstantiateIn(Control container)
@@ -202,7 +213,7 @@ namespace CompteResultat
         {
             try
             {
-                txtPrestPath.Text = "";
+                txtCotPrevPath.Text = "";
                 uploadCotPrevFile = null;
             }
             catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "imgSelectCotPrev_Click"); }
@@ -226,6 +237,16 @@ namespace CompteResultat
                 uploadExpFile = null;
             }
             catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "imgSelectExp_Click"); }
+        }
+
+        protected void imgSelectProvOuverture_Click(object sender, ImageClickEventArgs e)
+        {
+            try
+            {
+                txtProvOuverturePath.Text = "";
+                uploadProvOuvertureFile = null;
+            }
+            catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "imgSelectProvOuverture_Click"); }
         }
 
         protected void cmdImport_Click(object sender, EventArgs e)
@@ -254,6 +275,7 @@ namespace CompteResultat
                 string uploadPathSinistrPrev = Path.Combine(uploadDirectory, prefix + txtSinistrePrevPath.Text);
                 string uploadPathDecompPrev = Path.Combine(uploadDirectory, prefix + txtDecompPrevPath.Text);
                 string uploadPathProv = Path.Combine(uploadDirectory, prefix + txtProvPath.Text);
+                string uploadPathProvOuverture = Path.Combine(uploadDirectory, prefix + txtProvOuverturePath.Text);
                 string uploadPathExp = Path.Combine(uploadDirectory, prefix + txtExpPath.Text);
 
                 string newPrestEntCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.PrestationsEntMOG.ToString() + ".csv");
@@ -267,6 +289,7 @@ namespace CompteResultat
                 string newSinistrePrevCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.SinistrePrevMOG.ToString() + ".csv");
                 string newDecompPrevCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.DecompPrevMOG.ToString() + ".csv");
                 string newProvCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.ProvMOG.ToString() + ".csv");
+                string newProvOuvertureCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.ProvOuvertureMOG.ToString() + ".csv");
                 string newExpCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.ExpMOG.ToString() + ".csv");
 
                 string tableForOtherFields = WebConfigurationManager.AppSettings["TableForOtherFields"];
@@ -277,7 +300,7 @@ namespace CompteResultat
                 string configStringCotPrev = WebConfigurationManager.AppSettings[C.eConfigStrings.CotisatPrev.ToString()];
                 string configStringSinistrPrev = WebConfigurationManager.AppSettings[C.eConfigStrings.SinistrePrev.ToString()];
                 string configStringDecompPrev = WebConfigurationManager.AppSettings[C.eConfigStrings.DecomptePrev.ToString()];
-                string configStringProv = WebConfigurationManager.AppSettings[C.eConfigStrings.Provisions.ToString()];
+                string configStringProv = WebConfigurationManager.AppSettings[C.eConfigStrings.Provisions.ToString()];                
                 string configStringExp = WebConfigurationManager.AppSettings[C.eConfigStrings.Experience.ToString()];
 
                 uploadPrestFile = (HttpPostedFile)Session[C.eUploadSessionVar.UploadPrestFile.ToString()];
@@ -286,6 +309,7 @@ namespace CompteResultat
                 uploadCotPrevFile = (HttpPostedFile)Session[C.eUploadSessionVar.UploadCotPrevFile.ToString()];
                 uploadDecompPrevFile = (HttpPostedFile)Session[C.eUploadSessionVar.UploadDecompPrevFile.ToString()];
                 uploadProvFile = (HttpPostedFile)Session[C.eUploadSessionVar.UploadProvFile.ToString()];
+                uploadProvOuvertureFile = (HttpPostedFile)Session[C.eUploadSessionVar.UploadProvOuvertureFile.ToString()];
                 uploadSinistrePrevFile = (HttpPostedFile)Session[C.eUploadSessionVar.UploadSinistrePrevFile.ToString()];
                 uploadExpFile = (HttpPostedFile)Session[C.eUploadSessionVar.UploadExpFile.ToString()];
 
@@ -299,7 +323,7 @@ namespace CompteResultat
 
                 //we need to provide at least 1 import file                
                 if (txtPrestPath.Text == "" && txtDemoPath.Text == "" && txtCotPath.Text == "" && txtExpPath.Text == ""
-                    && txtSinistrePrevPath.Text == "" && txtDecompPrevPath.Text == "" && txtCotPrevPath.Text == "" && txtProvPath.Text == "")
+                    && txtSinistrePrevPath.Text == "" && txtDecompPrevPath.Text == "" && txtCotPrevPath.Text == "" && txtProvPath.Text == "" && txtProvOuverturePath.Text == "")
                     throw new Exception("Il faudra spécifier au moins un fichier d'import !");
 
 
@@ -337,6 +361,9 @@ namespace CompteResultat
 
                 if (uploadProvFile != null && uploadProvFile.FileName.Length > 0 && txtProvPath.Text != "")
                     uploadProvFile.SaveAs(uploadPathProv);
+
+                if (uploadProvOuvertureFile != null && uploadProvOuvertureFile.FileName.Length > 0 && txtProvOuverturePath.Text != "")
+                    uploadProvOuvertureFile.SaveAs(uploadPathProvOuverture);
 
                 if (uploadCotPrevFile != null && uploadCotPrevFile.FileName.Length > 0 && txtCotPrevPath.Text != "")               
                     uploadCotPrevFile.SaveAs(uploadPathCotPrev);
@@ -429,6 +456,17 @@ namespace CompteResultat
                     }
                 }
 
+                //verify Provisions Ouverture Data
+                if (File.Exists(uploadPathProvOuverture))
+                {
+                    missingColumns = BLImport.ImportFileVerification(C.eImportFile.Provisions, ref uploadPathProvOuverture, configStringProv);
+                    if (missingColumns.Count > 0)
+                    {
+                        string errMess = string.Format("Le fichier d'import : {0} manque les colonnes suivantes : {1} ", txtProvOuverturePath.Text, string.Join(", ", missingColumns));
+                        throw new Exception(errMess);
+                    }
+                }
+
                 //verify Experience Data
                 if (File.Exists(uploadPathExp))
                 {
@@ -447,11 +485,11 @@ namespace CompteResultat
 
                 //Perform data import
                 BLImport imp = new BLImport(userName, newPrestEntCSV, newPrestProdCSV, newCotEntCSV, newCotProdCSV, newDemoEntCSV, newDemoProdCSV, newOtherFieldsCSV, 
-                    newCotPrevCSV, newSinistrePrevCSV, newDecompPrevCSV, newProvCSV,
+                    newCotPrevCSV, newSinistrePrevCSV, newDecompPrevCSV, newProvCSV, newProvOuvertureCSV,
                     configStringPrest, configStringDemo, configStringCot, configStringOtherFields, configStringCotPrev, configStringSinistrPrev, configStringDecompPrev, configStringProv,
                     tableForOtherFields, importName, csvSep, uploadDirectory, uploadPathPrest, uploadPathCot, uploadPathDemo,
-                    uploadPathCotPrev, uploadPathSinistrPrev, uploadPathDecompPrev, uploadPathProv, newExpCSV, configStringExp, uploadPathExp, forceCompanySubsid, 
-                    updateGroupes, updateExperience, updateCad);
+                    uploadPathCotPrev, uploadPathSinistrPrev, uploadPathDecompPrev, uploadPathProv, uploadPathProvOuverture, newExpCSV, configStringExp, uploadPathExp, forceCompanySubsid, 
+                    updateGroupes, updateExperience, updateCad, provOuverture);
 
                 imp.DoImport();
 
@@ -479,6 +517,7 @@ namespace CompteResultat
                     txtCotPrevPath.Text = "";
                     txtDecompPrevPath.Text = "";
                     txtProvPath.Text = "";
+                    txtProvOuverturePath.Text = "";
                     txtDemoPath.Text = "";
                     txtNomImport.Text = "";
                     txtPrestPath.Text = "";
@@ -491,6 +530,7 @@ namespace CompteResultat
                     uploadCotPrevFile = null;
                     uploadDecompPrevFile = null;
                     uploadProvFile = null;
+                    uploadProvOuvertureFile = null;
                     uploadSinistrePrevFile = null;
                     uploadExpFile = null;
                 }
@@ -539,6 +579,7 @@ namespace CompteResultat
                 Page.Validators.Add(myCustomValidator);
             }
         }
+
 
 
 

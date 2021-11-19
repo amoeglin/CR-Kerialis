@@ -85,9 +85,11 @@
     <Compile Include="BLCompany.cs" />
     <Compile Include="BLCadencier.cs" />
     <Compile Include="BLCompteResultat.cs" />
+    <Compile Include="BLFraisSante.cs" />
     <Compile Include="BLImport.cs" />
     <Compile Include="BLMyCompany.cs" />
     <Compile Include="BLGroupsAndGaranties.cs" />
+    <Compile Include="BLFraisPrev.cs" />
     <Compile Include="BLTypePrev.cs" />
     <Compile Include="ExcelPrestaSheet.cs" />
     <Compile Include="ExcelSheetHandler.cs" />

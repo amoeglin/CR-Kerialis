@@ -43,5 +43,6 @@ namespace CompteResultat.DAL
         public Nullable<double> Psap { get; set; }
         public Nullable<double> PmMgdc { get; set; }
         public Nullable<double> Psi { get; set; }
+        public string IsComptable { get; set; }
     }
 }

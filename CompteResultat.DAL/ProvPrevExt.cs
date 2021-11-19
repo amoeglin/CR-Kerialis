@@ -18,7 +18,7 @@ namespace CompteResultat.DAL
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public static List<ProvPrev> GetProvPrevForContracts(List<string> assurList, List<string> parentCompanyList, List<string> companyList,
-            List<string> contrIds, string college, DateTime debutPeriod, DateTime finPeriod, DateTime dateArret)
+            List<string> contrIds, string college, DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, C.eTypeComptes typeComptes)
         {
             try
             {
@@ -26,15 +26,24 @@ namespace CompteResultat.DAL
 
                 using (var context = new CompteResultatEntities())
                 {
-                    //selection with DateProvision
-                    provPrev = context.ProvPrevs.Where(pp => assurList.Contains(pp.AssureurName) && parentCompanyList.Contains(pp.Company)
+                    if (typeComptes == C.eTypeComptes.Comptable)
+                    {
+                        //Comptable => no test on IsComptable
+                        provPrev = context.ProvPrevs.Where(pp => assurList.Contains(pp.AssureurName) && parentCompanyList.Contains(pp.Company)
+                        && companyList.Contains(pp.Subsid) && contrIds.Contains(pp.ContractId)
+                        && pp.DateProvision >= debutPeriod && pp.DateProvision <= finPeriod).ToList();
+                    }
+                    else
+                    {
+                        //Survenance => pp.IsComptable == false : 0
+                        provPrev = context.ProvPrevs.Where(pp => assurList.Contains(pp.AssureurName) && parentCompanyList.Contains(pp.Company)
                         && companyList.Contains(pp.Subsid) && contrIds.Contains(pp.ContractId)
                         && pp.DateSinistre >= debutPeriod && pp.DateSinistre <= finPeriod
-                        && pp.DateProvision == dateArret).ToList();
+                        && pp.DateProvision == dateArret && pp.IsComptable == "0").ToList();
+                    }
                 }
 
                 return provPrev;
-
             }
             catch (Exception ex)
             {
@@ -46,7 +55,7 @@ namespace CompteResultat.DAL
 
         // OLD désactivé le 0208 2021 AM
         public static List<ProvPrev> GetProvPrevGlobalEntData(List<string> parentCompanyList, List<string> companyList,
-            DateTime debutPeriod, DateTime finPeriod, DateTime dateArret)
+            DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, C.eTypeComptes TypeComptes)
         {
             try
             {
@@ -54,11 +63,21 @@ namespace CompteResultat.DAL
 
                 using (var context = new CompteResultatEntities())
                 {
-                    //selection with DateProvision
-                    provPrev = context.ProvPrevs.Where(pp => parentCompanyList.Contains(pp.Company)
+                    if (TypeComptes == C.eTypeComptes.Comptable)
+                    {
+                        //Comptable => no test on IsComptable
+                        provPrev = context.ProvPrevs.Where(pp => parentCompanyList.Contains(pp.Company)
+                        && companyList.Contains(pp.Subsid)
+                        && pp.DateProvision >= debutPeriod && pp.DateProvision <= finPeriod).ToList();
+                    }
+                    else
+                    {
+                        //Survenance => pp.IsComptable == false : 0
+                        provPrev = context.ProvPrevs.Where(pp => parentCompanyList.Contains(pp.Company)
                         && companyList.Contains(pp.Subsid)
                         && pp.DateSinistre >= debutPeriod && pp.DateSinistre <= finPeriod
-                        && pp.DateProvision == dateArret).ToList();
+                        && pp.DateProvision == dateArret && pp.IsComptable == "0"  ).ToList();
+                    }
                 }
 
                 return provPrev;

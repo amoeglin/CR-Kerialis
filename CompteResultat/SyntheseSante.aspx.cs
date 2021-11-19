@@ -54,6 +54,19 @@ namespace CompteResultat
                         radioTypeComptes.SelectedIndex = iTypeCompteVal;
                     else
                         radioTypeComptes.SelectedIndex = 0;
+
+                    if (radioTypeComptes.SelectedIndex == 0)
+                    {
+                        dateArreteCompte.Visible = true;
+                        lblDateDebut.InnerText = "Date survenance début :";
+                        lblDateFin.InnerText = "Date survenance fin :";
+                    }
+                    else
+                    {
+                        dateArreteCompte.Visible = false;
+                        lblDateDebut.InnerText = "Date comptable début :";
+                        lblDateFin.InnerText = "Date comptable fin :";
+                    }
                 }
             }
             catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "SyntheseSante::Page_Load"); }
@@ -539,6 +552,24 @@ namespace CompteResultat
         protected void txtArretCompte_TextChanged(object sender, EventArgs e)
         {
             //SaveParams();
+        }
+
+        protected void radioTypeComptes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (radioTypeComptes.SelectedIndex == 0)
+            {
+                dateArreteCompte.Visible = true;
+                lblDateDebut.InnerText = "Date survenance début :";
+                lblDateFin.InnerText = "Date survenance fin :";
+            }
+            else
+            {
+                dateArreteCompte.Visible = false;
+                lblDateDebut.InnerText = "Date comptable début :";
+                lblDateFin.InnerText = "Date comptable fin :";
+            }
+
+            SaveParams();
         }
     }
 }

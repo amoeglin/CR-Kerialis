@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SyntheseSante.aspx.cs" Inherits="CompteResultat.SyntheseSante" EnableViewState="false" %>
+﻿<%@ Page Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SyntheseSante.aspx.cs" Inherits="CompteResultat.SyntheseSante" EnableViewState="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     
@@ -53,15 +53,15 @@
         </div>
 
         <div >
-            <label class="element">Date survenance début :</label>
+            <label runat="server" id="lblDateDebut" class="element">Date survenance début :</label>
             <%--OnTextChanged="txtStartPeriode_TextChanged" AutoPostBack="true"--%>
             <asp:TextBox runat="server" ID="txtStartPeriode" TextMode="Date" width="250"   />
         </div>
         <div>
-            <label class="element">Date survenance fin :</label>
+            <label runat="server" id="lblDateFin" class="element">Date survenance fin :</label>
             <asp:TextBox runat="server" ID="txtEndPeriode" TextMode="Date" width="250"  />
         </div>
-        <div>
+        <div id="dateArreteCompte" runat="server">
             <label class="element">Arrêté des comptes :</label>
             <asp:TextBox runat="server" ID="txtArretCompte" TextMode="Date" width="250"  />
         </div>
@@ -100,8 +100,8 @@
             <label id="lblReportType" class="element" style="display:inline; margin-right:5px; vertical-align:top; font-size: 20px;" runat="server" >TYPE DE COMPTES : 
                 <%--<asp:Image visible="false" style="display:inline; margin-left: 10px" ID="imgReport" runat="server" />--%>
             </label>
-            <asp:RadioButtonList ValidateRequestMode="Disabled" AutoPostBack="false" style="display:inline; margin-top:10px" RepeatDirection="Horizontal" 
-                ID="radioTypeComptes" runat="server">
+            <asp:RadioButtonList ValidateRequestMode="Disabled" AutoPostBack="true" style="display:inline; margin-top:10px" RepeatDirection="Horizontal" 
+                ID="radioTypeComptes" runat="server" OnSelectedIndexChanged="radioTypeComptes_SelectedIndexChanged">
                 <asp:ListItem style="margin-right:10px" Selected>&nbsp;Survenance</asp:ListItem>
                 <asp:ListItem style="margin-right:10px">&nbsp;Comptable</asp:ListItem>                                 
             </asp:RadioButtonList>

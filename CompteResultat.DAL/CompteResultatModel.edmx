@@ -247,6 +247,24 @@ warning 6002: The table/view 'CompteResultat.dbo._TempOtherFields' does not have
           <Property Name="Name" Type="nvarchar" MaxLength="50" />
           <Property Name="CompanyList" Type="nvarchar(max)" />
         </EntityType>
+        <EntityType Name="FraisPrevoyance">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AnneeSurvenance" Type="int" />
+          <Property Name="TypeSinistre" Type="nvarchar" MaxLength="50" />
+          <Property Name="Frais" Type="float" />
+        </EntityType>
+        <EntityType Name="FraisSante">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AnneeSurvenance" Type="int" />
+          <Property Name="TypeFraisTaxes" Type="nvarchar" MaxLength="50" />
+          <Property Name="Frais" Type="float" />
+        </EntityType>
         <EntityType Name="GroupGarantySante">
           <Key>
             <PropertyRef Name="Id" />
@@ -380,6 +398,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="Psap" Type="float" />
           <Property Name="PmMgdc" Type="float" />
           <Property Name="Psi" Type="float" />
+          <Property Name="IsComptable" Type="nvarchar" MaxLength="1" Nullable="false" />
         </EntityType>
         <EntityType Name="ReAssureur">
           <Key>
@@ -663,6 +682,8 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySet Name="Demography" EntityType="Self.Demography" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Distributeur" EntityType="Self.Distributeur" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Domain" EntityType="Self.Domain" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FraisPrevoyance" EntityType="Self.FraisPrevoyance" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FraisSante" EntityType="Self.FraisSante" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GroupGarantySante" EntityType="Self.GroupGarantySante" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IMAssContr" EntityType="Self.IMAssContr" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IMContrComp" EntityType="Self.IMContrComp" Schema="dbo" store:Type="Tables" />
@@ -1171,6 +1192,8 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           </FunctionImport>
           <EntitySet Name="C_TempExpData" EntityType="CompteResultatModel.C_TempExpData" />
           <EntitySet Name="ProvPrevs" EntityType="CompteResultatModel.ProvPrev" />
+          <EntitySet Name="FraisPrevoyances" EntityType="CompteResultatModel.FraisPrevoyance" />
+          <EntitySet Name="FraisSantes" EntityType="CompteResultatModel.FraisSante" />
         </EntityContainer>
         <EntityType Name="ReportTemplate">
           <Key>
@@ -1379,6 +1402,25 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="Psap" Type="Double" />
           <Property Name="PmMgdc" Type="Double" />
           <Property Name="Psi" Type="Double" />
+          <Property Name="IsComptable" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="FraisPrevoyance">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AnneeSurvenance" Type="Int32" />
+          <Property Name="TypeSinistre" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Frais" Type="Double" />
+        </EntityType>
+        <EntityType Name="FraisSante">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AnneeSurvenance" Type="Int32" />
+          <Property Name="TypeFraisTaxes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Frais" Type="Double" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1859,6 +1901,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySetMapping Name="ProvPrevs">
             <EntityTypeMapping TypeName="CompteResultatModel.ProvPrev">
               <MappingFragment StoreEntitySet="ProvPrev">
+                <ScalarProperty Name="IsComptable" ColumnName="IsComptable" />
                 <ScalarProperty Name="Psi" ColumnName="Psi" />
                 <ScalarProperty Name="PmMgdc" ColumnName="PmMgdc" />
                 <ScalarProperty Name="Psap" ColumnName="Psap" />
@@ -1887,6 +1930,26 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
                 <ScalarProperty Name="ContractId" ColumnName="ContractId" />
                 <ScalarProperty Name="AssureurName" ColumnName="AssureurName" />
                 <ScalarProperty Name="ImportId" ColumnName="ImportId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FraisPrevoyances">
+            <EntityTypeMapping TypeName="CompteResultatModel.FraisPrevoyance">
+              <MappingFragment StoreEntitySet="FraisPrevoyance">
+                <ScalarProperty Name="Frais" ColumnName="Frais" />
+                <ScalarProperty Name="TypeSinistre" ColumnName="TypeSinistre" />
+                <ScalarProperty Name="AnneeSurvenance" ColumnName="AnneeSurvenance" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FraisSantes">
+            <EntityTypeMapping TypeName="CompteResultatModel.FraisSante">
+              <MappingFragment StoreEntitySet="FraisSante">
+                <ScalarProperty Name="Frais" ColumnName="Frais" />
+                <ScalarProperty Name="TypeFraisTaxes" ColumnName="TypeFraisTaxes" />
+                <ScalarProperty Name="AnneeSurvenance" ColumnName="AnneeSurvenance" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -107,6 +107,7 @@ namespace CompteResultat.Common
             SinistrePrevMOG,
             DecompPrevMOG,
             ProvMOG,
+            ProvOuvertureMOG,
             ExpMOG
         }
 
@@ -119,7 +120,7 @@ namespace CompteResultat.Common
             CotisatPrev,
             SinistrePrev,
             DecomptePrev,
-            Provisions,
+            Provisions,            
             Experience
         }
 
@@ -132,6 +133,7 @@ namespace CompteResultat.Common
             UploadSinistrePrevFile,
             UploadDecompPrevFile,
             UploadProvFile,
+            UploadProvOuvertureFile,
             UploadExpFile
         }
 

@@ -1165,7 +1165,7 @@ namespace CompteResultat.BL
 
                 //get ProvPrev
                 List<ProvPrev> allProvPrevData = new List<ProvPrev>();
-                allProvPrevData = ProvPrev.GetProvPrevGlobalEntData(parentCompanyList, subsidiaryList, debutPeriod, finPeriod, dateArret);
+                allProvPrevData = ProvPrev.GetProvPrevGlobalEntData(parentCompanyList, subsidiaryList, debutPeriod, finPeriod, dateArret, TypeComptes);
                 
                 //Some values from the Cot table may be missing => because we don't have a corresponding entry in the Presta table for certain PK's (Assur-Comp-Year...)
                 //we need to add those missing values from the Cot Table
@@ -1543,7 +1543,8 @@ namespace CompteResultat.BL
             return globalDecompte;
         }
 
-        private static List<ExcelGlobalDecompteData> AddFromProvisToGlobalDecompte(bool isGlobalEnt, bool isGarantie, List<ExcelGlobalDecompteData> globalDecompte, List<ProvPrev> allProvPrevData)
+        private static List<ExcelGlobalDecompteData> AddFromProvisToGlobalDecompte(bool isGlobalEnt, bool isGarantie, List<ExcelGlobalDecompteData> globalDecompte, 
+            List<ProvPrev> allProvPrevData)
         {
             foreach (ProvPrev dat in allProvPrevData)
             {
@@ -1635,12 +1636,12 @@ namespace CompteResultat.BL
                 finNew = new DateTime(finPeriod.Year - years, finPeriod.Month, finPeriod.Day);
 
 
-                allProvPrevData = ProvPrev.GetProvPrevForContracts(assurList, parentCompanyList, companyList, contrList, college, debutNew, finNew, dateArret);
+                allProvPrevData = ProvPrev.GetProvPrevForContracts(assurList, parentCompanyList, companyList, contrList, college, debutNew, finNew, dateArret, typeComptes);
                 List<string> dossierListPrevProv = allProvPrevData.Select(s => s.Dossier).ToList();
 
                 if (prevProvSheet == C.ePrevProv.Prev)
                 {
-                    allSinistreData = SinistrePrev.GetSinistresForContracts(assurList, parentCompanyList, companyList, contrList, college, debutNew, finNew, dateArret);
+                    allSinistreData = SinistrePrev.GetSinistresForContracts(assurList, parentCompanyList, companyList, contrList, college, debutNew, finNew, dateArret, typeComptes);
                     //mySinistreData.AddRange(yearSinistreData);
 
                     if (allSinistreData.Any())
@@ -1943,7 +1944,13 @@ namespace CompteResultat.BL
 
                     //decimal presta1 = DecomptePrev.GetSumPrestaForDossier(dossier, dateArret);
                     //presta = DecomptePrev.GetSumPrestaForDossierFromSP(dossier, dateArret);
-                    var res = decPrevReduced.Where(d => d.Dossier == dossier && d.DatePayement <= dateArret && d.DateSin == sin.DateSinistre && d.CauseSinistre == sin.NatureSinistre).Sum(d => d.Total);
+
+                    double? res = 0.0;
+                    if (typeComptes == C.eTypeComptes.Survenance)
+                        res = decPrevReduced.Where(d => d.Dossier == dossier && d.DatePayement <= dateArret && d.DateSin == sin.DateSinistre && d.CauseSinistre == sin.NatureSinistre).Sum(d => d.Total);
+                    else
+                        res = decPrevReduced.Where(d => d.Dossier == dossier && d.DatePayement >= debutNew && d.DatePayement <= finNew && d.DateSin == sin.DateSinistre && d.CauseSinistre == sin.NatureSinistre).Sum(d => d.Total);
+
                     presta = res.HasValue ? res.Value : 0;
 
                     newRow["PRESTATION"] = presta;
@@ -2347,7 +2354,7 @@ namespace CompteResultat.BL
         }
        
         public static void FillDates(FileInfo excelFilePath, DateTime dateArret, DateTime debutPeriode, DateTime finPeriode,
-            double? TaxDef, double? TaxAct, double? TaxPer, bool? calculProvision, int numberTopPerteLoss = 0)
+            double? TaxDef, double? TaxAct, double? TaxPer, bool? calculProvision, int numberTopPerteLoss = 0, C.eTypeComptes TypeComptes = C.eTypeComptes.Survenance)
         {
             try
             {
@@ -2374,6 +2381,11 @@ namespace CompteResultat.BL
 
                     if (numberTopPerteLoss != 0)
                         ws.Cells["Q2"].Value = numberTopPerteLoss.ToString();
+
+                    if (TypeComptes == C.eTypeComptes.Survenance)
+                        ws.Cells["S2"].Value = "Survenance";
+                    else
+                        ws.Cells["S2"].Value = "Comptable";
 
                     pck.Save();
                 }

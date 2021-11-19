@@ -64,6 +64,19 @@ namespace CompteResultat
                         radioTypeComptes.SelectedIndex = iTypeCompteVal;
                     else
                         radioTypeComptes.SelectedIndex = 0;
+
+                    if (radioTypeComptes.SelectedIndex == 0)
+                    {
+                        dateArreteCompte.Visible = true;
+                        lblDateDebut.InnerText = "Date survenance début :";
+                        lblDateFin.InnerText = "Date survenance fin :";
+                    }
+                    else
+                    {
+                        dateArreteCompte.Visible = false;
+                        lblDateDebut.InnerText = "Date comptable début :";
+                        lblDateFin.InnerText = "Date comptable fin :";
+                    }
                 }                             
             }
             catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::Page_Load"); }
@@ -972,13 +985,18 @@ namespace CompteResultat
             //    reportName = "PREV_" + reportName;
 
             myCR.Name = reportName;
+
+            DateTime dArret = DateTime.Parse(txtArretCompte.Text);
+            if (radioTypeComptes.SelectedIndex == 1)
+                dArret = DateTime.Parse(txtEndPeriode.Text);
+
             //add the CRPlanning data                            
             myCR.CRPlannings.Add(new CRPlanning
             {
                 //DebutPeriode = DateTime.Parse(txtStartPeriode.Value),
                 DebutPeriode = DateTime.Parse(txtStartPeriode.Text),
                 FinPeriode = DateTime.Parse(txtEndPeriode.Text),
-                DateArret = DateTime.Parse(txtArretCompte.Text)
+                DateArret = dArret
             });
 
             myCR.ReportType = repType;
@@ -1408,7 +1426,22 @@ namespace CompteResultat
             }  
          }
 
+        protected void radioTypeComptes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (radioTypeComptes.SelectedIndex == 0)
+            {
+                dateArreteCompte.Visible = true;
+                lblDateDebut.InnerText = "Date survenance début :";
+                lblDateFin.InnerText = "Date survenance fin :";
+            }
+            else
+            {
+                dateArreteCompte.Visible = false;
+                lblDateDebut.InnerText = "Date comptable début :";
+                lblDateFin.InnerText = "Date comptable fin :";
+            }
 
-
+            //SaveParams();
+        }
     }
 }

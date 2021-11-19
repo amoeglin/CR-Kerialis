@@ -135,6 +135,14 @@
     <Compile Include="Domain.cs">
       <DependentUpon>CompteResultatModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="FraisPrevoyance.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FraisPrevoyanceExt.cs" />
+    <Compile Include="FraisSante.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FraisSanteExt.cs" />
     <Compile Include="GroupGarantySante.cs">
       <DependentUpon>CompteResultatModel.tt</DependentUpon>
     </Compile>

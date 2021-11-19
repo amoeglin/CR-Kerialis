@@ -35,6 +35,7 @@ namespace CompteResultat.BL
         public string NewSinistrePrevCSV { get; set; }
         public string NewDecompPrevCSV { get; set; }
         public string NewProvCSV { get; set; }
+        public string NewProvOuvertureCSV { get; set; }
         public string NewExpCSV { get; set; }
         public string ConfigStringPrest { get; set; }
         public string ConfigStringDemo { get; set; }
@@ -54,6 +55,7 @@ namespace CompteResultat.BL
         public string UploadPathSinistrPrev { get; set; }
         public string UploadPathDecompPrev { get; set; }
         public string UploadPathProv { get; set; }
+        public string UploadPathProvOuverture { get; set; }
         public string UploadPathExp { get; set; }
         public int ImportId { get; set; }
 
@@ -61,17 +63,18 @@ namespace CompteResultat.BL
         public bool UpdateGroupes { get; set; }
         public bool UpdateExperience { get; set; }
         public bool UpdateCad { get; set; }
-
+        public static string ProvOuverture { get; set; }
+        
         #endregion
 
         public BLImport(string userName, string newPrestEntCSV, string newPrestProdCSV, string newCotEntCSV, string newCotProdCSV, string newDemoEntCSV, string newDemoProdCSV, string newOtherFieldsCSV,
-            string newCotPrevCSV, string newSinistrePrevCSV, string newDecompPrevCSV, string newProvCSV,
+            string newCotPrevCSV, string newSinistrePrevCSV, string newDecompPrevCSV, string newProvCSV, string newProvOuvertureCSV,
             string configStringPrest, string configStringDemo, string configStringCot, string configStringOtherFields,
             string configStringCotPrev, string configStringSinistrPrev, string configStringDecompPrev, string configStringProv,
             string tableForOtherFields, string importName, string csvSep, string uploadPath, 
             string uploadPathPrest, string uploadPathCot, string uploadPathDemo, string uploadPathCotPrev, string uploadPathSinistrPrev, 
-            string uploadPathDecompPrev, string uploadPathProv, string newExpCSV, string configStringExp, string uploadPathExp, 
-            bool forceCompanySubsid, bool updateGroupes, bool updateExperience, bool updateCad)
+            string uploadPathDecompPrev, string uploadPathProv, string uploadPathProvOuverture, string newExpCSV, string configStringExp, string uploadPathExp, 
+            bool forceCompanySubsid, bool updateGroupes, bool updateExperience, bool updateCad, string provOuverture)
         {
             CSVSep = csvSep;
             ImportName = importName;
@@ -87,6 +90,7 @@ namespace CompteResultat.BL
             NewSinistrePrevCSV = newSinistrePrevCSV;
             NewDecompPrevCSV = newDecompPrevCSV;
             NewProvCSV = newProvCSV;
+            NewProvOuvertureCSV = newProvOuvertureCSV;
             NewExpCSV = newExpCSV;
             ConfigStringPrest = configStringPrest;
             ConfigStringDemo = configStringDemo;
@@ -106,11 +110,13 @@ namespace CompteResultat.BL
             UploadPathSinistrPrev = uploadPathSinistrPrev;
             UploadPathDecompPrev = uploadPathDecompPrev;
             UploadPathProv = uploadPathProv;
+            UploadPathProvOuverture = uploadPathProvOuverture;
             UploadPathExp = uploadPathExp;
             ForceCompanySubsid = forceCompanySubsid;
             UpdateExperience = updateExperience;
             UpdateGroupes = updateGroupes;
             UpdateCad = updateCad;
+            ProvOuverture = provOuverture;
         }
 
         public BLImport(int importId)
@@ -238,6 +244,19 @@ namespace CompteResultat.BL
                     Thread.Sleep(500);
                     if (File.Exists(NewProvCSV))
                         G.GetAssurContrCompSubsidFromCSV(ref dataAssurContrCompSubsid, NewProvCSV, ImportId);
+                }
+
+                if (File.Exists(UploadPathProvOuverture))
+                {
+                    TransformFile(UploadPathProvOuverture, CSVSep, ConfigStringProv, NewProvOuvertureCSV, "Id", importId, C.eImportFile.Provisions, false, true);
+                    Thread.Sleep(500);
+                    if (File.Exists(NewProvOuvertureCSV))
+                        G.GetAssurContrCompSubsidFromCSV(ref dataAssurContrCompSubsid, NewProvOuvertureCSV, ImportId);
+
+                    TransformFile(UploadPathProvOuverture, CSVSep, ConfigStringProv, NewProvOuvertureCSV, "Id", importId, C.eImportFile.Provisions, true, true);
+                    Thread.Sleep(500);
+                    if (File.Exists(NewProvOuvertureCSV))
+                        G.GetAssurContrCompSubsidFromCSV(ref dataAssurContrCompSubsid, NewProvOuvertureCSV, ImportId);
                 }
 
                 //experience Data
@@ -583,6 +602,8 @@ namespace CompteResultat.BL
                     BulkInsert.DoBulkInsert(NewDecompPrevCSV, C.eDBImportTables.DecomptePrev.ToString());
                 if (File.Exists(NewProvCSV) && !UploadPathProv.EndsWith(UserName + "_"))
                     BulkInsert.DoBulkInsert(NewProvCSV, C.eDBImportTables.ProvPrev.ToString());
+                if (File.Exists(NewProvOuvertureCSV) && !UploadPathProvOuverture.EndsWith(UserName + "_"))
+                    BulkInsert.DoBulkInsert(NewProvOuvertureCSV, C.eDBImportTables.ProvPrev.ToString());
 
 
                 //### before inserting, the Exp file needs to be transformed: certain cols need to be modified
@@ -636,7 +657,7 @@ namespace CompteResultat.BL
                     BLCadencier.RecreateCadencier();
 
                 //Update TypePrevoyance
-                if (File.Exists(UploadPathDecompPrev) || File.Exists(UploadPathSinistrPrev) || File.Exists(UploadPathCotPrev) || File.Exists(UploadPathProv))
+                if (File.Exists(UploadPathDecompPrev) || File.Exists(UploadPathSinistrPrev) || File.Exists(UploadPathCotPrev) || File.Exists(UploadPathProv) || File.Exists(UploadPathProvOuverture))
                     BLTypePrev.RecreateTypePrevoyance();
 
                 //everything went well, we delete the corresponding data from the Temp Table
@@ -753,31 +774,27 @@ namespace CompteResultat.BL
         }
 
         public static void TransformFile(string inputFile, string csvSep, string configString,
-            string saveLocation, string leadingIdField = "", int importId = 0, C.eImportFile impFile= C.eImportFile.PrestaSante, bool forceCompanySubsid = false)
+            string saveLocation, string leadingIdField = "", int importId = 0, C.eImportFile impFile= C.eImportFile.PrestaSante, bool forceCompanySubsid = false, bool isProvOuverture = false)
         {
             var myKey = 0;
-            var myKey2 = 0;
-
+            
             try
             {
                 //get all entries trom the table typePrevoyance
                 List<TypePrevoyance> typePref = TypePrevoyance.GetTypePrev();
 
-                //save the new CSV file
-                if (File.Exists(saveLocation) && !forceCompanySubsid)
-                {
+                //delete the CSV file
+                if (File.Exists(saveLocation) && !forceCompanySubsid)                
                     File.Delete(saveLocation);
-                }
 
+                //Generate the Header of the CSV file
                 string newHeaderLine = "";
                 int cnt = 0;
 
                 if (leadingIdField != "")
                     newHeaderLine = leadingIdField + C.cVALSEP;
-
                 if (importId != 0)
                     newHeaderLine += "ImportId" + C.cVALSEP;
-
 
                 //create a Dict that contains the mappings of the imported Excel file                
                 //read the Header columns from the input file into a dictionary : 0-ColName... 
@@ -786,7 +803,6 @@ namespace CompteResultat.BL
                 string csvHeaders = File.ReadLines(inputFile).First();
                 string[] cols = Regex.Split(csvHeaders, csvSep);
 
-                cnt = 0;
                 foreach (string col in cols)
                 {
                     if (col != "")
@@ -795,13 +811,10 @@ namespace CompteResultat.BL
                         cnt++;
                     }
                 }
-
-                //<add key="Prestations" value="Id =>Field2;Name =>Field4;Email;NumbEmployees=>Field1;" />
-
+                
                 //Read the config string & create the mapping table (which is a dictionary) :
                 //key == position in DB Table (0, 1, 2, 3...) -- value == corresponding field index from imported csv file (3, 6, 0, 2...)
                 //that way, we end up with a file that maps exactly the DB Table structure & we can do a direct bulk insert
-
                 List<string> lstNewColHeaders = new List<string>();
                 Dictionary<int, int> dictConfigMappings = new Dictionary<int, int>();
 
@@ -841,6 +854,10 @@ namespace CompteResultat.BL
                     }
                 }
 
+                //If this file is of type Provision Ouverture, we need to add an additional column at the end : IsComptable
+                if (isProvOuverture)
+                    newHeaderLine += "IsComptable";
+
                 //Trim the header line if there is a trailing ;
                 if (newHeaderLine.EndsWith(C.cVALSEP))
                     newHeaderLine = newHeaderLine.Remove(newHeaderLine.Length - 1);
@@ -853,9 +870,34 @@ namespace CompteResultat.BL
                 Dictionary<int, string> dictInpFileLine = new Dictionary<int, string>();
                 cnt = 0;
 
-                if(!forceCompanySubsid)
+                if (!forceCompanySubsid)                
                     sb.AppendLine(newHeaderLine);
+               
+                var keyPM = dictImportFileFields.FirstOrDefault(x => x.Value == "Pm").Key;
+                var keyPmPassage = dictImportFileFields.FirstOrDefault(x => x.Value == "PmPassage").Key;
+                var keyPsap = dictImportFileFields.FirstOrDefault(x => x.Value == "Psap").Key;
+                var keyPmMgdc = dictImportFileFields.FirstOrDefault(x => x.Value == "PmMgdc").Key;
+                var keyPsi = dictImportFileFields.FirstOrDefault(x => x.Value == "Psi").Key;
+                var keyDateProvision = dictImportFileFields.FirstOrDefault(x => x.Value == "DateProvision").Key;
 
+                //Calculate CotNet for CotisatSante & CotisatPrev
+                var keyCotBruteSante = dictImportFileFields.FirstOrDefault(x => x.Value == "CotisationBrute").Key;
+                var keyCotNetSante = dictImportFileFields.FirstOrDefault(x => x.Value == "Cotisation").Key;
+                var keyCotBrutePrev = dictImportFileFields.FirstOrDefault(x => x.Value == "CotisationBrute").Key;
+                var keyCotNetPrev = dictImportFileFields.FirstOrDefault(x => x.Value == "Cotisation").Key;
+                var keyAnneeSurvSante = dictImportFileFields.FirstOrDefault(x => x.Value == "YearCotis").Key;
+                var keyAnneeSurvPrev = dictImportFileFields.FirstOrDefault(x => x.Value == "YearCotis").Key;
+                var keyCodeGarantiePrev = dictImportFileFields.FirstOrDefault(x => x.Value == "LabelSinistre").Key;
+                double valCotBrutSante = 1;
+                double valCotBrutPrev = 1;
+                int valAnneeSurvSante = 2020;
+                int valAnneeSurvPrev = 2020;
+                string valCodeGarantiePrev = "";
+
+                List<FraisSante> fraisSante = FraisSante.GetFraisSante();
+                List<FraisPrevoyance> fraisPrevoyance = FraisPrevoyance.GetFraisPrevoyance();                
+
+                //iterate all lines of import file
                 foreach (string line in File.ReadLines(inputFile))
                 {
                     if (line != "" && cnt > 0 && line.Substring(0,5) != ";;;;;")
@@ -869,8 +911,9 @@ namespace CompteResultat.BL
                         // get cell values from the line
                         cols = Regex.Split(line, C.cVALSEP);
                         
-                        int iContractId = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "contractid").Key;
+                        int iContractId = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "contratid").Key;
 
+                        //iterate all columns of current line
                         foreach (KeyValuePair<int, int> entry in dictConfigMappings)
                         {
                             //string contractId = 
@@ -919,31 +962,72 @@ namespace CompteResultat.BL
                                     if(forceCompanySubsid)
                                         myValue = myValue.ToUpper() + C.cASSTYPEPRODUCT;
                                     else
-                                        myValue = myValue.ToUpper() + C.cASSTYPEENTERPRISE;
+                                        myValue = myValue.ToUpper() + C.cASSTYPEENTERPRISE;                                    
                                 }
-                                
-                                //change the value for the column CodeSinistre for all 4 PREV tables => This column was deleted in the Excel import files & no corresponding column is present in the DB : 11/10/2021
-                                //DB_FIELD=&gt;EXCEL_COLUMN; 
-                                //myKey = dictImportFileFields.FirstOrDefault(x => x.Value == "NatureSinistre").Key;
-                                //if ((impFile == C.eImportFile.CotisatPrev || impFile == C.eImportFile.DecompPrev || impFile == C.eImportFile.SinistrePrev || impFile == C.eImportFile.Provisions)
-                                //    && (entry.Value == myKey))
-                                //{
-                                //    TypePrevoyance tp = typePref.Find(p => p.LabelSinistre == myValue);
 
-                                //    if (tp != null)
-                                //    {
-                                //        myValue = tp.CodeSinistre;
+                                #region CALCULATE COTNET
+                                // store required values for the calculation of CotNet for CotisatSante & CotisatPrev
+                                if (impFile == C.eImportFile.CotisatSante)
+                                {
+                                    if (entry.Value == keyCotBruteSante)
+                                    {
+                                        double dCotBrut = 0;
+                                        if (double.TryParse(cols[keyCotBruteSante], out dCotBrut))
+                                            valCotBrutSante = dCotBrut;
+                                    }
 
-                                //    }
-                                //    else
-                                //    {
-                                //        myValue = "AUTRES";
-                                //    }
-                                //}
+                                    if (entry.Value == keyCotNetSante)
+                                    {
+                                        myValue = "#####";
+                                    }
+
+                                    if (entry.Value == keyAnneeSurvSante)
+                                    {
+                                        int iAnneeSurv = 0;
+                                        if (int.TryParse(cols[keyAnneeSurvSante], out iAnneeSurv))
+                                            valAnneeSurvSante = iAnneeSurv;
+                                    }
+
+                                }
+                                if (impFile == C.eImportFile.CotisatPrev)
+                                {
+                                    if (entry.Value == keyCotNetPrev)
+                                    {
+                                        myValue = "#####";
+                                    }
+
+                                    if (entry.Value == keyCotBrutePrev)
+                                    {
+                                        double dCotBrut = 0;
+                                        if (double.TryParse(cols[keyCotBrutePrev], out dCotBrut))
+                                            valCotBrutPrev = dCotBrut;
+                                    }
+
+                                    if (entry.Value == keyAnneeSurvPrev)
+                                    {
+                                        int iAnneeSurv = 0;
+                                        if (int.TryParse(cols[keyAnneeSurvPrev], out iAnneeSurv))
+                                            valAnneeSurvPrev = iAnneeSurv;
+                                    }
+                                    if (entry.Value == keyCodeGarantiePrev)
+                                    {
+                                        valCodeGarantiePrev = cols[keyCodeGarantiePrev];
+                                    }
+                                }
+                                #endregion
+
+                                //modify DateProvision and multiply the fields PM, PSAP... with -1
+                                if (isProvOuverture)                                   
+                                {
+                                    if (entry.Value == keyDateProvision)
+                                        myValue = ProvOuverture;
+                                    if (entry.Value == keyPmPassage || entry.Value == keyPsap || entry.Value == keyPmMgdc || entry.Value == keyPsi || entry.Value == keyPM)
+                                        myValue = MultiplyByMinusOne(myValue); 
+                                }
 
                                 //force nombreActe = 1 if it is 0
                                 myKey = dictImportFileFields.FirstOrDefault(x => x.Value == "NombreActe").Key; //10
-                                if ((impFile == C.eImportFile.PrestaSante) && (entry.Key == myKey))
+                                if ((impFile == C.eImportFile.PrestaSante) && (entry.Value == myKey))
                                 {
                                     if (myValue == "0")
                                         myValue = "1";
@@ -951,7 +1035,7 @@ namespace CompteResultat.BL
 
                                 //force Age in Demo to 0 if negativ
                                 myKey = dictImportFileFields.FirstOrDefault(x => x.Value == "Age").Key;
-                                if ((impFile == C.eImportFile.Demography) && (entry.Key == myKey))
+                                if ((impFile == C.eImportFile.Demography) && (entry.Value == myKey))
                                 {
                                     if (int.Parse(myValue) < 0)
                                         myValue = "0";
@@ -960,6 +1044,36 @@ namespace CompteResultat.BL
                                 newLine += myValue + C.cVALSEP;
 
                             }
+                        }
+
+                        //we iterated through all columns => update CotNet
+                        if (impFile == C.eImportFile.CotisatSante)
+                        {                            
+                            FraisSante fsFrais = fraisSante.Find(f => f.AnneeSurvenance == valAnneeSurvSante && f.TypeFraisTaxes == "FRAIS");
+                            double frais = fsFrais.Frais.HasValue ? fsFrais.Frais.Value : 0;
+                            FraisSante fsTCA_CMU = fraisSante.Find(f => f.AnneeSurvenance == valAnneeSurvSante && f.TypeFraisTaxes == "TCA_CMU");
+                            double TCA_CMU = fsTCA_CMU.Frais.HasValue ? fsTCA_CMU.Frais.Value : 0;
+                            FraisSante fsTaxe_Covid = fraisSante.Find(f => f.AnneeSurvenance == valAnneeSurvSante && f.TypeFraisTaxes == "TAXE_COVID");
+                            double taxeCovid = fsTaxe_Covid.Frais.HasValue ? fsTaxe_Covid.Frais.Value : 0;
+
+                            var newCotNet = 0.0; // AM indiquer newCotNet = valCotBrutSante
+                            if (1 + TCA_CMU != 0)
+                                newCotNet = Math.Round((valCotBrutSante / (1 + TCA_CMU ) * (1 - frais - taxeCovid)), 2);
+                            newLine = newLine.Replace("#####", newCotNet.ToString());
+                        }
+                        if (impFile == C.eImportFile.CotisatPrev)
+                        {
+                            FraisPrevoyance fp = fraisPrevoyance.Find(f => f.AnneeSurvenance == valAnneeSurvPrev && f.TypeSinistre == valCodeGarantiePrev);
+                            double frais = fp.Frais.HasValue ? fp.Frais.Value : 0;
+                            var newCotNet = 0.0;                            
+                            newCotNet = Math.Round(valCotBrutPrev * (1 - frais), 2);
+                            newLine = newLine.Replace("#####", newCotNet.ToString());
+                        }
+
+                        //add flag :: true at the end of CSV file
+                        if (isProvOuverture)
+                        {
+                            newLine += "1";
                         }
 
                         if (newLine.EndsWith(C.cVALSEP))
@@ -986,6 +1100,17 @@ namespace CompteResultat.BL
             {
                 throw ex;
             }
+        }
+
+        private static string MultiplyByMinusOne(string myValue)
+        {
+            double dVal = 0;
+            if (double.TryParse(myValue, out dVal))
+            {
+                dVal *= -1;
+                myValue = dVal.ToString();
+            }
+            return myValue;
         }
 
         public static void ModifyExperienceFile(string inputFile)
