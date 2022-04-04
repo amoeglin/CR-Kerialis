@@ -11,6 +11,7 @@ using CompteResultat.Common;
 using System.Web.Configuration;
 using System.Data;
 using System.Globalization;
+using System.IO;
 
 namespace CompteResultat
 {

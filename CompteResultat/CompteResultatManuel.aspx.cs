@@ -692,6 +692,25 @@ namespace CompteResultat
             }
             else { validateReportName.Visible = false; }
 
+            //verify if the file to be created is open - xlsx && ppt
+            string crFilePath = Path.Combine(Server.MapPath(C.excelCRFolder), txtNameReport.Value + ".xlsm");
+            string crFilePathPPT = Path.Combine(Server.MapPath(C.excelCRFolder), txtNameReport.Value + ".pptm");
+
+            FileInfo fil1 = new FileInfo(crFilePath);
+            FileInfo fil2 = new FileInfo(crFilePathPPT);
+            if (IsFileLocked(fil1))
+            {
+                lblModalBody.Text = $"Merci de fermer le fichier suivant avant de procéder : <br /> {fil1.FullName}";
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modalFileOpen", "$('#modalFileOpen').modal();", true);
+                upModal.Update();
+            }
+            if (IsFileLocked(fil2))
+            {
+                lblModalBody.Text = $"Merci de fermer le fichier suivant avant de procéder : <br /> {fil2.FullName}";
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modalFileOpen", "$('#modalFileOpen').modal();", true);
+                upModal.Update();
+            }
+
             //save dates
             if (txtStartPeriode.Text != "")
             {
@@ -1442,6 +1461,27 @@ namespace CompteResultat
             }
 
             //SaveParams();
+        }
+
+        protected virtual bool IsFileLocked(FileInfo file)
+        {
+            try
+            {
+                using (FileStream stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    stream.Close();
+                }
+            }
+            catch (IOException ex)
+            {
+                if (ex.Message.ToString().ToLower().Contains("could not find file"))
+                    return false;
+                else
+                    return true;
+            }
+
+            //file is not locked
+            return false;
         }
     }
 }

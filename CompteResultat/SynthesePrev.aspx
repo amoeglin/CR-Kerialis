@@ -119,8 +119,8 @@
         
 
     </div>
-    
-        
+
+            
     <div class="itemCreateSynthese">
         <div style="margin-top:10px; float:left;">
             <span>
@@ -201,8 +201,11 @@
 
     </div>
 
-    </div>
+    </div>   
 
 </asp:Content>
+
+
+
 
 

@@ -290,4 +290,30 @@
 </div>
 
 
+     <!-- Bootstrap Modal Dialog -->
+    <asp:ScriptManager ID="ScriptManger1" runat="Server"></asp:ScriptManager>
+    <div class="modal fade" id="modalFileOpen" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <asp:UpdatePanel ID="upModal" runat="server" ChildrenAsTriggers="false" UpdateMode="Conditional">
+                <ContentTemplate>
+                    <div class="modal-content text-red" style="background-color: #00A8BC; font-size:18px; font-weight: bold; color:red;">
+                        <div class="modal-header">
+                            <h3 class="modal-title text-white" style="font-size:20px; color:white;" id="exampleModalLabel">Fichier ouvert !</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <asp:Label ID="lblModalBody" runat="server" Text=""></asp:Label>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-info" data-dismiss="modal" aria-hidden="true">Close</button>
+                        </div>
+                    </div>
+                </ContentTemplate>
+            </asp:UpdatePanel>
+        </div>
+    </div>
+
+
 </asp:Content>
