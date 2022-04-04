@@ -807,7 +807,7 @@ namespace CompteResultat.BL
                 {
                     if (col != "")
                     {
-                        dictImportFileFields.Add(cnt, col.Trim());
+                        dictImportFileFields.Add(cnt, col.Trim().ToLower());
                         cnt++;
                     }
                 }
@@ -873,21 +873,21 @@ namespace CompteResultat.BL
                 if (!forceCompanySubsid)                
                     sb.AppendLine(newHeaderLine);
                
-                var keyPM = dictImportFileFields.FirstOrDefault(x => x.Value == "Pm").Key;
-                var keyPmPassage = dictImportFileFields.FirstOrDefault(x => x.Value == "PmPassage").Key;
-                var keyPsap = dictImportFileFields.FirstOrDefault(x => x.Value == "Psap").Key;
-                var keyPmMgdc = dictImportFileFields.FirstOrDefault(x => x.Value == "PmMgdc").Key;
-                var keyPsi = dictImportFileFields.FirstOrDefault(x => x.Value == "Psi").Key;
-                var keyDateProvision = dictImportFileFields.FirstOrDefault(x => x.Value == "DateProvision").Key;
+                var keyPM = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "pm").Key;
+                var keyPmPassage = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "pmpassage").Key;
+                var keyPsap = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "psap").Key;
+                var keyPmMgdc = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "pmmgdc").Key;
+                var keyPsi = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "psi").Key;
+                var keyDateProvision = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "dateprovision").Key;
 
                 //Calculate CotNet for CotisatSante & CotisatPrev
-                var keyCotBruteSante = dictImportFileFields.FirstOrDefault(x => x.Value == "CotisationBrute").Key;
-                var keyCotNetSante = dictImportFileFields.FirstOrDefault(x => x.Value == "Cotisation").Key;
-                var keyCotBrutePrev = dictImportFileFields.FirstOrDefault(x => x.Value == "CotisationBrute").Key;
-                var keyCotNetPrev = dictImportFileFields.FirstOrDefault(x => x.Value == "Cotisation").Key;
-                var keyAnneeSurvSante = dictImportFileFields.FirstOrDefault(x => x.Value == "YearCotis").Key;
-                var keyAnneeSurvPrev = dictImportFileFields.FirstOrDefault(x => x.Value == "YearCotis").Key;
-                var keyCodeGarantiePrev = dictImportFileFields.FirstOrDefault(x => x.Value == "LabelSinistre").Key;
+                var keyCotBruteSante = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "cotisationbrute").Key;
+                var keyCotNetSante = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "cotisation").Key;
+                var keyCotBrutePrev = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "cotisationbrute").Key;
+                var keyCotNetPrev = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "cotisation").Key;
+                var keyAnneeSurvSante = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "yearcotis").Key;
+                var keyAnneeSurvPrev = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "yearcotis").Key;
+                var keyCodeGarantiePrev = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "labelsinistre").Key;
                 double valCotBrutSante = 1;
                 double valCotBrutPrev = 1;
                 int valAnneeSurvSante = 2020;
@@ -1026,7 +1026,7 @@ namespace CompteResultat.BL
                                 }
 
                                 //force nombreActe = 1 if it is 0
-                                myKey = dictImportFileFields.FirstOrDefault(x => x.Value == "NombreActe").Key; //10
+                                myKey = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "nombreacte").Key; //10
                                 if ((impFile == C.eImportFile.PrestaSante) && (entry.Value == myKey))
                                 {
                                     if (myValue == "0")
@@ -1034,7 +1034,7 @@ namespace CompteResultat.BL
                                 }
 
                                 //force Age in Demo to 0 if negativ
-                                myKey = dictImportFileFields.FirstOrDefault(x => x.Value == "Age").Key;
+                                myKey = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "age").Key;
                                 if ((impFile == C.eImportFile.Demography) && (entry.Value == myKey))
                                 {
                                     if (int.Parse(myValue) < 0)
