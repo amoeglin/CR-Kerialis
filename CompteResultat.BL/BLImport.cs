@@ -1082,7 +1082,7 @@ namespace CompteResultat.BL
                         sb.AppendLine(newLine);
                     }
 
-                    cnt++;
+                    cnt++; 
                     newLine = "";
 
                     if (cnt > 10000)
