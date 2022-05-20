@@ -44,6 +44,7 @@ namespace CompteResultat.DAL
         public double? RAnnexe { get; set; }
         public double? RNous { get; set; }
         public double PSI { get; set; }
+        public double PmPortabilite { get; set; }
         public double Provisions { get; set; }        
         public double CotBrute { get; set; }
         public string TaxTotal { get; set; }
@@ -384,5 +385,6 @@ namespace CompteResultat.DAL
         public double? Psap { get; set; }
         public double? PmMgdc { get; set; }
         public double? Psi { get; set; }
+        public double? PmPortabilite { get; set; }
     }
 }

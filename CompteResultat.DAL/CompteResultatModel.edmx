@@ -398,6 +398,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="Psap" Type="float" />
           <Property Name="PmMgdc" Type="float" />
           <Property Name="Psi" Type="float" />
+          <Property Name="PmPortabilite" Type="float" />
           <Property Name="IsComptable" Type="nvarchar" MaxLength="1" Nullable="false" />
         </EntityType>
         <EntityType Name="ReAssureur">
@@ -1403,6 +1404,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="PmMgdc" Type="Double" />
           <Property Name="Psi" Type="Double" />
           <Property Name="IsComptable" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="true" />
+          <Property Name="PmPortabilite" Type="Double" />
         </EntityType>
         <EntityType Name="FraisPrevoyance">
           <Key>
@@ -1901,6 +1903,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySetMapping Name="ProvPrevs">
             <EntityTypeMapping TypeName="CompteResultatModel.ProvPrev">
               <MappingFragment StoreEntitySet="ProvPrev">
+                <ScalarProperty Name="PmPortabilite" ColumnName="PmPortabilite" />
                 <ScalarProperty Name="IsComptable" ColumnName="IsComptable" />
                 <ScalarProperty Name="Psi" ColumnName="Psi" />
                 <ScalarProperty Name="PmMgdc" ColumnName="PmMgdc" />

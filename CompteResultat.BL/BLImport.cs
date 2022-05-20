@@ -878,6 +878,7 @@ namespace CompteResultat.BL
                 var keyPsap = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "psap").Key;
                 var keyPmMgdc = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "pmmgdc").Key;
                 var keyPsi = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "psi").Key;
+                var keyPmPortabilite = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "pmportabilite").Key;
                 var keyDateProvision = dictImportFileFields.FirstOrDefault(x => x.Value.ToLower() == "dateprovision").Key;
 
                 //Calculate CotNet for CotisatSante & CotisatPrev
@@ -1021,7 +1022,7 @@ namespace CompteResultat.BL
                                 {
                                     if (entry.Value == keyDateProvision)
                                         myValue = ProvOuverture;
-                                    if (entry.Value == keyPmPassage || entry.Value == keyPsap || entry.Value == keyPmMgdc || entry.Value == keyPsi || entry.Value == keyPM)
+                                    if (entry.Value == keyPmPassage || entry.Value == keyPsap || entry.Value == keyPmMgdc || entry.Value == keyPsi || entry.Value == keyPmPortabilite || entry.Value == keyPM)
                                         myValue = MultiplyByMinusOne(myValue); 
                                 }
 

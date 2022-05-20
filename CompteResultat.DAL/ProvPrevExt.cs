@@ -110,6 +110,7 @@ namespace CompteResultat.DAL
                             Psap = g.Sum(i => i.Psap),
                             PmMgdc = g.Sum(i => i.PmMgdc),
                             Psi = g.Sum(i => i.Psi),
+                            PmPortabilite = g.Sum(i => i.PmPortabilite),
                         })
                         .ToList();
                 }

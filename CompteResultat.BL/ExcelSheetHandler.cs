@@ -1187,6 +1187,7 @@ namespace CompteResultat.BL
                        YearSurv = g.Key.YearSurv,
                        RNous = g.Sum(i => i.RNous),
                        PSI = g.Sum(i => i.PSI),
+                       PmPortabilite = g.Sum(i => i.PmPortabilite),
                        Provisions = g.Sum(i => i.Provisions),
                        CotBrute = g.Sum(i => i.CotBrute),
                        TaxActive = TaxAct.ToString(),
@@ -1216,6 +1217,7 @@ namespace CompteResultat.BL
                        YearSurv = g.Key.YearSurv,
                        RNous = g.Sum(i => i.RNous),
                        PSI = g.Sum(i => i.PSI),
+                       PmPortabilite = g.Sum(i => i.PmPortabilite),
                        Provisions = g.Sum(i => i.Provisions),
                        CotBrute = g.Sum(i => i.CotBrute),
                        TaxActive = TaxAct.ToString(),
@@ -1245,6 +1247,7 @@ namespace CompteResultat.BL
                        YearSurv = g.Key.YearSurv,
                        RNous = g.Sum(i => i.RNous),
                        PSI = g.Sum(i => i.PSI),
+                       PmPortabilite = g.Sum(i => i.PmPortabilite),
                        Provisions = g.Sum(i => i.Provisions),
                        CotBrute = g.Sum(i => i.CotBrute),
                        TaxActive = TaxAct.ToString(),
@@ -1274,6 +1277,7 @@ namespace CompteResultat.BL
                        YearSurv = g.Key.YearSurv,
                        RNous = g.Sum(i => i.RNous),
                        PSI = g.Sum(i => i.PSI),
+                       PmPortabilite = g.Sum(i => i.PmPortabilite),
                        Provisions = g.Sum(i => i.Provisions),
                        CotBrute = g.Sum(i => i.CotBrute),
                        TaxActive = TaxAct.ToString(),
@@ -1321,8 +1325,12 @@ namespace CompteResultat.BL
 
                     double totalProv = Math.Round(decompte.Provisions, 2);
                     double psi = Math.Round(decompte.PSI, 2);
-                    newRow["Provisions"] = totalProv - psi;
+                    double pmPortabilite = Math.Round(decompte.PmPortabilite, 2);
+
+                    newRow["Provisions"] = totalProv - psi - pmPortabilite;
                     newRow["PSI"] = psi;
+                    newRow["PmPortabilite"] = pmPortabilite;
+
                     newRow["TotalProvisions"] = totalProv;                    
 
                     newRow["CotBrute"] = decompte?.CotBrute ?? 0;
@@ -1364,8 +1372,10 @@ namespace CompteResultat.BL
 
                     double totalProv = Math.Round(decompte.Provisions, 2);
                     double psi = Math.Round(decompte.PSI, 2);
-                    newRow["Provisions"] = totalProv - psi;
+                    double pmPortabilite = Math.Round(decompte.PmPortabilite, 2);
+                    newRow["Provisions"] = totalProv - psi - pmPortabilite;
                     newRow["PSI"] = psi;
+                    newRow["PmPortabilite"] = pmPortabilite;
                     newRow["TotalProvisions"] = totalProv;
 
                     newRow["CotBrute"] = decompte?.CotBrute ?? 0;
@@ -1408,8 +1418,10 @@ namespace CompteResultat.BL
 
                     double totalProv = Math.Round(decompte.Provisions, 2);
                     double psi = Math.Round(decompte.PSI, 2);
-                    newRow["Provisions"] = totalProv - psi;
+                    double pmPortabilite = Math.Round(decompte.PmPortabilite, 2);
+                    newRow["Provisions"] = totalProv - psi - pmPortabilite;
                     newRow["PSI"] = psi;
+                    newRow["PmPortabilite"] = pmPortabilite;
                     newRow["TotalProvisions"] = totalProv;
 
                     newRow["CotBrute"] = decompte?.CotBrute ?? 0;
@@ -1451,8 +1463,10 @@ namespace CompteResultat.BL
 
                     double totalProv = Math.Round(decompte.Provisions, 2);
                     double psi = Math.Round(decompte.PSI, 2);
-                    newRow["Provisions"] = totalProv - psi;
+                    double pmPortabilite = Math.Round(decompte.PmPortabilite, 2);
+                    newRow["Provisions"] = totalProv - psi - pmPortabilite;
                     newRow["PSI"] = psi;
+                    newRow["PmPortabilite"] = pmPortabilite;
                     newRow["TotalProvisions"] = totalProv;
 
                     newRow["CotBrute"] = decompte?.CotBrute ?? 0;
@@ -1565,6 +1579,7 @@ namespace CompteResultat.BL
                 double dPsap = dat.Psap.HasValue ? dat.Psap.Value : 0;
                 double dPmMgdc = dat.PmMgdc.HasValue ? dat.PmMgdc.Value : 0;
                 double dPsi = dat.Psi.HasValue ? dat.Psi.Value : 0;
+                double dPmPortabilite = dat.PmPortabilite.HasValue ? dat.PmPortabilite.Value : 0;
 
                 //try to do a merge => update existing line in Decompte
                 if (decomptItem != null)
@@ -1572,7 +1587,8 @@ namespace CompteResultat.BL
                     double rnous = decomptItem.RNous.HasValue ? decomptItem.RNous.Value : 0;
 
                     decomptItem.PSI += dPsi;
-                    decomptItem.Provisions += dPm + dPmPassage + dPsap + dPmMgdc + dPsi;
+                    decomptItem.PmPortabilite += dPmPortabilite;
+                    decomptItem.Provisions += dPm + dPmPassage + dPsap + dPmMgdc + dPsi + dPmPortabilite;
                     decomptItem.GainLoss = decomptItem.CotNet - rnous - decomptItem.Provisions;
                     decomptItem.CodeGarantie = dat.NatureSinistre;                    
                 }
@@ -1590,7 +1606,8 @@ namespace CompteResultat.BL
                     item.Dossier = dat.Dossier;
                     
                     item.PSI = dPsi;
-                    item.Provisions = dPm + dPmPassage + dPsap + dPmMgdc + dPsi;                    
+                    item.PmPortabilite = dPmPortabilite;
+                    item.Provisions = dPm + dPmPassage + dPsap + dPmMgdc + dPsi + dPmPortabilite;                    
                     item.CodeGarantie = dat.NatureSinistre;
                     //item.GainLoss = 0;
 
@@ -1714,7 +1731,8 @@ namespace CompteResultat.BL
                                 PmPassage = dat.PmPassage,
                                 Psap = dat.Psap,
                                 PmMgdc = dat.PmMgdc,
-                                Psi = dat.Psi
+                                Psi = dat.Psi,
+                                PmPortabilite = dat.PmPortabilite
                             });
 
                         }
@@ -1780,6 +1798,7 @@ namespace CompteResultat.BL
                 DataColumn psap = new DataColumn("Psap", typeof(decimal));
                 DataColumn pmMgdc = new DataColumn("PmMgdc", typeof(decimal));
                 DataColumn psi = new DataColumn("Psi", typeof(decimal));
+                DataColumn pmPortabilite = new DataColumn("PmPortabilite", typeof(decimal));
 
                 if (prevProvSheet == C.ePrevProv.Prev)
                 {
@@ -1800,7 +1819,7 @@ namespace CompteResultat.BL
                     prevTableProv.Columns.AddRange(new DataColumn[] { company, contract, codcol, dateSinistre, yearSinistre, typePrev, birthdate, age, ageRange, sex1,
                     dateClosure, motifClosure, duration, ageEntreeInval, nbJoursInval, prestaTotal, provision, dossier1, lastname, firstname, sexHF, dateResiliat,
                     birthdate2, dateIncap, franchiseIncap, durationIncap, incapYesNo, dateInval, prestaIncapInval, franchiseInval, capitalDeces, categoryInval, dateMax, codeSinistre,
-                    dateProv, matricule, pm, pmPassage, psap, pmMgdc, psi});
+                    dateProv, matricule, pm, pmPassage, psap, pmMgdc, psi, pmPortabilite});
 
                     foreach (DataColumn col in prevTableProv.Columns)
                     {
@@ -2073,7 +2092,8 @@ namespace CompteResultat.BL
                             double dPsap = sin.Psap.HasValue ? sin.Psap.Value : 0;
                             double dPmMgdc = sin.PmMgdc.HasValue ? sin.PmMgdc.Value : 0;
                             double dPsi = sin.Psi.HasValue ? sin.Psi.Value : 0;
-
+                            double dPmPortabilite = sin.PmPortabilite.HasValue ? sin.PmPortabilite.Value : 0;
+                            
                             newRow["Date Provision"] = sin.DateProvision;
                             newRow["Matricule"] = sin.Matricule;
                             newRow["Pm"] = dPm;
@@ -2081,8 +2101,9 @@ namespace CompteResultat.BL
                             newRow["Psap"] = dPsap;
                             newRow["PmMgdc"] = dPmMgdc;
                             newRow["Psi"] = dPsi;
-
-                            newRow["PROVISION"] = dPm + dPmPassage + dPsap + dPmMgdc + dPsi;
+                            newRow["PmPortabilite"] = dPmPortabilite;
+                            
+                            newRow["PROVISION"] = dPm + dPmPassage + dPsap + dPmMgdc + dPsi + dPmPortabilite;
                         }
 
                         prevTableProv.Rows.Add(newRow);
@@ -2219,6 +2240,7 @@ namespace CompteResultat.BL
 
                 DataColumn Provisions = new DataColumn("Provisions", typeof(decimal));
                 DataColumn PSI = new DataColumn("PSI", typeof(decimal));
+                DataColumn PmPortabilite = new DataColumn("PmPortabilite", typeof(decimal));
                 DataColumn TotalProvisions = new DataColumn("TotalProvisions", typeof(decimal));
 
                 DataColumn CotBrute = new DataColumn("CotBrute", typeof(decimal));
@@ -2228,7 +2250,7 @@ namespace CompteResultat.BL
                 DataColumn GainLoss = new DataColumn("GainLoss", typeof(decimal));
                 DataColumn DateArret = new DataColumn("DateArret", typeof(DateTime));
 
-                myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, Subsid, YearSurv, TypeSinistre, Prestations, Provisions, PSI, TotalProvisions, CotBrute, TauxChargement, CotNet, Ratio, GainLoss,
+                myTable.Columns.AddRange(new DataColumn[] { Assureur, Company, Subsid, YearSurv, TypeSinistre, Prestations, Provisions, PSI, PmPortabilite, TotalProvisions, CotBrute, TauxChargement, CotNet, Ratio, GainLoss,
                     DateArret, ContractId });
 
                 return myTable;
