@@ -2298,7 +2298,7 @@ namespace CompteResultat.BL
                         yearCotDataSante = CotisatSante.GetCotisationsForContracts(assurList, parentCompanyList, companyList, contrList, college, debutNew, finNew);
                         myCotDataSante.AddRange(yearCotDataSante);
                     }
-                    else if ((templateType == C.eReportTemplateTypes.PREV && years == 0) || (templateType == C.eReportTemplateTypes.PREV_GLOBAL && years == 0))
+                    else if ((templateType == C.eReportTemplateTypes.PREV && years == 0) || (templateType == C.eReportTemplateTypes.PREV_GLOBAL && years == 0))                       
                     {                        
                         yearCotDataPrev = CotisatPrev.GetCotisationsForContracts(assurList, parentCompanyList, companyList, contrList, college, debutNew, finNew);
                         myCotDataPrev.AddRange(yearCotDataPrev);
@@ -2359,13 +2359,25 @@ namespace CompteResultat.BL
                     }
                 }
 
+                log.Error("EXCELPACK");
                 using (ExcelPackage pck = new ExcelPackage(excelFilePath))
                 {
-                    pck.Workbook.Worksheets[C.cEXCELCOT].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
-
-                    ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELCOT];
-                    ws.Cells["A2"].LoadFromDataTable(cotisatTable, false);
-                    pck.Save();
+                    try
+                    {
+                        log.Error("1");
+                        pck.Workbook.Worksheets[C.cEXCELCOT].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+                        log.Error("2");
+                        ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELCOT];
+                        log.Error("3");
+                        ws.Cells["A2"].LoadFromDataTable(cotisatTable, false);
+                        log.Error("4");
+                        pck.Save();
+                        log.Error("5");
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error("Error :: In Using ExcelPack : " + ex.Message);
+                    }
                 }
             }
             catch (Exception ex)

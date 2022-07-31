@@ -241,9 +241,19 @@ namespace CompteResultat.BL
                 //### display warning if the destination file already exists or should we just overwrtie the file ???
 
                 if (File.Exists(templateFilePath))
-                    File.Copy(templateFilePath, crFilePath, true);
+                {
+                    try
+                    {
+                        File.Copy(templateFilePath, crFilePath, true);
+                    } catch(Exception ex)
+                    {
+                        log.Error(ex.Message);
+                    }
+                }
                 else
+                {
                     throw new Exception("The specified Excel template file does not exist: " + templateFileName);
+                }
 
                 if (ReportType == C.eReportTypes.Standard || ReportType == C.eReportTypes.GlobalSynthese)
                 {
@@ -308,11 +318,12 @@ namespace CompteResultat.BL
                 {
                     if (templateType == C.eReportTemplateTypes.SANTE)
                         CreateExcelSANTEData(fiExcelFile, AssurNames, ParentCompanyNames, SubsidNames, ContractNames, debutPeriod, finPeriod, yearsToCalc, college,
-                            dateArret, crp, crFilePathPPT, crFilePath, templateType, reportWithOption);
-
-                    else if (templateType == C.eReportTemplateTypes.PREV)
+                            dateArret, crp, crFilePathPPT, crFilePath, templateType, reportWithOption);                    
+                    else if (templateType == C.eReportTemplateTypes.PREV) 
+                    {
                         CreateExcelPREVData(fiExcelFile, AssurNames, ParentCompanyNames, SubsidNames, ContractNames, debutPeriod, finPeriod, college,
                         dateArret, crp, crFilePathPPT, crFilePath, templateType, yearsToCalc, CalculateProvision);
+                    }
                 }
                 else 
                 {
@@ -377,7 +388,6 @@ namespace CompteResultat.BL
                 //ExcelSheetHandler.FillOUI(fiExcelFile);
 
                 ExcelSheetHandler.FillTypePrev(fiExcelFile);
-
 
                 //### run Excel Macros 
                 //RunExcelMacro(fiExcelFile.FullName, "PROVISIONCALCUL.PROVISIONCALCUL", false);

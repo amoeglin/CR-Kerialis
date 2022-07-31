@@ -684,128 +684,167 @@ namespace CompteResultat
         }
 
         protected void cmdCreateCR_Click(object sender, EventArgs e)
-        {  
-            //RequiredFieldValidator1.ErrorMessage = "Le nom du rapport est obligatoire !";
-            if (txtNameReport.Value == "")
-            {
-                validateReportName.Visible = true;
-            }
-            else { validateReportName.Visible = false; }
+        {
+            try {
+                try {
+                    //RequiredFieldValidator1.ErrorMessage = "Le nom du rapport est obligatoire !";
+                    try { 
+                        if (txtNameReport.Value == "")
+                        {
+                            validateReportName.Visible = true;
+                        }
+                        else { validateReportName.Visible = false; }
+                    }
+                    catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::10"); }
 
-            //verify if the file to be created is open - xlsx && ppt
-            string crFilePath = Path.Combine(Server.MapPath(C.excelCRFolder), txtNameReport.Value + ".xlsm");
-            string crFilePathPPT = Path.Combine(Server.MapPath(C.excelCRFolder), txtNameReport.Value + ".pptm");
+                    string crFilePath = "";
+                    string crFilePathPPT = "";
+                    try { 
+                        //verify if the file to be created is open - xlsx && ppt
+                        crFilePath = Path.Combine(Server.MapPath(C.excelCRFolder), txtNameReport.Value + ".xlsm");
+                        crFilePathPPT = Path.Combine(Server.MapPath(C.excelCRFolder), txtNameReport.Value + ".pptm");
+                    }
+                    catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::11"); }
 
-            FileInfo fil1 = new FileInfo(crFilePath);
-            FileInfo fil2 = new FileInfo(crFilePathPPT);
-            if (IsFileLocked(fil1))
-            {
-                lblModalBody.Text = $"Merci de fermer le fichier suivant avant de procéder : <br /> {fil1.FullName}";
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modalFileOpen", "$('#modalFileOpen').modal();", true);
-                upModal.Update();
-            }
-            if (IsFileLocked(fil2))
-            {
-                lblModalBody.Text = $"Merci de fermer le fichier suivant avant de procéder : <br /> {fil2.FullName}";
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modalFileOpen", "$('#modalFileOpen').modal();", true);
-                upModal.Update();
-            }
+                    FileInfo fil1 = new FileInfo(crFilePath);
+                    FileInfo fil2 = new FileInfo(crFilePathPPT);
 
-            //save dates
-            if (txtStartPeriode.Text != "")
-            {
-                HttpCookie cookie = new HttpCookie("txtStartPeriode");
-                cookie.Values["txtStartPeriode"] = txtStartPeriode.Text;
-                Response.Cookies.Add(cookie);
-            }
-            if (txtEndPeriode.Text != "")
-            {
-                HttpCookie cookie = new HttpCookie("txtEndPeriode");
-                cookie.Values["txtEndPeriode"] = txtEndPeriode.Text;
-                Response.Cookies.Add(cookie);
-            }
-            if (txtArretCompte.Text != "")
-            {
-                HttpCookie cookie = new HttpCookie("txtArretCompte");
-                cookie.Values["txtArretCompte"] = txtArretCompte.Text;
-                Response.Cookies.Add(cookie);
-            }
+                    try {                                           
+                        if (IsFileLocked(fil1))
+                        {
+                            try
+                            {
+                                lblModalBody.Text = $"Merci de fermer le fichier suivant avant de procéder : <br /> {fil1.FullName}";                                
+                                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modalFileOpen", "$('#modalFileOpen').modal();", true);                       
+                                upModal.Update();
+                            }
+                            catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::15"); }
+                        }                        
+                    }
+                    catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::13"); }
 
-            HttpCookie cookieTC = new HttpCookie("typeCompte");
-            cookieTC.Values["typeCompte"] = radioTypeComptes.SelectedIndex.ToString();
-            Response.Cookies.Add(cookieTC);
-
-            //verify if Cadencier is up to date
-            //CadencierIsUpToDate();
-            List<int> missingYears = new List<int>();
-            bool cadUpToDate = BLCadencier.CadencierIsUpToDate(ref missingYears, txtStartPeriode.Text, txtEndPeriode.Text);
-
-            lblCadencierWarning.Visible = false;
-            if (!cadUpToDate && cmbDetailReport.SelectedItem.Text != "Prévoyance")
-            {
-                string strYears = string.Join(", ", missingYears);
-                lblCadencierWarning.Text = "Attention, le cadencier n’est pas à jour pour les année(s) : " + strYears + " !";
-                lblCadencierWarning.Visible = true;
-            }
-
-
-            List < BLCompteResultat > crs = CollectData();
-
-            //Call method in BL & pass the List of CRs
-            int crId = 0;
-            if (crs != null)
-            {
-                foreach (BLCompteResultat cr in crs)
-                {
-                    crId = cr.CreateNewCompteResultat();
+                    try {
+                        fil2 = new FileInfo(crFilePathPPT);
+                        if (IsFileLocked(fil2))
+                        {
+                            lblModalBody.Text = $"Merci de fermer le fichier suivant avant de procéder : <br /> {fil2.FullName}";
+                            //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modalFileOpen", "$('#modalFileOpen').modal();", true);
+                            upModal.Update();
+                        }
+                    }
+                    catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::14"); }
                 }
+                catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::2"); }
+
+                try { 
+                    //save dates
+                    if (txtStartPeriode.Text != "")
+                    {
+                        HttpCookie cookie = new HttpCookie("txtStartPeriode");
+                        cookie.Values["txtStartPeriode"] = txtStartPeriode.Text;
+                        Response.Cookies.Add(cookie);
+                    }
+                    if (txtEndPeriode.Text != "")
+                    {
+                        HttpCookie cookie = new HttpCookie("txtEndPeriode");
+                        cookie.Values["txtEndPeriode"] = txtEndPeriode.Text;
+                        Response.Cookies.Add(cookie);
+                    }
+                    if (txtArretCompte.Text != "")
+                    {
+                        HttpCookie cookie = new HttpCookie("txtArretCompte");
+                        cookie.Values["txtArretCompte"] = txtArretCompte.Text;
+                        Response.Cookies.Add(cookie);
+                    }
+
+                    HttpCookie cookieTC = new HttpCookie("typeCompte");
+                    cookieTC.Values["typeCompte"] = radioTypeComptes.SelectedIndex.ToString();
+                    Response.Cookies.Add(cookieTC);
+                }
+                catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::3"); }
+
+                try { 
+                    //verify if Cadencier is up to date
+                    //CadencierIsUpToDate();
+                    List<int> missingYears = new List<int>();
+                    bool cadUpToDate = BLCadencier.CadencierIsUpToDate(ref missingYears, txtStartPeriode.Text, txtEndPeriode.Text);
+
+                    lblCadencierWarning.Visible = false;
+                    if (!cadUpToDate && cmbDetailReport.SelectedItem.Text != "Prévoyance")
+                    {
+                        string strYears = string.Join(", ", missingYears);
+                        lblCadencierWarning.Text = "Attention, le cadencier n’est pas à jour pour les année(s) : " + strYears + " !";
+                        lblCadencierWarning.Visible = true;
+                    }
+                }
+                catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::4"); }
+
+                try { 
+                    List < BLCompteResultat > crs = CollectData();
+
+                    //Call method in BL & pass the List of CRs
+                    int crId = 0;
+                    if (crs != null)
+                    {
+                        foreach (BLCompteResultat cr in crs)
+                        {
+                            crId = cr.CreateNewCompteResultat();
+                        }
+                    }
+                }
+                catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::5"); }
+
+                //### fix the below code
+                //return;
+
+                try {  
+                    //delete all CR nodes & re-create them to reflect name changes 
+                    //make sure the correct parent node of the CR nodes to be deleted is selected
+                    TreeNode selectedNode = tvContracts.SelectedNode;
+                    if (selectedNode != null)
+                    {
+                    TreeViewTag tv = TreeViewTag.GetObjectFromString(selectedNode.Value);
+
+                    if (tv.NodeType == C.eTVNodeTypes.CompteResultat)
+                    {
+                        //we need to move up one level
+                        selectedNode = selectedNode.Parent;
+                        tv = TreeViewTag.GetObjectFromString(selectedNode.Value);
+                    }
+
+                    //delete all CR nodes
+                    List<TreeNode> crNodes = new List<TreeNode>();
+                    foreach (TreeNode crNode in selectedNode.ChildNodes)
+                    {
+                        TreeViewTag tvCR = TreeViewTag.GetObjectFromString(crNode.Value);
+                        if (tvCR.NodeType == C.eTVNodeTypes.CompteResultat)
+                            crNodes.Add(crNode);
+
+                        //TreeViewTag tvCR = TreeViewTag.GetObjectFromString(nodeCR.Value);
+                        //if (tvCR.NodeType == C.eTVNodeTypes.CompteResultat)
+                        //    selectedNode.ChildNodes.Remove(nodeCR);             
+                    }
+
+                    if (crNodes.Count > 0)
+                    {
+                        foreach (TreeNode crNode in crNodes)
+                            selectedNode.ChildNodes.Remove(crNode);
+
+                        //re-create all CR nodes
+                        int assurId = tv.AssureurId;
+                        string detail = "Nom : " + tv.Name + Environment.NewLine + Environment.NewLine;
+                        int parentCompanyId = -1;
+                        if (tv.NodeType == C.eTVNodeTypes.ParentCompany)
+                            parentCompanyId = tv.Id;
+
+                        LoadAllCRNodes(selectedNode, tv, parentCompanyId, assurId, detail);
+                    }
+                    }
+                }
+                catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::6"); }
+
             }
-
-            //### fix the below code
-            //return;
-
-            //delete all CR nodes & re-create them to reflect name changes 
-            //make sure the correct parent node of the CR nodes to be deleted is selected
-            TreeNode selectedNode = tvContracts.SelectedNode;
-            if (selectedNode != null)
-            {
-                TreeViewTag tv = TreeViewTag.GetObjectFromString(selectedNode.Value);
-
-                if (tv.NodeType == C.eTVNodeTypes.CompteResultat)
-                {
-                    //we need to move up one level
-                    selectedNode = selectedNode.Parent;
-                    tv = TreeViewTag.GetObjectFromString(selectedNode.Value);
-                }
-
-                //delete all CR nodes
-                List<TreeNode> crNodes = new List<TreeNode>();
-                foreach (TreeNode crNode in selectedNode.ChildNodes)
-                {
-                    TreeViewTag tvCR = TreeViewTag.GetObjectFromString(crNode.Value);
-                    if (tvCR.NodeType == C.eTVNodeTypes.CompteResultat)
-                        crNodes.Add(crNode);
-
-                    //TreeViewTag tvCR = TreeViewTag.GetObjectFromString(nodeCR.Value);
-                    //if (tvCR.NodeType == C.eTVNodeTypes.CompteResultat)
-                    //    selectedNode.ChildNodes.Remove(nodeCR);             
-                }
-
-                if (crNodes.Count > 0)
-                {
-                    foreach (TreeNode crNode in crNodes)
-                        selectedNode.ChildNodes.Remove(crNode);
-
-                    //re-create all CR nodes
-                    int assurId = tv.AssureurId;
-                    string detail = "Nom : " + tv.Name + Environment.NewLine + Environment.NewLine;
-                    int parentCompanyId = -1;
-                    if (tv.NodeType == C.eTVNodeTypes.ParentCompany)
-                        parentCompanyId = tv.Id;
-
-                    LoadAllCRNodes(selectedNode, tv, parentCompanyId, assurId, detail);
-                }
-            }
+            catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::1"); }
         }
         
         protected List<BLCompteResultat> CollectData()

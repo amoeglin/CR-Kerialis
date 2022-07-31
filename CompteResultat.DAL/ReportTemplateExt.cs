@@ -24,7 +24,7 @@ namespace CompteResultat.DAL
 
                 using (var context = new CompteResultatEntities())
                 {
-                    repTempl = context.ReportTemplate.Where(e => e.Type != "SANTE_SYNT").OrderBy(r => r.DisplayOrder).ToList();
+                    repTempl = context.ReportTemplate.Where(e => e.Type != "SANTE_SYNT" && e.Type != "PREV_SYNTH").OrderBy(r => r.DisplayOrder).ToList();
                 }
 
                 if (repTempl == null || repTempl.Count == 0)
