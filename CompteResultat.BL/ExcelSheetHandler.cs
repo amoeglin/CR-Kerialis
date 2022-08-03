@@ -1298,7 +1298,11 @@ namespace CompteResultat.BL
 
                 //create DATA table
                 foreach (ExcelGlobalDecompteData decompte in globalDecompteGroup)
-                { 
+                {
+                    double ratio = 0;
+                    if (decompte.CotNet != 0)
+                        ratio = (decompte.Provisions + (decompte.RNous.HasValue ? decompte.RNous.Value : 0)) / decompte.CotNet;
+
                     double tauxChargement = 0;
                     if (decompte.CotBrute != 0)
                     {
@@ -1337,7 +1341,8 @@ namespace CompteResultat.BL
                     //newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
                     newRow["TauxChargement"] = Math.Round(tauxChargement, 4);
                     newRow["CotNet"] = decompte?.CotNet ?? 0;
-                    newRow["Ratio"] = Math.Round(decompte.Ratio, 4);
+                    //newRow["Ratio"] = Math.Round(decompte.Ratio, 4);
+                    newRow["Ratio"] = Math.Round(ratio, 4);
                     newRow["GainLoss"] = gainLoss;
                     newRow["DateArret"] = dateArret;                    
 
@@ -1392,6 +1397,10 @@ namespace CompteResultat.BL
                 //create DATA_GARANTIE table
                 foreach (ExcelGlobalDecompteData decompte in globalDecompteGroupwithGarantie)
                 {
+                    double ratio = 0;
+                    if (decompte.CotNet != 0)
+                        ratio = (decompte.Provisions + (decompte.RNous.HasValue ? decompte.RNous.Value : 0)) / decompte.CotNet;
+
                     double tauxChargement = 0;
                     if (decompte.CotBrute != 0)
                     {
@@ -1428,7 +1437,8 @@ namespace CompteResultat.BL
                     //newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
                     newRow["TauxChargement"] = Math.Round(tauxChargement, 4);
                     newRow["CotNet"] = decompte?.CotNet ?? 0;
-                    newRow["Ratio"] = Math.Round(decompte.Ratio, 4);
+                    //newRow["Ratio"] = Math.Round(decompte.Ratio, 4);
+                    newRow["Ratio"] = Math.Round(ratio, 4);
                     newRow["GainLoss"] = gainLoss;
                     newRow["DateArret"] = dateArret;
 
@@ -1472,10 +1482,10 @@ namespace CompteResultat.BL
                     newRow["CotBrute"] = decompte?.CotBrute ?? 0;
                    //newRow["TauxChargement"] = string.Format("{0:0.0000} %", tauxChargement);
                     newRow["TauxChargement"] = Math.Round(tauxChargement, 4);
-                     newRow["CotNet"] = decompte?.CotNet ?? 0;
+                    newRow["CotNet"] = decompte?.CotNet ?? 0;
                     newRow["Ratio"] = Math.Round(ratio, 4);
                     newRow["GainLoss"] = gainLoss;
-                    newRow["DateArret"] = dateArret;
+                    newRow["DateArret"] = dateArret;  
 
                     globalGarantieTableCumul.Rows.Add(newRow);
                 }
