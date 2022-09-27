@@ -141,7 +141,7 @@ namespace CompteResultat.DAL
             }
         }
 
-        public static List<ExcelGlobalPrestaData> GetPrestaGlobalEntData(List<int> years, List<string> companyList)
+        public static List<ExcelGlobalPrestaData> GetPrestaGlobalEntData(List<int> years, List<string> companyList, DateTime dateArret)
         {
             try
             {
@@ -150,7 +150,7 @@ namespace CompteResultat.DAL
                 using (var context = new CompteResultatEntities())
                 {
                     prestations = context.PrestSantes
-                    .Where(d => years.Contains(d.DateSoins.Value.Year) && companyList.Contains(d.Company))
+                    .Where(d => years.Contains(d.DateSoins.Value.Year) && companyList.Contains(d.Company) && d.DatePayment <= dateArret)
                     .GroupBy(p => new { p.AssureurName, p.Company, AnnSurv = p.DateSoins.Value.Year, p.ContractId })
                     .Select(g => new ExcelGlobalPrestaData
                     {
@@ -188,7 +188,7 @@ namespace CompteResultat.DAL
             }
         }
 
-        public static List<ExcelGlobalPrestaData> GetPrestaGlobalEntDataCompta(List<int> years, List<string> companyList)
+        public static List<ExcelGlobalPrestaData> GetPrestaGlobalEntDataCompta(List<int> years, List<string> companyList, DateTime dateArret)
         {
             try
             {
@@ -197,7 +197,7 @@ namespace CompteResultat.DAL
                 using (var context = new CompteResultatEntities())
                 {
                     prestations = context.PrestSantes
-                    .Where(d => years.Contains(d.DatePayment.Value.Year) && companyList.Contains(d.Company))
+                    .Where(d => years.Contains(d.DatePayment.Value.Year) && companyList.Contains(d.Company) && d.DatePayment <= dateArret)
                     .GroupBy(p => new { p.AssureurName, p.Company, AnnPaiement = p.DatePayment.Value.Year, p.ContractId })
                     .Select(g => new ExcelGlobalPrestaData
                     {
@@ -235,7 +235,7 @@ namespace CompteResultat.DAL
             }
         }
 
-        public static List<ExcelGlobalPrestaData> GetPrestaGlobalSubsidData(List<int> years, List<string> subsidList)
+        public static List<ExcelGlobalPrestaData> GetPrestaGlobalSubsidData(List<int> years, List<string> subsidList, DateTime dateArret)
         {
             try
             {
@@ -244,7 +244,7 @@ namespace CompteResultat.DAL
                 using (var context = new CompteResultatEntities())
                 {
                     prestations = context.PrestSantes
-                    .Where(d => years.Contains(d.DateSoins.Value.Year) && subsidList.Contains(d.Company))
+                    .Where(d => years.Contains(d.DateSoins.Value.Year) && subsidList.Contains(d.Company) && d.DatePayment <= dateArret)
                     .GroupBy(p => new { p.AssureurName, p.Company, p.Subsid, AnnSurv = p.DateSoins.Value.Year, p.ContractId })
                     .Select(g => new ExcelGlobalPrestaData
                     {
@@ -282,7 +282,7 @@ namespace CompteResultat.DAL
             }
         }
 
-        public static List<ExcelGlobalPrestaData> GetPrestaGlobalSubsidDataCompta(List<int> years, List<string> subsidList)
+        public static List<ExcelGlobalPrestaData> GetPrestaGlobalSubsidDataCompta(List<int> years, List<string> subsidList, DateTime dateArret)
         {
             try
             {
@@ -291,7 +291,7 @@ namespace CompteResultat.DAL
                 using (var context = new CompteResultatEntities())
                 {
                     prestations = context.PrestSantes
-                    .Where(d => years.Contains(d.DatePayment.Value.Year) && subsidList.Contains(d.Company))
+                    .Where(d => years.Contains(d.DatePayment.Value.Year) && subsidList.Contains(d.Company) && d.DatePayment <= dateArret)
                     .GroupBy(p => new { p.AssureurName, p.Company, p.Subsid, AnneePaiement = p.DatePayment.Value.Year, p.ContractId })
                     .Select(g => new ExcelGlobalPrestaData
                     {

@@ -24,8 +24,9 @@ namespace CompteResultat
                 {
                     try
                     {
+                        context.Database.ExecuteSqlCommand("truncate table[CompteResultat].[dbo].[Cadencier]");
                         context.Database.ExecuteSqlCommand("truncate table[CompteResultat].[dbo].[IMAssContr]");
-
+                        
                         context.Database.ExecuteSqlCommand("truncate table[CompteResultat].[dbo].[IMContrComp]");
                         context.Database.ExecuteSqlCommand("truncate table[CompteResultat].[dbo].[IMContrDistrib]");
                         context.Database.ExecuteSqlCommand("truncate table[CompteResultat].[dbo].[IMReAssAss]");

@@ -140,6 +140,8 @@ namespace CompteResultat.BL
                 List<string> assNames = presta.GroupBy(p => new { p.AssureurName })
                     .Select(g => g.Key.AssureurName)
                     .ToList();
+
+                //assNames.Add("Paramètres par défaut");
                 List<int> years = presta.GroupBy(p => new { p.AnneeSoins })
                     .Select(g => g.Key.AnneeSoins)
                     .ToList();
@@ -153,6 +155,7 @@ namespace CompteResultat.BL
 
                 int maxYear = years.Max();
 
+                bool defaultDone = false;
                 foreach (string assName in assNames)
                 {
                     lstSommePresta = new List<double?>();
@@ -166,6 +169,8 @@ namespace CompteResultat.BL
 
                     //delete Cad for specific year
                     Cadencier.DeleteCadencierForSpecificYear(maxYear, assName);
+                    if(!defaultDone)
+                        Cadencier.DeleteCadencierForSpecificYear(maxYear, "Paramètres par défaut");
 
                     //re-create Cad for that year
                     int maxMonth = presta.Max(p => p.MoisReglement);
@@ -217,18 +222,41 @@ namespace CompteResultat.BL
                             coeffPSAP = 0;
                         }
 
-                        int id = Cadencier.InsertCadencier(new Cadencier
+
+                        //### test - Paramètres par défaut
+                        foreach (int y in years)
                         {
-                            AssureurName = assName,
-                            Year = maxYear,
-                            DebutSurvenance = new DateTime(maxYear, 1, 1),
-                            FinSurvenance = new DateTime(maxYear, 12, 31),
-                            Month = month,
-                            Cumul = Math.Round(coeffPSAP.Value, 4)
-                        });
+                            int id = Cadencier.InsertCadencier(new Cadencier
+                            {
+                                AssureurName = assName,
+                                Year = y,                                
+                                DebutSurvenance = new DateTime(y, 1, 1),
+                                FinSurvenance = new DateTime(y, 12, 31),
+                                Month = month,
+                                Cumul = Math.Round(coeffPSAP.Value, 4)
+                            });
+                        }
+
+                        if(!defaultDone)
+                        {
+                            foreach (int y in years)
+                            {
+                                int id = Cadencier.InsertCadencier(new Cadencier
+                                {
+                                    AssureurName = "Paramètres par défaut",
+                                    Year = y,
+                                    DebutSurvenance = new DateTime(y, 1, 1),
+                                    FinSurvenance = new DateTime(y, 12, 31),
+                                    Month = month,
+                                    Cumul = Math.Round(coeffPSAP.Value, 4)
+                                });
+                            }
+                        }
 
                         month++;
                     }
+
+                    defaultDone = true;
                 }
 
             }

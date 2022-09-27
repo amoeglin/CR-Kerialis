@@ -318,7 +318,7 @@ namespace CompteResultat.BL
                 {
                     if (templateType == C.eReportTemplateTypes.SANTE)
                         CreateExcelSANTEData(fiExcelFile, AssurNames, ParentCompanyNames, SubsidNames, ContractNames, debutPeriod, finPeriod, yearsToCalc, college,
-                            dateArret, crp, crFilePathPPT, crFilePath, templateType, reportWithOption);                    
+                            dateArret, crp, crFilePathPPT, crFilePath, templateType, reportWithOption, CalculateProvision);                    
                     else if (templateType == C.eReportTemplateTypes.PREV) 
                     {
                         CreateExcelPREVData(fiExcelFile, AssurNames, ParentCompanyNames, SubsidNames, ContractNames, debutPeriod, finPeriod, college,
@@ -327,7 +327,7 @@ namespace CompteResultat.BL
                 }
                 else 
                 {
-                    CreateExcelGLOBALData(fiExcelFile, ParentCompanyNames, SubsidNames, debutPeriod, finPeriod, dateArret, ReportType, templateType);
+                    CreateExcelGLOBALData(fiExcelFile, ParentCompanyNames, SubsidNames, debutPeriod, finPeriod, dateArret, ReportType, templateType, CalculateProvision, AssurNames);
                 }
             }
             catch (Exception ex)
@@ -338,30 +338,33 @@ namespace CompteResultat.BL
         }
 
         public void CreateExcelGLOBALData(FileInfo fiExcelFile, string companyList, string subsidList, DateTime debutPeriod, DateTime finPeriod,
-           DateTime dateArret, C.eReportTypes reportType, C.eReportTemplateTypes templateType)
+           DateTime dateArret, C.eReportTypes reportType, C.eReportTemplateTypes templateType, bool calculateProvision, string assurNameList)
         {
             int numberTopPerteLoss = 0;
+            List<string> assurList = Regex.Split(assurNameList, C.cVALSEP).ToList();
 
             if (templateType == C.eReportTemplateTypes.SANTE_GLOBAL)
-                ExcelSheetHandler.FillGlobalSheet(fiExcelFile, companyList, subsidList, debutPeriod, finPeriod, dateArret, reportType, TypeComptes, TaxDef, TaxAct, TaxPer);
+                ExcelSheetHandler.FillGlobalSheet(fiExcelFile, companyList, subsidList, debutPeriod, finPeriod, dateArret, reportType, TypeComptes, TaxDef, TaxAct, TaxPer, calculateProvision);
             else if (templateType == C.eReportTemplateTypes.PREV_GLOBAL)
                 ExcelSheetHandler.FillGlobalSheetPrev(fiExcelFile, companyList, subsidList, debutPeriod, finPeriod, dateArret, reportType, TypeComptes, TaxDef, TaxAct, TaxPer);
             else if (templateType == C.eReportTemplateTypes.SANTE_SYNT)
             {
-                ExcelSheetHandler.FillGlobalSheetSynthese(fiExcelFile, companyList, subsidList, debutPeriod, finPeriod, dateArret, reportType, TypeComptes, TaxDef, TaxAct, TaxPer);
+                ExcelSheetHandler.FillGlobalSheetSynthese(fiExcelFile, companyList, subsidList, debutPeriod, finPeriod, dateArret, reportType, TypeComptes, TaxDef, TaxAct, TaxPer, calculateProvision);
                 numberTopPerteLoss = NumberTopPerteLoss;
             }
             else if (templateType == C.eReportTemplateTypes.PREV_SYNTH)
             {
                 ExcelSheetHandler.FillGlobalSheetPrev(fiExcelFile, companyList, subsidList, debutPeriod, finPeriod, dateArret, reportType, TypeComptes, TaxDef, TaxAct, TaxPer);
                 numberTopPerteLoss = NumberTopPerteLoss;
-            }
-
-            ExcelSheetHandler.FillDates(fiExcelFile, dateArret, debutPeriod, finPeriod, TaxDef, TaxAct, TaxPer, null, numberTopPerteLoss, TypeComptes);
-
-            ExcelSheetHandler.FillOUI(fiExcelFile);
+            }  
 
             ExcelSheetHandler.FillTypePrev(fiExcelFile);
+
+            if(templateType.ToString().ToLower().Contains("sante"))
+                ExcelSheetHandler.FillAffichageSheet(fiExcelFile, assurList[0]);
+
+            ExcelSheetHandler.FillDates(fiExcelFile, dateArret, debutPeriod, finPeriod, TaxDef, TaxAct, TaxPer, null, numberTopPerteLoss, TypeComptes);
+            ExcelSheetHandler.FillOUI(fiExcelFile);
         }       
 
         public void CreateExcelPREVData(FileInfo fiExcelFile, string assurNameList, string parentCompanyNameList, string companyNameList, string contrNameList, DateTime debutPeriod, DateTime finPeriod,
@@ -405,7 +408,7 @@ namespace CompteResultat.BL
         }
 
         public void CreateExcelSANTEData(FileInfo fiExcelFile, string assurNameList, string parentCompanyNameList, string companyNameList, string contrNameList, DateTime debutPeriod, DateTime finPeriod, 
-            int yearsToCalc, string college, DateTime dateArret, CRPlanning crp, string crFilePathPPT, string crFilePath, C.eReportTemplateTypes templateType, bool reportWithOption)
+            int yearsToCalc, string college, DateTime dateArret, CRPlanning crp, string crFilePathPPT, string crFilePath, C.eReportTemplateTypes templateType, bool reportWithOption, bool calculateProvision)
         {
             DateTime debutNew;
             DateTime finNew;
@@ -549,7 +552,7 @@ namespace CompteResultat.BL
                     }
                 }
 
-                ExcelSheetHandler.FillPrestSheet(fiExcelFile, crp, myPrestaDataNormalized, reportWithOption);
+                ExcelSheetHandler.FillPrestSheet(fiExcelFile, crp, myPrestaDataNormalized, reportWithOption, calculateProvision);
 
                 #endregion
 
@@ -563,7 +566,7 @@ namespace CompteResultat.BL
 
                 //*************************** END EXPERIENCE DATA ******************************************
 
-                ExcelSheetHandler.FillProvisionSheet(fiExcelFile, crp, myPrestaDataNormalized);
+                ExcelSheetHandler.FillProvisionSheet(fiExcelFile, crp, myPrestaDataNormalized, calculateProvision);
 
                 ExcelSheetHandler.FillQuartileSheet(fiExcelFile, prestaDataNormalizedFirstYear);
 

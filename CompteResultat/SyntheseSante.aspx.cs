@@ -21,7 +21,7 @@ namespace CompteResultat
         protected void Page_Load(object sender, EventArgs e)
         {
             try
-            { 
+            {                
                 lblHeaderSynthese.Text = txtNumberEnt.Text + " Comptes de resultats sante avec les prestations triees par ordre decroissant :";
 
                 if (!IsPostBack)
@@ -95,11 +95,11 @@ namespace CompteResultat
                 DataView dv;
                 if (assurName.ToLower().Contains("_entreprise"))
                 {
-                    syntheseTable = ExcelSheetHandler.GetSyntheseTable(debutPeriode, finPeriode, dateArret, reportType, typeComptes, false, true);                    
+                    syntheseTable = ExcelSheetHandler.GetSyntheseTable(debutPeriode, finPeriode, dateArret, reportType, typeComptes, false, true, chkCalcProv.Checked);                    
                 }
                 else
                 {
-                    syntheseTable = ExcelSheetHandler.GetSyntheseTable(debutPeriode, finPeriode, dateArret, reportType, typeComptes, true, true);
+                    syntheseTable = ExcelSheetHandler.GetSyntheseTable(debutPeriode, finPeriode, dateArret, reportType, typeComptes, true, true, chkCalcProv.Checked);
                 }
 
                 if (syntheseTable.Rows.Count != 0)

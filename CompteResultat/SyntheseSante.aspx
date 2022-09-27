@@ -103,7 +103,7 @@
             <asp:RadioButtonList ValidateRequestMode="Disabled" AutoPostBack="true" style="display:inline; margin-top:10px" RepeatDirection="Horizontal" 
                 ID="radioTypeComptes" runat="server" OnSelectedIndexChanged="radioTypeComptes_SelectedIndexChanged">
                 <asp:ListItem style="margin-right:10px" Selected>&nbsp;Survenance</asp:ListItem>
-                <asp:ListItem style="margin-right:10px">&nbsp;Comptable</asp:ListItem>                                 
+                <%--<asp:ListItem style="margin-right:10px">&nbsp;Comptable</asp:ListItem> --%>                                
             </asp:RadioButtonList>
         </div>
 

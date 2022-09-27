@@ -23,7 +23,7 @@ namespace CompteResultat.BL
         #region SANTE
 
         public static void FillGlobalSheet(FileInfo excelFilePath, string companyList, string subsidList, DateTime debutPeriod,
-           DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, C.eTypeComptes typeComptes, double TaxDef, double TaxAct, double TaxPer)
+           DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, C.eTypeComptes typeComptes, double TaxDef, double TaxAct, double TaxPer, bool calculateProvision)
         {
             try
             {
@@ -34,7 +34,7 @@ namespace CompteResultat.BL
                 List<ExcelGlobalPrestaData> globalPresta = new List<ExcelGlobalPrestaData>();
                 List<ExcelGlobalPrestaData> globalCotisatCumul = new List<ExcelGlobalPrestaData>(); 
 
-                GetGlobalCotisatCumul(ref globalPresta, ref globalCotisatCumul, isGlobalEnt, companyList, subsidList, debutPeriod, finPeriod, dateArret, reportType, typeComptes, TaxDef, TaxAct, TaxPer);
+                GetGlobalCotisatCumul(ref globalPresta, ref globalCotisatCumul, isGlobalEnt, companyList, subsidList, debutPeriod, finPeriod, dateArret, reportType, typeComptes, TaxDef, TaxAct, TaxPer, calculateProvision);
 
                 //create DATA_CUMUL table
                 foreach (ExcelGlobalPrestaData prest in globalCotisatCumul)
@@ -133,12 +133,12 @@ namespace CompteResultat.BL
         }
 
         public static void FillGlobalSheetSynthese(FileInfo excelFilePath, string companyList, string subsidList, DateTime debutPeriod,
-          DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, C.eTypeComptes typeComptes, double TaxDef, double TaxAct, double TaxPer)
+          DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, C.eTypeComptes typeComptes, double TaxDef, double TaxAct, double TaxPer, bool calculateProvision)
         {
             try
             {
-                DataTable syntheseTableProd = GetSyntheseTable(debutPeriod, finPeriod, dateArret, reportType, typeComptes, true, false); 
-                DataTable syntheseTableEnt = GetSyntheseTable(debutPeriod, finPeriod, dateArret, reportType, typeComptes, false, false);  
+                DataTable syntheseTableProd = GetSyntheseTable(debutPeriod, finPeriod, dateArret, reportType, typeComptes, true, false, calculateProvision); 
+                DataTable syntheseTableEnt = GetSyntheseTable(debutPeriod, finPeriod, dateArret, reportType, typeComptes, false, false, calculateProvision);  
 
                 using (ExcelPackage pck = new ExcelPackage(excelFilePath))
                 {
@@ -160,7 +160,8 @@ namespace CompteResultat.BL
             }
         }
 
-        public static DataTable GetSyntheseTable(DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, C.eTypeComptes typeComptes, bool isProdTable, bool simpleMode=false)
+        public static DataTable GetSyntheseTable(DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, C.eTypeComptes typeComptes, bool isProdTable, 
+            bool simpleMode=false, bool calculateProvision=false)
         {
             try
             {
@@ -180,7 +181,7 @@ namespace CompteResultat.BL
                 List<string> assurNames = new List<string>();
                 assurNames = Assureur.GetEnterpriseAssNamesByType(assurtype);
                 BLCompteResultat.GetCompSubsidValuesForAssur(ref comps, ref subsids, assurNames);
-                GetGlobalCotisatCumul(ref globalPresta, ref globalCotisatCumul, true, comps, subsids, debutPeriod, finPeriod, dateArret, reportType, typeComptes, 0, 0, 0);
+                GetGlobalCotisatCumul(ref globalPresta, ref globalCotisatCumul, true, comps, subsids, debutPeriod, finPeriod, dateArret, reportType, typeComptes, 0, 0, 0, calculateProvision);
 
                 //create DATA_PRODUIT & DATA_ENTREPRISE table
                 foreach (ExcelGlobalPrestaData prest in globalPresta)
@@ -289,7 +290,8 @@ namespace CompteResultat.BL
         }
 
         public static void GetGlobalCotisatCumul(ref List<ExcelGlobalPrestaData> globalPresta, ref List<ExcelGlobalPrestaData> globalCotisatCumul, bool isGlobalEnt,
-            string companyList, string subsidList, DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, C.eTypeComptes typeComptes, double TaxDef, double TaxAct, double TaxPer)
+            string companyList, string subsidList, DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, C.eReportTypes reportType, C.eTypeComptes typeComptes, double TaxDef, 
+            double TaxAct, double TaxPer, bool calculateProvision)
         {
             try
             {
@@ -311,21 +313,21 @@ namespace CompteResultat.BL
                 {
                     if (typeComptes == C.eTypeComptes.Comptable)
                     {
-                        globalPresta = PrestSante.GetPrestaGlobalEntDataCompta(years, parentCompanyList);
+                        globalPresta = PrestSante.GetPrestaGlobalEntDataCompta(years, parentCompanyList, dateArret);
                     }
                     else {
-                        globalPresta = PrestSante.GetPrestaGlobalEntData(years, parentCompanyList);
+                        globalPresta = PrestSante.GetPrestaGlobalEntData(years, parentCompanyList, dateArret);
                     }
                 }
                 else
                 {
                     if (typeComptes == C.eTypeComptes.Comptable)
                     {
-                        globalPresta = PrestSante.GetPrestaGlobalSubsidDataCompta(years, subsidiaryList);
+                        globalPresta = PrestSante.GetPrestaGlobalSubsidDataCompta(years, subsidiaryList, dateArret);
                     }
                     else
                     {
-                        globalPresta = PrestSante.GetPrestaGlobalSubsidData(years, subsidiaryList);
+                        globalPresta = PrestSante.GetPrestaGlobalSubsidData(years, subsidiaryList, dateArret);
                     }
                 }
 
@@ -406,11 +408,17 @@ namespace CompteResultat.BL
                         
                         //calculate all remaining fields
                         DateTime dateDebutSurv = new DateTime(dat.YearSurv, 1, 1);
-                        DateTime dateFinSurv = new DateTime(dat.YearSurv, 12, 31);
+                        DateTime dateFinSurv = new DateTime(dat.YearSurv, 12, 31);                        
                         double presta = dat.RNous.HasValue ? dat.RNous.Value : 0;
-                        double coeffCad = GetCoefCadencier(dat.YearSurv, dateArret, dateDebutSurv, dateFinSurv, cadencierAll, dat.Assureur);
 
-                        double provision = coeffCad * presta;
+                        double coeffCad = 0;
+                        double provision = 0;
+                        if (calculateProvision)
+                        {
+                            coeffCad = GetCoefCadencier(dat.YearSurv, dateArret, dateDebutSurv, dateFinSurv, cadencierAll, dat.Assureur);
+                            provision = coeffCad * presta;
+                        }
+
                         provision = Math.Round(provision, 2);
                         cotNet = Math.Round(cotNet, 2);
 
@@ -465,6 +473,11 @@ namespace CompteResultat.BL
                         DateTime dateDebutSurv = new DateTime(dat.YearSurv, 1, 1);
                         DateTime dateFinSurv = new DateTime(dat.YearSurv, 12, 31);
                         double coeffCad = GetCoefCadencier(dat.YearSurv, dateArret, dateDebutSurv, dateFinSurv, cadencierAll, dat.Assureur);
+                        if (calculateProvision==false)
+                        {
+                            coeffCad = 0;
+                        }
+
                         item.Coef = coeffCad;
 
                         globalPresta.Add(item);
@@ -565,14 +578,14 @@ namespace CompteResultat.BL
             }
         }
 
-        public static void FillPrestSheet(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData, bool reportWithOption)
+        public static void FillPrestSheet(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData, bool reportWithOption, bool calculateProvision)
         {
             try
             {
                 if (reportWithOption)
                     CollectPrestaData2(excelFilePath, crp, myPrestData, C.eExcelSheetPrestaData.Prestation);
                 else
-                    CollectPrestaData(excelFilePath, crp, myPrestData, C.eExcelSheetPrestaData.Prestation);
+                    CollectPrestaData(excelFilePath, crp, myPrestData, C.eExcelSheetPrestaData.Prestation, calculateProvision);
             }
             catch (Exception ex)
             {
@@ -593,18 +606,18 @@ namespace CompteResultat.BL
                 var expDataWithoutId = expData.Select(e => new
                 {
                     Au = e.Au,
-                    Contrat = e.Contrat.Trim(),
-                    Codcol = e.CodCol.Trim(),
+                    Contrat = e.Contrat?.Trim() ?? "",
+                    Codcol = e.CodCol?.Trim() ?? "",
                     AnneeExp = e.AnneeExp,
-                    Libacte = e.LibActe.Trim(),
-                    Libfam = e.LibFam.Trim(),
-                    TypeCas = e.TypeCas.Trim(),
+                    Libacte = e.LibActe?.Trim() ?? "",
+                    Libfam = e.LibFam?.Trim() ?? "",
+                    TypeCas = e.TypeCas?.Trim() ?? "",
                     NbrActe = e.NombreActe,
                     FR = e.Fraisreel,
                     RSS = e.Rembss,
                     Rannexe = e.RembAnnexe,
                     Rnous = e.RembNous,
-                    Res = e.Reseau.Trim(),
+                    Res = e.Reseau?.Trim() ?? "",
                     Minfr = e.MinFr,
                     Maxfr = e.MaxFr,
                     Minnous = e.MinNous,
@@ -629,11 +642,11 @@ namespace CompteResultat.BL
             }
         }
 
-        public static void FillProvisionSheet(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData)
+        public static void FillProvisionSheet(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData, bool calculateProvision)
         {
             try
             {
-                CollectPrestaData(excelFilePath, crp, myPrestData, C.eExcelSheetPrestaData.Provision);
+                CollectPrestaData(excelFilePath, crp, myPrestData, C.eExcelSheetPrestaData.Provision, calculateProvision);
             }
             catch (Exception ex)
             {
@@ -687,10 +700,11 @@ namespace CompteResultat.BL
                         Select(p => p.FraisReel.Value / p.NombreActe.Value).ToList();
                     }
                     else
-                    {
+                    {                        
+                        myPrestData = myPrestData.Where(p => p.GarantyName != null).ToList();
                         fraisReelList = myPrestData.Where(p => p.GarantyName.ToString().ToLower() == gar.ToLower() && p.FraisReel > 0).
                         OrderBy(p => p.FraisReel.Value).
-                        Select(p => p.FraisReel.Value / p.NombreActe.Value).ToList();
+                        Select(p => p.FraisReel.Value / p.NombreActe.Value).ToList();                      
                     }
 
                     int totalElements = fraisReelList.Count();
@@ -752,7 +766,7 @@ namespace CompteResultat.BL
         {
             try
             {
-                //create the table that holds the values for the quartiles
+                //create the table that holds the values for the quartiles 
                 DataTable affTable = new DataTable();
                 DataTable affTable2 = new DataTable();
 
@@ -2407,10 +2421,11 @@ namespace CompteResultat.BL
                 {                   
                     ExcelWorksheet ws = pck.Workbook.Worksheets[C.cEXCELGROUPGARANT];
 
-                    if (calculProvision.HasValue)
-                    {
-                        ws.Cells["A2"].Value = calculProvision.Value == true ? "OUI" : "NON";
-                    }
+                    //26/9/22 RS - n'est plus requis
+                    //if (calculProvision.HasValue)
+                    //{
+                    //    ws.Cells["A2"].Value = calculProvision.Value == true ? "OUI" : "NON";
+                    //}
 
                     //if (TaxDef.HasValue)
                     //    ws.Cells["Q2"].Value = TaxDef/100; 
@@ -2568,7 +2583,7 @@ namespace CompteResultat.BL
 
         }
         
-        private static void CollectPrestaData(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData, C.eExcelSheetPrestaData excelSheet)
+        private static void CollectPrestaData(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData, C.eExcelSheetPrestaData excelSheet, bool calculateProvision)
         {
             try
             {
@@ -2631,7 +2646,6 @@ namespace CompteResultat.BL
                         newRow["ANNEESOIN"] = expYear; // + 1;
                     }
 
-
                     newRow["AU"] = prest.DateVision.HasValue ? prest.DateVision.Value : (object)DBNull.Value; 
                     newRow["CONTRAT"] = prest.ContractId;
                     newRow["CODCOL"] = prest.CodeCol;
@@ -2648,7 +2662,12 @@ namespace CompteResultat.BL
 
                         //#### modify this: provide Assureur
                         double coefCad = GetCoefCadencier(anneeSoins, dateArret, dateDebutPeriode, dateFinPeriode, cadencierAll, null);
-                        newRow["PROVISION"] = coefCad * rembNous;
+                        if (calculateProvision)
+                            newRow["PROVISION"] = Math.Round(coefCad * rembNous, 2);
+                        else
+                        {
+                            newRow["PROVISION"] = 0;
+                        }
                     }
                     else
                     {
