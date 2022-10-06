@@ -253,6 +253,7 @@ namespace CompteResultat
         {
             string userName = "";
             string uploadDirectory = "";
+            string importDirectory = "";
             bool hasErr = false;
             bool forceCompanySubsid = chkForceCompSubsid.Checked;
             bool updateGroupes = chkGroupes.Checked;
@@ -266,6 +267,7 @@ namespace CompteResultat
                 //initial configuration
                 userName = User.Identity.Name;
                 uploadDirectory = Path.Combine(Request.PhysicalApplicationPath, C.uploadFolder);
+                importDirectory = Path.Combine(Request.PhysicalApplicationPath, "Import");
 
                 string prefix = userName + "_";
                 string uploadPathPrest = Path.Combine(uploadDirectory, prefix + txtPrestPath.Text);
@@ -344,32 +346,73 @@ namespace CompteResultat
 
                 //upload provided import files
 
+                string filePath = "";
+                //string dateTimeToday = DateTime.Now.ToString("s").Replace(":", "-");
+                importDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports", importName + "-" + DateTime.Now.ToString("s").Replace(":", "-"));
+                Directory.CreateDirectory(importDirectory);
+                
                 if (uploadPrestFile != null && uploadPrestFile.FileName.Length > 0 && txtPrestPath.Text != "")
+                {                    
                     uploadPrestFile.SaveAs(uploadPathPrest);
+                    filePath = Path.Combine(importDirectory, txtPrestPath.Text);
+                    uploadPrestFile.SaveAs(filePath);
+                }
 
                 if (uploadCotFile != null && uploadCotFile.FileName.Length > 0 && txtCotPath.Text != "")
+                {
                     uploadCotFile.SaveAs(uploadPathCot);
+                    filePath = Path.Combine(importDirectory, txtCotPath.Text);
+                    uploadCotFile.SaveAs(filePath);
+                }
 
                 if (uploadDemoFile != null && uploadDemoFile.FileName.Length > 0 && txtDemoPath.Text != "")
+                {
                     uploadDemoFile.SaveAs(uploadPathDemo);
+                    filePath = Path.Combine(importDirectory, txtDemoPath.Text);
+                    uploadDemoFile.SaveAs(filePath);
+                }
 
                 if (uploadSinistrePrevFile != null && uploadSinistrePrevFile.FileName.Length > 0 && txtSinistrePrevPath.Text != "")
+                {
                     uploadSinistrePrevFile.SaveAs(uploadPathSinistrPrev);
+                    filePath = Path.Combine(importDirectory, txtSinistrePrevPath.Text);
+                    uploadSinistrePrevFile.SaveAs(filePath);
+                }
 
                 if (uploadDecompPrevFile != null && uploadDecompPrevFile.FileName.Length > 0 && txtDecompPrevPath.Text != "")
+                {
                     uploadDecompPrevFile.SaveAs(uploadPathDecompPrev);
+                    filePath = Path.Combine(importDirectory, txtDecompPrevPath.Text);
+                    uploadDecompPrevFile.SaveAs(filePath);
+                }
 
                 if (uploadProvFile != null && uploadProvFile.FileName.Length > 0 && txtProvPath.Text != "")
+                {
                     uploadProvFile.SaveAs(uploadPathProv);
+                    filePath = Path.Combine(importDirectory, txtProvPath.Text);
+                    uploadProvFile.SaveAs(filePath);
+                }
 
                 if (uploadProvOuvertureFile != null && uploadProvOuvertureFile.FileName.Length > 0 && txtProvOuverturePath.Text != "")
+                {
                     uploadProvOuvertureFile.SaveAs(uploadPathProvOuverture);
+                    filePath = Path.Combine(importDirectory, txtProvOuverturePath.Text);
+                    uploadProvOuvertureFile.SaveAs(filePath);
+                }
 
-                if (uploadCotPrevFile != null && uploadCotPrevFile.FileName.Length > 0 && txtCotPrevPath.Text != "")               
+                if (uploadCotPrevFile != null && uploadCotPrevFile.FileName.Length > 0 && txtCotPrevPath.Text != "")
+                {
                     uploadCotPrevFile.SaveAs(uploadPathCotPrev);
+                    filePath = Path.Combine(importDirectory, txtCotPrevPath.Text);
+                    uploadCotPrevFile.SaveAs(filePath);
+                }
 
                 if (uploadExpFile != null && uploadExpFile.FileName.Length > 0 && txtExpPath.Text != "")
+                {
                     uploadExpFile.SaveAs(uploadPathExp);
+                    filePath = Path.Combine(importDirectory, txtExpPath.Text);
+                    uploadExpFile.SaveAs(filePath);
+                }                
 
                 #endregion
 
@@ -487,7 +530,7 @@ namespace CompteResultat
                 BLImport imp = new BLImport(userName, newPrestEntCSV, newPrestProdCSV, newCotEntCSV, newCotProdCSV, newDemoEntCSV, newDemoProdCSV, newOtherFieldsCSV, 
                     newCotPrevCSV, newSinistrePrevCSV, newDecompPrevCSV, newProvCSV, newProvOuvertureCSV,
                     configStringPrest, configStringDemo, configStringCot, configStringOtherFields, configStringCotPrev, configStringSinistrPrev, configStringDecompPrev, configStringProv,
-                    tableForOtherFields, importName, csvSep, uploadDirectory, uploadPathPrest, uploadPathCot, uploadPathDemo,
+                    tableForOtherFields, importName, csvSep, uploadDirectory, importDirectory, uploadPathPrest, uploadPathCot, uploadPathDemo,
                     uploadPathCotPrev, uploadPathSinistrPrev, uploadPathDecompPrev, uploadPathProv, uploadPathProvOuverture, newExpCSV, configStringExp, uploadPathExp, forceCompanySubsid, 
                     updateGroupes, updateExperience, updateCad, provOuverture);
 
@@ -507,7 +550,10 @@ namespace CompteResultat
             //    myCustomValidator.ErrorMessage = ex.Message;
             //    Page.Validators.Add(myCustomValidator);
             //}
-            catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "cmdImport_Click"); }
+            catch (Exception ex) {
+                Directory.Delete(importDirectory, true);
+                UICommon.HandlePageError(ex, this.Page, "cmdImport_Click");
+            }
             finally
             {
                 if (!hasErr)

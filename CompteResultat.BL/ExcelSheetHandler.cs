@@ -985,7 +985,7 @@ namespace CompteResultat.BL
             DateTime dateFinPeriode, List<Cadencier> myCad, string assur)
         {
             try
-            {
+            {                
                 double cumul = 0;
                 int month = 0;
 
@@ -998,18 +998,23 @@ namespace CompteResultat.BL
 
                 if (anneeSoins != 0 && dateArret != DateTime.MinValue && dateFinPeriode != DateTime.MinValue)
                 {
-                    date1 = new DateTime(anneeSoins, dateDebutPeriode.Month, dateDebutPeriode.Day);
-                    //month = ((dateArret.Year - date1.Year) * 12) + dateArret.Month - date1.Month;
+                    //date1 = new DateTime(anneeSoins, dateDebutPeriode.Month, dateDebutPeriode.Day);
+                    date1 = new DateTime(anneeSoins,1, 1);
 
                     TimeSpan span = dateArret.Subtract(date1);
                     double monthDouble = span.TotalDays / 30.25;
                     month = (int)Math.Round(monthDouble, MidpointRounding.AwayFromZero);
 
-                    dateDebutPeriodeAdjusted = new DateTime(anneeSoins, dateDebutPeriode.Month, dateDebutPeriode.Day);
-                    dateFinPeriodeAdjusted = new DateTime(anneeSoins, dateFinPeriode.Month, dateFinPeriode.Day);
-
-                    var res = myCad.Where(c => c.Month == month && c.Year == dateArret.Year && c.DebutSurvenance == dateDebutPeriodeAdjusted
+                    //dateDebutPeriodeAdjusted = new DateTime(anneeSoins, dateDebutPeriode.Month, dateDebutPeriode.Day);
+                    //dateFinPeriodeAdjusted = new DateTime(anneeSoins, dateFinPeriode.Month, dateFinPeriode.Day);
+                    dateDebutPeriodeAdjusted = new DateTime(anneeSoins, 1,1);
+                    dateFinPeriodeAdjusted = new DateTime(anneeSoins, 12,31);
+                    
+                    //var res = myCad.Where(c => c.Month == month && c.Year == dateArret.Year && c.DebutSurvenance == dateDebutPeriodeAdjusted
+                    //    && c.FinSurvenance == dateFinPeriodeAdjusted);
+                    var res = myCad.Where(c => c.Month == month && c.Year == anneeSoins && c.DebutSurvenance == dateDebutPeriodeAdjusted
                         && c.FinSurvenance == dateFinPeriodeAdjusted);
+
                     if (res.Any())
                     {
                         //choose the value according to the provided Assureur

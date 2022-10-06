@@ -48,6 +48,8 @@ namespace CompteResultat.BL
         public string ConfigStringExp { get; set; }
         public string TableForOtherFields { get; set; }
         public string UploadPath { get; set; }
+        public string ImportDirectory { get; set; }
+        
         public string UploadPathPrest { get; set; }
         public string UploadPathCot { get; set; }
         public string UploadPathDemo { get; set; }
@@ -71,7 +73,7 @@ namespace CompteResultat.BL
             string newCotPrevCSV, string newSinistrePrevCSV, string newDecompPrevCSV, string newProvCSV, string newProvOuvertureCSV,
             string configStringPrest, string configStringDemo, string configStringCot, string configStringOtherFields,
             string configStringCotPrev, string configStringSinistrPrev, string configStringDecompPrev, string configStringProv,
-            string tableForOtherFields, string importName, string csvSep, string uploadPath, 
+            string tableForOtherFields, string importName, string csvSep, string uploadPath, string importDirectory,
             string uploadPathPrest, string uploadPathCot, string uploadPathDemo, string uploadPathCotPrev, string uploadPathSinistrPrev, 
             string uploadPathDecompPrev, string uploadPathProv, string uploadPathProvOuverture, string newExpCSV, string configStringExp, string uploadPathExp, 
             bool forceCompanySubsid, bool updateGroupes, bool updateExperience, bool updateCad, string provOuverture)
@@ -103,6 +105,7 @@ namespace CompteResultat.BL
             ConfigStringExp = configStringExp;
             TableForOtherFields = tableForOtherFields;
             UploadPath = uploadPath;
+            ImportDirectory = importDirectory;
             UploadPathPrest = uploadPathPrest;
             UploadPathCot = uploadPathCot;
             UploadPathDemo = uploadPathDemo;
@@ -674,6 +677,8 @@ namespace CompteResultat.BL
                 
                 try
                 {
+                    Directory.Delete(ImportDirectory, true);
+
                     if (ImportId != 0)
                     {
                         CleanTablesForSpecificImportID(ImportId, true);
@@ -765,6 +770,26 @@ namespace CompteResultat.BL
                 //if (File.Exists(NewCotCSV)) File.Delete(NewCotCSV);
                 //if (File.Exists(NewDemoCSV)) File.Delete(NewDemoCSV);
                 //if (File.Exists(NewOtherFieldsCSV)) File.Delete(NewOtherFieldsCSV);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
+        public static void SaveImportFiles(string UploadPath, string UserName)
+        {
+            try
+            {
+                //delete all files with the specified user prefix
+                List<string> fileList = Directory.GetFiles(UploadPath, UserName + "_*", SearchOption.TopDirectoryOnly).ToList();
+                foreach (string fle in fileList)
+                {
+                    if (File.Exists(fle))
+                        File.Delete(fle);
+                }
+
             }
             catch (Exception ex)
             {
@@ -1049,13 +1074,22 @@ namespace CompteResultat.BL
 
                         //we iterated through all columns => update CotNet
                         if (impFile == C.eImportFile.CotisatSante)
-                        {                            
+                        {
+                            double frais = 0;
+                            double TCA_CMU = 0;
+                            double taxeCovid = 0;
+
                             FraisSante fsFrais = fraisSante.Find(f => f.AnneeSurvenance == valAnneeSurvSante && f.TypeFraisTaxes == "FRAIS");
-                            double frais = fsFrais.Frais.HasValue ? fsFrais.Frais.Value : 0;
+                            if (fsFrais != null)                                
+                                frais = fsFrais.Frais.HasValue ? fsFrais.Frais.Value : 0;
+
                             FraisSante fsTCA_CMU = fraisSante.Find(f => f.AnneeSurvenance == valAnneeSurvSante && f.TypeFraisTaxes == "TCA_CMU");
-                            double TCA_CMU = fsTCA_CMU.Frais.HasValue ? fsTCA_CMU.Frais.Value : 0;
+                            if (fsTCA_CMU != null)
+                                TCA_CMU = fsTCA_CMU.Frais.HasValue ? fsTCA_CMU.Frais.Value : 0;
+
                             FraisSante fsTaxe_Covid = fraisSante.Find(f => f.AnneeSurvenance == valAnneeSurvSante && f.TypeFraisTaxes == "TAXE_COVID");
-                            double taxeCovid = fsTaxe_Covid.Frais.HasValue ? fsTaxe_Covid.Frais.Value : 0;
+                            if (fsTaxe_Covid != null)
+                                taxeCovid = fsTaxe_Covid.Frais.HasValue ? fsTaxe_Covid.Frais.Value : 0;
 
                             var newCotNet = 0.0; // AM indiquer newCotNet = valCotBrutSante
                             if (1 + TCA_CMU != 0)
@@ -1064,8 +1098,12 @@ namespace CompteResultat.BL
                         }
                         if (impFile == C.eImportFile.CotisatPrev)
                         {
+                            double frais = 0;
+
                             FraisPrevoyance fp = fraisPrevoyance.Find(f => f.AnneeSurvenance == valAnneeSurvPrev && f.TypeSinistre == valCodeGarantiePrev);
-                            double frais = fp.Frais.HasValue ? fp.Frais.Value : 0;
+                            if (fp != null)
+                                frais = fp.Frais.HasValue ? fp.Frais.Value : 0;
+
                             var newCotNet = 0.0;                            
                             newCotNet = Math.Round(valCotBrutPrev * (1 - frais), 2);
                             newLine = newLine.Replace("#####", newCotNet.ToString());
