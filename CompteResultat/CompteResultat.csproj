@@ -24,6 +24,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -242,6 +243,7 @@
     <Content Include="bin\ru\DevExpress.Web.v17.1.resources.dll" />
     <Content Include="CompteResultatAutomatique.aspx" />
     <Content Include="CompteResultatManuel.aspx" />
+    <Content Include="FMImport.aspx" />
     <Content Include="FileManager.aspx" />
     <Content Include="GestionExperience.aspx" />
     <Content Include="GestionCadencier.aspx" />
@@ -259,6 +261,8 @@
     <Content Include="Images\cr.jpg" />
     <Content Include="Images\deletePath.jpg" />
     <Content Include="Images\deletePath16.jpg" />
+    <Content Include="Images\FM16.jpg" />
+    <Content Include="Images\FM24.jpg" />
     <Content Include="Images\subsid.png" />
     <Content Include="Images\user.jpg" />
     <Content Include="MonEntreprise.aspx" />
@@ -383,6 +387,13 @@
     </Compile>
     <Compile Include="CompteResultatManuel.aspx.designer.cs">
       <DependentUpon>CompteResultatManuel.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="FMImport.aspx.cs">
+      <DependentUpon>FMImport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FMImport.aspx.designer.cs">
+      <DependentUpon>FMImport.aspx</DependentUpon>
     </Compile>
     <Compile Include="FileManager.aspx.cs">
       <DependentUpon>FileManager.aspx</DependentUpon>

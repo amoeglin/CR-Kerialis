@@ -15,11 +15,16 @@ packages/
 **/obj
 
 .vs/
+.zip/
+.7Z/
+
 
 
 CompteResultat/App_Data/ErrorLog/
 CompteResultat/App_Data/Excel/
 CompteResultat/App_Data/ExcelCR/
 CompteResultat/App_Data/Upload/
+CompteResultat/App_Data/Imports/
+CompteResultat/App_Data/ReportTemplates/Backup/
 /CompteResultat/App_Data/ReportTemplates/ReportTemplateSynthesePrev - Copie (3).xlsm
 /CompteResultat/App_Data/ReportTemplates/ReportTemplateSynthesePrev - Copie (2).xlsm

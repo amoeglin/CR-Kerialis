@@ -828,6 +828,69 @@ namespace CompteResultat.BL
             }
         }
 
+        public static void FillImportSheet(FileInfo excelFilePath)
+        {
+            //return;
+            try
+            {                
+                DataTable importTable = new DataTable();
+                //DataColumn impPath = new DataColumn("PATH", typeof(string));
+                DataColumn impFile = new DataColumn("FILE", typeof(string));
+
+                importTable.Columns.AddRange(new DataColumn[] { impFile });
+
+                //get import path => read all files in directory
+                var imports = Import.GetImports();
+
+                if (imports.Any())
+                {
+                    DataRow newRow = null;
+                    foreach (var elem in imports)
+                    {
+                        string importPath = elem.ImportPath;
+                        if(importPath != null && importPath != "")
+                        {
+                            //newRow = importTable.NewRow();
+                            //newRow["PATH"] = importPath;
+                            //newRow["FILE"] = importPath;
+                            //importTable.Rows.Add(newRow);
+
+                            if (Directory.Exists(importPath))
+                            {
+                                string[] fileEntries = Directory.GetFiles(importPath);
+                                foreach (string fileName in fileEntries)
+                                {
+                                    newRow = importTable.NewRow();
+                                    //newRow["PATH"] = "";
+                                    newRow["FILE"] = fileName;
+                                    importTable.Rows.Add(newRow);
+                                }
+                            }
+                        }
+                        //add an empty line
+                        newRow = importTable.NewRow();
+                        newRow["FILE"] = "";
+                        importTable.Rows.Add(newRow);
+                    }
+                }                
+
+                //save data to Excel
+                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
+                {
+                    pck.Workbook.Worksheets["IMPORT"].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+
+                    ExcelWorksheet ws = pck.Workbook.Worksheets["IMPORT"];
+                    ws.Cells["A2"].LoadFromDataTable(importTable, false);
+                    pck.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: FillImportSheet : " + ex.Message);
+                throw ex;
+            }
+        }
+
         //### this is almost a duplicate of the Method: CollectPrestaData this needs to be cleaned up and improved
         private static void CollectPrestaData2(FileInfo excelFilePath, CRPlanning crp, List<PrestSante> myPrestData, C.eExcelSheetPrestaData excelSheet)
         {

@@ -18,5 +18,6 @@ namespace CompteResultat.DAL
         public string Name { get; set; }
         public System.DateTime Date { get; set; }
         public string UserName { get; set; }
+        public string ImportPath { get; set; }
     }
 }

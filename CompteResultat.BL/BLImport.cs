@@ -133,7 +133,7 @@ namespace CompteResultat.BL
             {
                 // ***** Add a new line to the Import table and get the corresponding Id
 
-                Import imp = new Import { Name = ImportName, Date = DateTime.Today.Date, UserName = UserName };
+                Import imp = new Import { Name = ImportName, Date = DateTime.Today.Date, UserName = UserName, ImportPath = ImportDirectory };
                 int importId = Import.Insert(imp);
                 ImportId = importId;
 

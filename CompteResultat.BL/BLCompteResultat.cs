@@ -365,6 +365,7 @@ namespace CompteResultat.BL
 
             ExcelSheetHandler.FillDates(fiExcelFile, dateArret, debutPeriod, finPeriod, TaxDef, TaxAct, TaxPer, null, numberTopPerteLoss, TypeComptes);
             ExcelSheetHandler.FillOUI(fiExcelFile);
+            ExcelSheetHandler.FillImportSheet(fiExcelFile);
         }       
 
         public void CreateExcelPREVData(FileInfo fiExcelFile, string assurNameList, string parentCompanyNameList, string companyNameList, string contrNameList, DateTime debutPeriod, DateTime finPeriod,
@@ -387,17 +388,8 @@ namespace CompteResultat.BL
 
                 ExcelSheetHandler.FillDates(fiExcelFile, dateArret, debutPeriod, finPeriod, null, null, null, calculateProvision, NumberTopPerteLoss, TypeComptes);
 
-                //Test - we no longer use Excel Macros
-                //ExcelSheetHandler.FillOUI(fiExcelFile);
-
                 ExcelSheetHandler.FillTypePrev(fiExcelFile);
-
-                //### run Excel Macros 
-                //RunExcelMacro(fiExcelFile.FullName, "PROVISIONCALCUL.PROVISIONCALCUL", false);
-
-                //RunExcelMacro(fiExcelFile.FullName, "FULL.FULL", false);
-
-                //RunPPTMacro(crFilePathPPT, crFilePath, "M2", false);
+                ExcelSheetHandler.FillImportSheet(fiExcelFile);
 
             }
             catch (Exception ex)
@@ -580,6 +572,7 @@ namespace CompteResultat.BL
 
                 //###Test - we no longer use Excel Macros
                 ExcelSheetHandler.FillOUI(fiExcelFile);
+                ExcelSheetHandler.FillImportSheet(fiExcelFile);
 
 
                 //### run Excel Macro

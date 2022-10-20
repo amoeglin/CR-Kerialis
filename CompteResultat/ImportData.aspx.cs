@@ -597,6 +597,15 @@ namespace CompteResultat
                     gvImport.DataBind();
                 }
             }
+            if (e.CommandName == "RedirectFMImport")
+            {
+                string importPath = e.CommandArgument.ToString();
+
+                if (importPath != "")
+                {
+                    Response.Redirect("~/FMImport.aspx?path=" + importPath);
+                }
+            }
         }
 
         

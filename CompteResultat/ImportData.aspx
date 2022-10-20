@@ -209,6 +209,14 @@
                         <asp:BoundField DataField="Name" HeaderText="Nom du lot" SortExpression="Name" />
                         <asp:BoundField DataField="Date" DataFormatString="{0:d}" HeaderText="Date Import" SortExpression="Date" />
                         <asp:BoundField DataField="UserName" HeaderText="Utilisateur" SortExpression="UserName" />
+                        <asp:BoundField DataField="ImportPath" HeaderText="Dossier Import" SortExpression="ImportPath" ItemStyle-Wrap="True" HeaderStyle-Width="500px" />
+
+                        <asp:TemplateField HeaderText="">
+                            <ItemTemplate>
+                                <asp:ImageButton style="margin-right:10px;" ImageUrl="~/Images/FM24.jpg" ID="cmdFileManager" runat="server"  
+                                    CommandName="RedirectFMImport" CommandArgument='<%# Bind("ImportPath") %>' /> 
+                            </ItemTemplate>
+                        </asp:TemplateField>
 
                         <asp:TemplateField HeaderText="">
                             <ItemTemplate>
