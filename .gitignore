@@ -1,6 +1,6 @@
 
 
-# _DB/
+_DB/
 
 CompteResultat.zip
 
@@ -8,6 +8,7 @@ __INSTALL_Kerialis/
 _IMPORT/
 _ZIP/
 __BACKUP/
+_Import BDP
 
 packages/
 
@@ -17,6 +18,7 @@ packages/
 .vs/
 .zip/
 .7Z/
+
 
 
 
