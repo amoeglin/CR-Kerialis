@@ -2,5 +2,5 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
-    <h1>Production Automatique des Statistiques...</h1>
+    <h1>Production Automatique des Statistiques.....</h1>
 </asp:Content>

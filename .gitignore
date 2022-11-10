@@ -1,6 +1,7 @@
 
 
 _DB/
+_TEMP/
 
 CompteResultat.zip
 
@@ -20,7 +21,7 @@ packages/
 .7Z/
 
 
-
+_NOTES.txt
 
 CompteResultat/App_Data/ErrorLog/
 CompteResultat/App_Data/Excel/
