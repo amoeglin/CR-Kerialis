@@ -250,6 +250,7 @@
     <Content Include="GestionEntreprises.aspx" />
     <Content Include="GestionFraisSante.aspx" />
     <Content Include="GestionFraisPrev.aspx" />
+    <Content Include="GestionImport.aspx" />
     <Content Include="GestionTypePrev.aspx" />
     <Content Include="GestionGaranties.aspx" />
     <Content Include="GestionLots.aspx" />
@@ -263,6 +264,8 @@
     <Content Include="Images\deletePath16.jpg" />
     <Content Include="Images\FM16.jpg" />
     <Content Include="Images\FM24.jpg" />
+    <Content Include="Images\minus.png" />
+    <Content Include="Images\plus.png" />
     <Content Include="Images\subsid.png" />
     <Content Include="Images\user.jpg" />
     <Content Include="MonEntreprise.aspx" />
@@ -436,6 +439,13 @@
     </Compile>
     <Compile Include="GestionFraisPrev.aspx.designer.cs">
       <DependentUpon>GestionFraisPrev.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="GestionImport.aspx.cs">
+      <DependentUpon>GestionImport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="GestionImport.aspx.designer.cs">
+      <DependentUpon>GestionImport.aspx</DependentUpon>
     </Compile>
     <Compile Include="GestionTypePrev.aspx.cs">
       <DependentUpon>GestionTypePrev.aspx</DependentUpon>

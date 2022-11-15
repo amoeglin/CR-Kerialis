@@ -16,7 +16,8 @@ namespace CompteResultat.Account
 
         protected void LoginUser_LoggedIn(object sender, EventArgs e)
         {
-            Response.Redirect("~/SynthesePrev.aspx");
+            //SynthesePrev
+            Response.Redirect("~/GestionImport.aspx");
         }
 
         

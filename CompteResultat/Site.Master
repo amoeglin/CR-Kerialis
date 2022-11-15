@@ -75,6 +75,7 @@
                         IncludeStyleBlock="false" Orientation="Horizontal">
                         <Items>                       
                             <asp:MenuItem NavigateUrl="~/ImportData.aspx" Text="Import" /> 
+                            <asp:MenuItem NavigateUrl="~/GestionImport.aspx" Text="Gestion Import" /> 
                             
                             <asp:MenuItem Selectable="false"   Text="Synthese" >
                                 <asp:MenuItem NavigateUrl="~/SyntheseSante.aspx" Text="Synthese Santé" />                            
@@ -109,6 +110,7 @@
                         IncludeStyleBlock="false" Orientation="Horizontal">
                         <Items>                            
                             <asp:MenuItem NavigateUrl="~/ImportData.aspx" Text="Import" /> 
+                            <asp:MenuItem NavigateUrl="~/GestionImport.aspx" Text="Gestion Import" /> 
                             
                             <asp:MenuItem Selectable="false"   Text="Synthese" >
                                 <asp:MenuItem NavigateUrl="~/SyntheseSante.aspx" Text="Synthese Santé" />                            

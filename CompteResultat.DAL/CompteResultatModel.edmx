@@ -311,6 +311,17 @@ warning 6002: The table/view 'CompteResultat.dbo.IMContrDistrib' does not have a
           <Property Name="Date" Type="date" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" />
           <Property Name="ImportPath" Type="nvarchar" MaxLength="250" />
+          <Property Name="TEST" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="ImportFiles">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ImportId" Type="int" Nullable="false" />
+          <Property Name="FileGroup" Type="nvarchar" MaxLength="15" />
+          <Property Name="FileType" Type="nvarchar" MaxLength="100" />
+          <Property Name="FileName" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -690,6 +701,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySet Name="IMAssContr" EntityType="Self.IMAssContr" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IMContrComp" EntityType="Self.IMContrComp" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Import" EntityType="Self.Import" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ImportFiles" EntityType="Self.ImportFiles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MyCompany" EntityType="Self.MyCompany" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PrestSante" EntityType="Self.PrestSante" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProvPrev" EntityType="Self.ProvPrev" Schema="dbo" store:Type="Tables" />
@@ -1034,6 +1046,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ImportPath" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="TEST" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Company_Company">
           <End Role="Company" Type="Self.Company" Multiplicity="0..1" />
@@ -1197,6 +1210,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySet Name="ProvPrevs" EntityType="CompteResultatModel.ProvPrev" />
           <EntitySet Name="FraisPrevoyances" EntityType="CompteResultatModel.FraisPrevoyance" />
           <EntitySet Name="FraisSantes" EntityType="CompteResultatModel.FraisSante" />
+          <EntitySet Name="ImportFiles" EntityType="CompteResultatModel.ImportFile" />
         </EntityContainer>
         <EntityType Name="ReportTemplate">
           <Key>
@@ -1425,6 +1439,16 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="AnneeSurvenance" Type="Int32" />
           <Property Name="TypeFraisTaxes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Frais" Type="Double" />
+        </EntityType>
+        <EntityType Name="ImportFile">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ImportId" Type="Int32" Nullable="false" />
+          <Property Name="FileGroup" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="FileType" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="FileName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1688,6 +1712,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySetMapping Name="Imports">
             <EntityTypeMapping TypeName="CompteResultatModel.Import">
               <MappingFragment StoreEntitySet="Import">
+                <ScalarProperty Name="TEST" ColumnName="TEST" />
                 <ScalarProperty Name="ImportPath" ColumnName="ImportPath" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -1957,6 +1982,17 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
                 <ScalarProperty Name="TypeFraisTaxes" ColumnName="TypeFraisTaxes" />
                 <ScalarProperty Name="AnneeSurvenance" ColumnName="AnneeSurvenance" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ImportFiles">
+            <EntityTypeMapping TypeName="CompteResultatModel.ImportFile">
+              <MappingFragment StoreEntitySet="ImportFiles">
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="FileType" ColumnName="FileType" />
+                <ScalarProperty Name="FileGroup" ColumnName="FileGroup" />
+                <ScalarProperty Name="ImportId" ColumnName="ImportId" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

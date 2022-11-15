@@ -36,7 +36,7 @@
     </div> 
     --%>
     
-    <div style="float:left; margin-top: -15px;">
+    <div style="float:left; margin-top: 10px;">
 
         <table>
         <tr style="height:40px; text-align:left; vertical-align:text-top; margin-bottom: 10px; margin-top:200px; ">
@@ -248,8 +248,8 @@
 
     </div>
     
-    <div id="divImportSante"    >
-        <table  border="0" >
+    <div id="divImportSante" style="margin-top: 10px; margin-left: 30px; background-color:#D0EFEE; float:left"     >
+        <table  border="0"  >
             <tr >
                 <td style="width: 30px;">
                 <td style="text-align:left; width: 400px;">

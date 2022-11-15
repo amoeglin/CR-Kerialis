@@ -80,6 +80,7 @@
     <Compile Include="College.cs">
       <DependentUpon>CompteResultatModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="ImportFilesExt.cs" />
     <Compile Include="CollegeExt.cs" />
     <Compile Include="Company.cs">
       <DependentUpon>CompteResultatModel.tt</DependentUpon>
@@ -147,6 +148,9 @@
       <DependentUpon>CompteResultatModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Import.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ImportFile.cs">
       <DependentUpon>CompteResultatModel.tt</DependentUpon>
     </Compile>
     <Compile Include="MyCompany.cs">
