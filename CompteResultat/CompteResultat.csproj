@@ -270,6 +270,7 @@
     <Content Include="Images\deletePath16.jpg" />
     <Content Include="Images\FM16.jpg" />
     <Content Include="Images\FM24.jpg" />
+    <Content Include="Images\folder.png" />
     <Content Include="Images\minus.png" />
     <Content Include="Images\plus.png" />
     <Content Include="Images\subsid.png" />
