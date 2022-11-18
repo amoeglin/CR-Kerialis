@@ -360,7 +360,7 @@ namespace CompteResultat
 
                 if (uploadCotFile != null && uploadCotFile.FileName.Length > 0 && txtCotPath.Text != "")
                 {
-                    uploadCotFile.SaveAs(uploadPathCot);
+                    uploadCotFile.SaveAs(uploadPathCot);                    
                     filePath = Path.Combine(importDirectory, txtCotPath.Text);
                     uploadCotFile.SaveAs(filePath);
                 }

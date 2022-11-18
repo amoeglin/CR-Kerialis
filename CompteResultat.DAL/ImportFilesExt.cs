@@ -63,6 +63,25 @@ namespace CompteResultat.DAL
             }
         }
 
+        public static int Insert(ImportFile imp)
+        {
+            try
+            {
+                using (var context = new CompteResultatEntities())
+                {
+                    context.ImportFiles.Add(imp);
+                    context.SaveChanges();
+
+                    return imp.ID;
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
 
         public class MetaData
         {

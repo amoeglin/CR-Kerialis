@@ -19,6 +19,7 @@ namespace CompteResultat.DAL
         public System.DateTime Date { get; set; }
         public string UserName { get; set; }
         public string ImportPath { get; set; }
-        public string TEST { get; set; }
+        public Nullable<bool> Archived { get; set; }
+        public Nullable<System.DateTime> ProvOuvertureDate { get; set; }
     }
 }

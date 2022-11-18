@@ -311,7 +311,8 @@ warning 6002: The table/view 'CompteResultat.dbo.IMContrDistrib' does not have a
           <Property Name="Date" Type="date" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" />
           <Property Name="ImportPath" Type="nvarchar" MaxLength="250" />
-          <Property Name="TEST" Type="nvarchar" MaxLength="255" />
+          <Property Name="Archived" Type="bit" />
+          <Property Name="ProvOuvertureDate" Type="date" />
         </EntityType>
         <EntityType Name="ImportFiles">
           <Key>
@@ -1046,7 +1047,8 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ImportPath" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="TEST" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Archived" Type="Boolean" />
+          <Property Name="ProvOuvertureDate" Type="DateTime" Precision="0" />
         </EntityType>
         <Association Name="FK_Company_Company">
           <End Role="Company" Type="Self.Company" Multiplicity="0..1" />
@@ -1712,7 +1714,8 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySetMapping Name="Imports">
             <EntityTypeMapping TypeName="CompteResultatModel.Import">
               <MappingFragment StoreEntitySet="Import">
-                <ScalarProperty Name="TEST" ColumnName="TEST" />
+                <ScalarProperty Name="ProvOuvertureDate" ColumnName="ProvOuvertureDate" />
+                <ScalarProperty Name="Archived" ColumnName="Archived" />
                 <ScalarProperty Name="ImportPath" ColumnName="ImportPath" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />

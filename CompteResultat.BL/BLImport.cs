@@ -127,20 +127,27 @@ namespace CompteResultat.BL
             ImportId = importId;
         }
 
+        public BLImport()
+        {           
+        }        
+
         public void DoImport()
         {
+            ImportFile impFile;
+
             try
             {
                 // ***** Add a new line to the Import table and get the corresponding Id
 
-                Import imp = new Import { Name = ImportName, Date = DateTime.Today.Date, UserName = UserName, ImportPath = ImportDirectory };
+                //### if ID is not NULL, set Archived flag to false and update the import name - otherwise create a new import
+                Import imp = new Import { Name = ImportName, Date = DateTime.Today.Date, UserName = UserName, ImportPath = ImportDirectory, Archived=false };
                 int importId = Import.Insert(imp);
                 ImportId = importId;
 
 
                 // ***** Transform the uploaded csv files so they correspond with our DB schema
 
-                #region INSERT KEY DATA FROM IMPORT FILES INTO TEMP TABLE
+                #region INSERT KEY DATA FROM IMPORT FILES INTO TEMP TABLE && TRANSFORM INPUT FILES
 
                 //Iterate all imported files => add unique combination of: Assur-Contr-Comp-Subsid and add them to a List<string>
                 List<string> dataAssurContrCompSubsid = new List<string>();
@@ -158,6 +165,10 @@ namespace CompteResultat.BL
                     //TransformFile(UploadPathPrest, CSVSep, ConfigStringPrest, NewPrestCSV, "Id", importId, C.eImportFile.PrestaSante, ForceCompanySubsid);
                     //Thread.Sleep(500);
 
+                    impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPSANTE, FileType = C.cIMPFILETYPEPREST, 
+                        FileName = Path.GetFileName(UploadPathPrest).Replace(UserName + "_", "") };
+                    ImportFile.Insert(impFile);
+
                     //Entreprise
                     TransformFile(UploadPathPrest, CSVSep, ConfigStringPrest, NewPrestEntCSV, "Id", importId, C.eImportFile.PrestaSante, false);
                     Thread.Sleep(500);
@@ -173,6 +184,10 @@ namespace CompteResultat.BL
 
                 if (File.Exists(UploadPathCot))
                 {
+                    impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPSANTE, FileType = C.cIMPFILETYPECOT, 
+                        FileName = Path.GetFileName(UploadPathCot).Replace(UserName + "_", "") };
+                    ImportFile.Insert(impFile);
+
                     TransformFile(UploadPathCot, CSVSep, ConfigStringCot, NewCotEntCSV, "Id", importId, C.eImportFile.CotisatSante, false);
                     Thread.Sleep(500);
                     if (File.Exists(NewCotEntCSV))
@@ -186,6 +201,10 @@ namespace CompteResultat.BL
 
                 if (File.Exists(UploadPathDemo))
                 {
+                    impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPSANTE, FileType = C.cIMPFILETYPEDEMO,
+                        FileName = Path.GetFileName(UploadPathDemo).Replace(UserName + "_", "") };
+                    ImportFile.Insert(impFile);
+
                     TransformFile(UploadPathDemo, CSVSep, ConfigStringDemo, NewDemoEntCSV, "Id", importId, C.eImportFile.Demography, false);
                     Thread.Sleep(500);
                     if (File.Exists(NewDemoEntCSV))
@@ -199,6 +218,10 @@ namespace CompteResultat.BL
 
                 if (File.Exists(UploadPathCotPrev))
                 {
+                    impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPPREV, FileType = C.cIMPFILETYPECOT, 
+                        FileName = Path.GetFileName(UploadPathCotPrev).Replace(UserName + "_", "") };
+                    ImportFile.Insert(impFile);
+
                     TransformFile(UploadPathCotPrev, CSVSep, ConfigStringCotPrev, NewCotPrevCSV, "Id", importId, C.eImportFile.CotisatPrev, false);
                     Thread.Sleep(500);
                     if (File.Exists(NewCotPrevCSV))
@@ -212,6 +235,10 @@ namespace CompteResultat.BL
 
                 if (File.Exists(UploadPathSinistrPrev))
                 {
+                    impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPPREV, FileType = C.cIMPFILETYPESIN, 
+                        FileName = Path.GetFileName(UploadPathSinistrPrev).Replace(UserName + "_", "") };
+                    ImportFile.Insert(impFile);
+
                     TransformFile(UploadPathSinistrPrev, CSVSep, ConfigStringSinistrPrev, NewSinistrePrevCSV, "Id", importId, C.eImportFile.SinistrePrev, false);
                     Thread.Sleep(500);
                     if (File.Exists(NewSinistrePrevCSV))
@@ -225,6 +252,10 @@ namespace CompteResultat.BL
 
                 if (File.Exists(UploadPathDecompPrev))
                 {
+                    impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPPREV, FileType = C.cIMPFILETYPEDECOMP, 
+                        FileName = Path.GetFileName(UploadPathDecompPrev).Replace(UserName + "_", "") };
+                    ImportFile.Insert(impFile);
+
                     TransformFile(UploadPathDecompPrev, CSVSep, ConfigStringDecompPrev, NewDecompPrevCSV, "Id", importId, C.eImportFile.DecompPrev, false);
                     Thread.Sleep(500);
                     if (File.Exists(NewDecompPrevCSV))
@@ -238,6 +269,10 @@ namespace CompteResultat.BL
 
                 if (File.Exists(UploadPathProv))
                 {
+                    impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPPREV, FileType = C.cIMPFILETYPEPROVCLOT, 
+                        FileName = Path.GetFileName(UploadPathProv).Replace(UserName + "_", "") };
+                    ImportFile.Insert(impFile);
+
                     TransformFile(UploadPathProv, CSVSep, ConfigStringProv, NewProvCSV, "Id", importId, C.eImportFile.Provisions, false);
                     Thread.Sleep(500);
                     if (File.Exists(NewProvCSV))
@@ -251,6 +286,10 @@ namespace CompteResultat.BL
 
                 if (File.Exists(UploadPathProvOuverture))
                 {
+                    impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPPREV, FileType = C.cIMPFILETYPEPROVOUV, 
+                        FileName = Path.GetFileName(UploadPathProvOuverture).Replace(UserName + "_", "") };
+                    ImportFile.Insert(impFile);
+
                     TransformFile(UploadPathProvOuverture, CSVSep, ConfigStringProv, NewProvOuvertureCSV, "Id", importId, C.eImportFile.Provisions, false, true);
                     Thread.Sleep(500);
                     if (File.Exists(NewProvOuvertureCSV))
@@ -262,11 +301,11 @@ namespace CompteResultat.BL
                         G.GetAssurContrCompSubsidFromCSV(ref dataAssurContrCompSubsid, NewProvOuvertureCSV, ImportId);
                 }
 
-                //experience Data
-                if (File.Exists(UploadPathExp))
-                {
-                    TransformFile(UploadPathExp, CSVSep, ConfigStringExp, NewExpCSV, "Id", importId);                  
-                }
+                //experience Data => no longer used
+                //if (File.Exists(UploadPathExp))
+                //{
+                //    TransformFile(UploadPathExp, CSVSep, ConfigStringExp, NewExpCSV, "Id", importId);                  
+                //}
 
                 // create the NewOtherFieldsCSV
                 if (dataAssurContrCompSubsid.Count > 1)
@@ -609,13 +648,13 @@ namespace CompteResultat.BL
                     BulkInsert.DoBulkInsert(NewProvOuvertureCSV, C.eDBImportTables.ProvPrev.ToString());
 
 
-                //### before inserting, the Exp file needs to be transformed: certain cols need to be modified
-                if (File.Exists(NewExpCSV) && !UploadPathExp.EndsWith(UserName + "_"))
-                {
-                    ModifyExperienceFile(NewExpCSV);  
-                    Thread.Sleep(500);
-                    BulkInsert.DoBulkInsert(NewExpCSV, C.eDBImportTables._TempExpData.ToString());
-                }
+                //no longer needed ---  before inserting, the Exp file needs to be transformed: certain cols need to be modified
+                //if (File.Exists(NewExpCSV) && !UploadPathExp.EndsWith(UserName + "_"))
+                //{
+                //    ModifyExperienceFile(NewExpCSV);  
+                //    Thread.Sleep(500);
+                //    BulkInsert.DoBulkInsert(NewExpCSV, C.eDBImportTables._TempExpData.ToString());
+                //}
 
 
                 //iterate Demo Table with ImportId => update Presta & Cotisat Tables : 'WithOption' field
@@ -641,23 +680,19 @@ namespace CompteResultat.BL
                     PrestSante.UpdateWithOptionField(sql);
                 }
 
-                //foreach (DemoSanteWithOptionInfo data in demoWithOption)
-                //{
-                //    PrestSante.UpdateOptionField(importId, data.ContractId);
-                //    CotisatSante.UpdateOptionField(importId, data.ContractId);
-                //}
+                // update groups, exp & cadencier
+                //### very slow - fix this
+                if (false)
+                {
+                    if (UpdateGroupes)
+                        BLGroupsAndGaranties.RecreateGroupsGarantiesSanteFromPresta();
 
+                    if (UpdateExperience)
+                        BLExperience.RecreateExperienceFromPresta();
 
-                // ### maybe do something with the data in the _TempOtherFields Table => calculations
-
-                if(UpdateGroupes)
-                    BLGroupsAndGaranties.RecreateGroupsGarantiesSanteFromPresta();
-
-                if (UpdateExperience)
-                    BLExperience.RecreateExperienceFromPresta();
-
-                if (UpdateCad)
-                    BLCadencier.RecreateCadencier();
+                    if (UpdateCad)
+                        BLCadencier.RecreateCadencier();
+                }
 
                 //Update TypePrevoyance
                 if (File.Exists(UploadPathDecompPrev) || File.Exists(UploadPathSinistrPrev) || File.Exists(UploadPathCotPrev) || File.Exists(UploadPathProv) || File.Exists(UploadPathProvOuverture))
@@ -732,7 +767,9 @@ namespace CompteResultat.BL
                     sql = @"TRUNCATE TABLE _TempOtherFields;";
                     context.Database.ExecuteSqlCommand(sql, importId);
 
-                    sql = @"DELETE FROM Import WHERE Id = {0};";
+                    //### modify Archive to true
+                    //sql = @"DELETE FROM Import WHERE Id = {0};";
+                    sql = @"UPDATE Import SET Archived = 1 where Id = {0};";
                     context.Database.ExecuteSqlCommand(sql, importId);
                 }
 
@@ -1353,6 +1390,19 @@ namespace CompteResultat.BL
                 throw ex;
             }
         }
+
+    }
+
+    public class UploadPaths
+    {
+        public string uploadPathPrest { get; set; }
+        public string uploadPathCot { get; set; }
+        public string uploadPathDemo { get; set; }
+        public string uploadPathCotPrev { get; set; }
+        public string uploadPathSinistrPrev { get; set; }
+        public string uploadPathDecompPrev { get; set; }
+        public string uploadPathProv { get; set; }
+        public string uploadPathProvOuverture { get; set; }
 
     }
 }

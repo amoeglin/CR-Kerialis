@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace CompteResultat.Common
 {
     public sealed class C
-    {
+    {        
         public enum eCompanyProperties
         {
             Id = 1,
@@ -263,6 +263,17 @@ namespace CompteResultat.Common
         public static string cISODATE = "yyyy-MM-dd";
         public static string cEXCELEXTENSION = ".xlsm";
         public static string cPPTEXTENSION = ".pptm";
+
+        //Import File Group & Type
+        public static string cIMPFILEGROUPSANTE = "SANTE";
+        public static string cIMPFILEGROUPPREV = "PREV";
+        public static string cIMPFILETYPECOT = "Cotisation";
+        public static string cIMPFILETYPEDEMO = "Demography";
+        public static string cIMPFILETYPEPREST = "Prestation";
+        public static string cIMPFILETYPEDECOMP = "Décomptes";
+        public static string cIMPFILETYPESIN = "Sinistres";
+        public static string cIMPFILETYPEPROVCLOT = "Provisions Clôture";
+        public static string cIMPFILETYPEPROVOUV = "Provisions Ouverture";
 
 
         //Excel Sheets

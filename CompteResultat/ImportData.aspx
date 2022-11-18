@@ -160,7 +160,7 @@
             </td>            
         </tr>
 
-            <tr style="display:none; text-align:center">
+        <tr style="display:none; text-align:center">
             <td style="text-align:left; width: 160px;">
                 <label>Données expérience : </label>                  
             </td>
@@ -199,7 +199,7 @@
         <tr>
             <td colspan="2">
                 <asp:ObjectDataSource DataObjectTypeName="CompteResultat.DAL.Import" ID="odsImport" runat="server" TypeName="CompteResultat.DAL.Import" 
-                    SelectMethod="GetImports" SortParameterName="sortExpression" ></asp:ObjectDataSource>
+                    SelectMethod="GetImportsWithoutArchive" SortParameterName="sortExpression" ></asp:ObjectDataSource>
 
                 <asp:GridView CellPadding="5" ID="gvImport" runat="server" DataSourceID="odsImport" DataKeyNames="Id"  AutoGenerateColumns="False" OnRowDataBound="gvImport_RowDataBound" 
                     OnRowCommand="gvImport_RowCommand" AllowSorting="true" AllowPaging="true" PageSize="10"  >

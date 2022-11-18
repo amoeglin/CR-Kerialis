@@ -11,70 +11,130 @@ using System.Data;
 using CompteResultat.BL;
 using CompteResultat.DAL;
 using CompteResultat.Common;
+using Newtonsoft.Json;
+
+//https://www.c-sharpcorner.com/UploadFile/7eb164/gridview-control-in-Asp-Net/
+//https://www.aspsnippets.com/Articles/Display-data-in-GridView-from-database-in-ASPNet-using-C-and-VBNet.aspx
+//https://www.educba.com/asp-dot-net-gridview/
 
 namespace CompteResultat
-{
+{  
     public partial class GestionImport : System.Web.UI.Page
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        protected void Page_Load(object sender, EventArgs e)
+        private string SortDirection
         {
-            //check the hidden field in each row and if the value is: "expanded", add the id of the corresponding imageID
-            //to the string that is used as an arg to call the ExpandImages JS function
-            string imageIds = "";
-            foreach (GridViewRow row in gvImport.Rows)
-            {
-                Image imgPlusMinus = (Image)row.FindControl("imgPlusMinus");
-                HiddenField hdnState = (HiddenField)row.FindControl("hdnState");
-                Control chkImport = (Control)row.FindControl("chkImport");
-                int importId = Convert.ToInt32(gvImport.DataKeys[row.RowIndex].Value);
-
-                if (hdnState.Value == "expanded")
-                {
-                    imageIds += imgPlusMinus.ClientID + ",";
-                }
-
-            }
-
-            imageIds = imageIds.TrimEnd(',');
-
-            //string[] imgIds = new string[2];
-            //imgIds[0] = id;
-            //imgIds[1] = id2;
-            //string imageIds = string.Join(",", imgIds);
-
-            ClientScript.RegisterStartupScript(this.GetType(), "Javascript", string.Format("ExpandImages('{0}');", imageIds), true);
-
+            get { return ViewState["SortDirection"] != null ? ViewState["SortDirection"].ToString() : "ASC"; }
+            set { ViewState["SortDirection"] = value; }
         }
 
-        protected void imgPlusMinus_Load(object sender, EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
-            Image img = (Image)sender;
-            string title = img.ToolTip;
-            var a = 3;
+            if (!this.IsPostBack)
+            {
+                txtProvOuvertureDate.Text = DateTime.Now.ToShortDateString();
+                this.BindMainGrid();
+            }
+        }
 
-        }        
+        private void BindMainGrid(string sortExpression = null)
+        {
+            if (sortExpression != null)
+            {
+                this.SortDirection = this.SortDirection == "ASC" ? "DESC" : "ASC";
+                gvImport.DataSource = Import.GetImports(sortExpression, SortDirection);
+            }
+            else
+            {
+                gvImport.DataSource = Import.GetImports();
+            }
+                        
+            gvImport.DataBind();
+        }               
+
+        protected GVProperties ScanGrid()
+        {
+            int numberOfImportFilesSelected = 0;
+            int numberOfDifferntImports = 0;
+            List<int> importIds = new List<int>();
+            GVProperties props = new GVProperties();
+
+            foreach (GridViewRow row in gvImport.Rows)
+            {
+                //CheckBox cb = (CheckBox)row.FindControl("chkImport");
+                int importId = Convert.ToInt32(gvImport.DataKeys[row.RowIndex].Value);                
+                //string importName = row.Cells[3].Text;
+                //string importPath = row.Cells[6].Text;
+
+                GridView gvImpFiles = (GridView)row.FindControl("gvImpFiles");
+
+                foreach (GridViewRow row2 in gvImpFiles.Rows)
+                {
+                    CheckBox cb2 = (CheckBox)row2.FindControl("chkImport2");
+                    if (cb2 != null && cb2.Checked)
+                    {
+                        //int idFile = Convert.ToInt32(gvImpFiles.DataKeys[row2.RowIndex].Value);
+                        numberOfImportFilesSelected++;
+                        importIds.Add(importId);                        
+                    }
+                }                
+            }
+
+            importIds = importIds.Distinct().ToList();
+            numberOfDifferntImports = importIds.Count();
+
+            props.numberOfDifferntImports = numberOfDifferntImports;
+            props.numberOfImportFilesSelected = numberOfImportFilesSelected;
+
+            return props;
+        }
 
         protected void cmdImport_Click(object sender, EventArgs e)
-        {
-            string userName = "";
-            string uploadDirectory = "";
-            string importDirectory = "";
-            string importName = "";
+        { 
+            //generic propertis
             bool hasErr = false;
-            
+            string uploadDirectory = Path.Combine(Request.PhysicalApplicationPath, C.uploadFolder);
+
+            //### prov ouverture date
+            DateTime provOuverture;
+            if (! DateTime.TryParse(txtProvOuvertureDate.Text, out provOuverture))
+                provOuverture = DateTime.Now;
 
             try
             {
-                bool atLeastOneRowDeleted = false;
+                //### 
+                GVProperties props = ScanGrid();
+
+                //validation: Import name must be provided and at least 1 element must be selected
+                if (txtNomImport.Text == "")
+                    throw new Exception("Il faudra renseigner un nom pour l’import dans le champ 'Nom Import' !");
+
+                if (props.numberOfImportFilesSelected == 0)
+                    throw new Exception("Il faudra sélectionner au moins un fichier d'import !");
+
+                string importName = txtNomImport.Text;
+
+                Import.UpdateArchivedFlagAndImportName(4, importName);
+
+                return; 
+
+            
+                //bool atLeastOneRowDeleted = false;
+
+                //### create new import folder obly if at least one file was selected                
+                string newImportDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports", importName + "-" + DateTime.Now.ToString("s").Replace(":", "-"));
+                Directory.CreateDirectory(newImportDirectory);
+
                 // Iterate through the Products.Rows property
                 foreach (GridViewRow row in gvImport.Rows)
                 {
                     // Access the CheckBox
                     CheckBox cb = (CheckBox)row.FindControl("chkImport");
 
-                    int importId = Convert.ToInt32(gvImport.DataKeys[row.RowIndex].Value);    
+                    int importId = Convert.ToInt32(gvImport.DataKeys[row.RowIndex].Value);
+                    //string impName = row.Cells[3].Text;
+                    string importPath = row.Cells[6].Text;
 
                     if (cb != null && cb.Checked)
                     {
@@ -83,86 +143,28 @@ namespace CompteResultat
                         foreach (GridViewRow row2 in gvImpFiles.Rows)
                         {
                             CheckBox cb2 = (CheckBox)row2.FindControl("chkImport2");
-                            importId = Convert.ToInt32(gvImpFiles.DataKeys[row2.RowIndex].Value);
+                            if (cb2 != null && cb2.Checked)
+                            {
+                                int idFile = Convert.ToInt32(gvImpFiles.DataKeys[row2.RowIndex].Value);
+                                string fileGroup = row2.Cells[2].Text;
+                                string fileType = row2.Cells[3].Text;
+                                string fileName = row2.Cells[4].Text;
+
+                                //do the input
+                                string currentImportFilePath = Path.Combine(importPath, fileName);                                
+                                UploadPaths uplPaths = GetUploadFilePaths(currentImportFilePath, newImportDirectory, uploadDirectory, fileGroup, fileType, fileName);
+
+                                //### add provOuverture to table Import
+                                BLImport blImp = GetImportBasicConfig(uplPaths, importName, "", newImportDirectory);
+
+                                blImp.DoImport();
+
+                            }
                         }   
                     }
                 }
 
-
-
-
-
-                #region INITIAL CONFIGURATION
-
-                //initial configuration
-                userName = User.Identity.Name;
-                uploadDirectory = Path.Combine(Request.PhysicalApplicationPath, C.uploadFolder);
-                importDirectory = Path.Combine(Request.PhysicalApplicationPath, "Import");
-
-                string prefix = userName + "_";                
-
-                string csvSep = WebConfigurationManager.AppSettings["CSVSEP"];
-
-                #endregion
-
-                //most basic validation
-                if (txtNomImport.Text == "")
-                    throw new Exception("Il faudra renseigner un nom pour l’import dans le champ 'Nom Import' !");
-
-                //we need to provide at least 1 import file                
-                //if (txtPrestPath.Text == "" && txtDemoPath.Text == "" && txtCotPath.Text == "" && txtExpPath.Text == ""
-                //    && txtSinistrePrevPath.Text == "" && txtDecompPrevPath.Text == "" && txtCotPrevPath.Text == "" && txtProvPath.Text == "" && txtProvOuverturePath.Text == "")
-                //    throw new Exception("Il faudra spécifier au moins un fichier d'import !");
-
-
-                #region SAVE IMPORTED FILES TO SPECIFIC LOCATION
-
-                //upload provided import files
-
-                string filePath = "";
-                //string dateTimeToday = DateTime.Now.ToString("s").Replace(":", "-");
-                importDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports", importName + "-" + DateTime.Now.ToString("s").Replace(":", "-"));
-                //Directory.CreateDirectory(importDirectory);
-
-                //if (uploadPrestFile != null && uploadPrestFile.FileName.Length > 0 && txtPrestPath.Text != "")
-                //{
-                //    uploadPrestFile.SaveAs(uploadPathPrest);
-                //    filePath = Path.Combine(importDirectory, txtPrestPath.Text);
-                //    uploadPrestFile.SaveAs(filePath);
-                //}
-
-                
-                #endregion
-
-                #region VALIDATE IMPORT FILES - VERIFY IF ALL REQUIRED FIELDS ARE PRESENT
-
-                //Validate imported files
-                List<string> missingColumns;
-
-                //verify PrestaSante Data
-                //if (File.Exists(uploadPathPrest))
-                //{
-                //    missingColumns = BLImport.ImportFileVerification(C.eImportFile.PrestaSante, ref uploadPathPrest, configStringPrest);
-                //    if (missingColumns.Count > 0)
-                //    {
-                //        string errMess = string.Format("Le fichier d'import : {0} manque les colonnes suivantes : {1} ", txtPrestPath.Text, string.Join(", ", missingColumns));
-                //        throw new Exception(errMess);
-                //    }
-                //}            
-
-
-                #endregion
-
-
-                //Perform data import
-                //BLImport imp = new BLImport(userName, newPrestEntCSV, newPrestProdCSV, newCotEntCSV, newCotProdCSV, newDemoEntCSV, newDemoProdCSV, newOtherFieldsCSV,
-                //    newCotPrevCSV, newSinistrePrevCSV, newDecompPrevCSV, newProvCSV, newProvOuvertureCSV,
-                //    configStringPrest, configStringDemo, configStringCot, configStringOtherFields, configStringCotPrev, configStringSinistrPrev, configStringDecompPrev, configStringProv,
-                //    tableForOtherFields, importName, csvSep, uploadDirectory, importDirectory, uploadPathPrest, uploadPathCot, uploadPathDemo,
-                //    uploadPathCotPrev, uploadPathSinistrPrev, uploadPathDecompPrev, uploadPathProv, uploadPathProvOuverture, newExpCSV, configStringExp, uploadPathExp, forceCompanySubsid,
-                //    updateGroupes, updateExperience, updateCad, provOuverture);
-
-                //imp.DoImport();
+                //####################                
 
                 //refresh the data grid
                 //gvImport.DataBind();
@@ -170,7 +172,8 @@ namespace CompteResultat
             }            
             catch (Exception ex)
             {
-                Directory.Delete(importDirectory, true);
+                //### cleanup
+                //Directory.Delete(importDirectory, true);
                 UICommon.HandlePageError(ex, this.Page, "cmdImport_Click");
             }
             finally
@@ -184,7 +187,130 @@ namespace CompteResultat
                 }
             }
         }
+        
+        protected UploadPaths GetUploadFilePaths(string currentImportFilePath, string newImportPath, string uploadPath, string fileGroup, string fileType, string fileName)
+        {
+            UploadPaths paths = new UploadPaths();
 
+            FileInfo currentImportFileFI = new FileInfo(currentImportFilePath);
+            string prefix = User.Identity.Name + "_";
+                        
+            if (File.Exists(currentImportFilePath))
+            {
+                //save the files to be imported to the Upload folder and to the new Imports folder                
+                string newImportFilePath = Path.Combine(newImportPath, fileName);
+                currentImportFileFI.CopyTo(newImportFilePath, true);
+                string uploadFilePath = Path.Combine(uploadPath, prefix + fileName);
+                currentImportFileFI.CopyTo(uploadFilePath, true);
+
+                if (fileGroup == C.cIMPFILEGROUPSANTE)
+                {
+                    if (fileType == C.cIMPFILETYPECOT)
+                    {
+                        paths.uploadPathCot = uploadFilePath;                        
+                    }
+                    else if (fileType == C.cIMPFILETYPEDEMO)
+                    {
+                        paths.uploadPathDemo = uploadFilePath;
+                    }
+                    else if (fileType == C.cIMPFILETYPEPREST)
+                    {
+                        paths.uploadPathPrest = uploadFilePath;
+                    }
+                }
+                else
+                {
+                    if (fileType == C.cIMPFILETYPECOT)
+                    {
+                        paths.uploadPathCotPrev = uploadFilePath;
+                    }
+                    else if (fileType == C.cIMPFILETYPEDECOMP)
+                    {
+                        paths.uploadPathDecompPrev = uploadFilePath;
+                    }
+                    else if (fileType == C.cIMPFILETYPEPROVCLOT)
+                    {
+                        paths.uploadPathProv = uploadFilePath;
+                    }
+                    else if (fileType == C.cIMPFILETYPEPROVOUV)
+                    {
+                        paths.uploadPathProvOuverture = uploadFilePath;
+                    }
+                    else if (fileType == C.cIMPFILETYPESIN)
+                    {
+                        paths.uploadPathSinistrPrev = uploadFilePath;
+                    }
+                }
+            }
+
+            return paths;
+        }
+
+        protected BLImport GetImportBasicConfig(UploadPaths uplPaths, string importName, string provOuverture, string importDirectory)
+        {
+            //the following fields need to be set manually:
+            //importName, provOuverture && uploadPathPrest, uploadPathCot, uploadPathDemo, uploadPathCotPrev, uploadPathSinistrPrev, uploadPathDecompPrev, 
+            //uploadPathProv, uploadPathProvOuverture 
+
+            //Optionally: ImportId
+
+            bool hasErr = false;
+
+            string csvSep = WebConfigurationManager.AppSettings["CSVSEP"];
+            string userName = User.Identity.Name;
+
+            //location of files to be imported :: older, previously imported files
+            string uploadDirectory = Path.Combine(Request.PhysicalApplicationPath, C.uploadFolder);
+
+            //backup location of newly imported files
+            //string importDirectory = Path.Combine(Request.PhysicalApplicationPath, "Import");
+
+            bool forceCompanySubsid = false;
+            bool updateGroupes = true;
+            bool updateExperience = true;
+            bool updateCad = true;
+
+            string prefix = userName + "_";
+            string newPrestEntCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.PrestationsEntMOG.ToString() + ".csv");
+            string newPrestProdCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.PrestationsProdMOG.ToString() + ".csv");
+            string newCotEntCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.CotisationsEntMOG.ToString() + ".csv");
+            string newCotProdCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.CotisationsProdMOG.ToString() + ".csv");
+            string newDemoEntCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.DemographyEntMOG.ToString() + ".csv");
+            string newDemoProdCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.DemographyProdMOG.ToString() + ".csv");
+            string newOtherFieldsCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.OtherFieldsMOG.ToString() + ".csv");
+            string newCotPrevCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.CotPrevMOG.ToString() + ".csv");
+            string newSinistrePrevCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.SinistrePrevMOG.ToString() + ".csv");
+            string newDecompPrevCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.DecompPrevMOG.ToString() + ".csv");
+            string newProvCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.ProvMOG.ToString() + ".csv");
+            string newProvOuvertureCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.ProvOuvertureMOG.ToString() + ".csv");
+            string newExpCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.ExpMOG.ToString() + ".csv");
+
+            string tableForOtherFields = WebConfigurationManager.AppSettings["TableForOtherFields"];
+            string configStringPrest = WebConfigurationManager.AppSettings[C.eConfigStrings.PrestSante.ToString()];
+            string configStringCot = WebConfigurationManager.AppSettings[C.eConfigStrings.CotisatSante.ToString()];
+            string configStringDemo = WebConfigurationManager.AppSettings[C.eConfigStrings.Demography.ToString()];
+            string configStringOtherFields = WebConfigurationManager.AppSettings[C.eConfigStrings.OtherFields.ToString()];
+            string configStringCotPrev = WebConfigurationManager.AppSettings[C.eConfigStrings.CotisatPrev.ToString()];
+            string configStringSinistrPrev = WebConfigurationManager.AppSettings[C.eConfigStrings.SinistrePrev.ToString()];
+            string configStringDecompPrev = WebConfigurationManager.AppSettings[C.eConfigStrings.DecomptePrev.ToString()];
+            string configStringProv = WebConfigurationManager.AppSettings[C.eConfigStrings.Provisions.ToString()];
+            string configStringExp = WebConfigurationManager.AppSettings[C.eConfigStrings.Experience.ToString()];
+
+            // not used
+            string uploadPathExp = "";            
+
+            //importDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports", importName + "-" + DateTime.Now.ToString("s").Replace(":", "-"));
+            //Directory.CreateDirectory(importDirectory);
+
+            BLImport imp = new BLImport(userName, newPrestEntCSV, newPrestProdCSV, newCotEntCSV, newCotProdCSV, newDemoEntCSV, newDemoProdCSV, newOtherFieldsCSV,
+                    newCotPrevCSV, newSinistrePrevCSV, newDecompPrevCSV, newProvCSV, newProvOuvertureCSV,
+                    configStringPrest, configStringDemo, configStringCot, configStringOtherFields, configStringCotPrev, configStringSinistrPrev, configStringDecompPrev, configStringProv,
+                    tableForOtherFields, importName, csvSep, uploadDirectory, importDirectory, uplPaths.uploadPathPrest, uplPaths.uploadPathCot, uplPaths.uploadPathDemo,
+                    uplPaths.uploadPathCotPrev, uplPaths.uploadPathSinistrPrev, uplPaths.uploadPathDecompPrev, uplPaths.uploadPathProv, uplPaths.uploadPathProvOuverture,
+                    newExpCSV, configStringExp, uploadPathExp, forceCompanySubsid, updateGroupes, updateExperience, updateCad, provOuverture);
+
+            return imp;
+        }
 
         protected void gvImport_RowDataBound(object sender, GridViewRowEventArgs e)
         {
@@ -197,6 +323,23 @@ namespace CompteResultat
 
                     //Button cmd = e.Row.FindControl("cmdDelete") as Button;
                     //cmd.CommandArgument = importId.ToString();
+
+                    TableCell statusCell = e.Row.Cells[7];
+                    if (statusCell.Text == "True")
+                    {
+                        statusCell.Text = "OUI";
+                    } else
+                    {
+                        statusCell.Text = "NON";
+                    }
+
+                    bool archived = Boolean.Parse((DataBinder.Eval(e.Row.DataItem, "Archived").ToString()));
+
+                    if (archived)
+                    {
+                        //e.Row.Attributes["style"] = "background-color:#FFF11F";  yellow
+                        e.Row.Attributes.Add("style", "background-color:#FFFF74");
+                    }
 
                     int importId = int.Parse(gvImport.DataKeys[e.Row.RowIndex].Value.ToString());
                     GridView gvImpFiles = e.Row.FindControl("gvImpFiles") as GridView;
@@ -214,37 +357,10 @@ namespace CompteResultat
             }
         }
 
-        protected void gvImpFiles_RowDataBound(object sender, GridViewRowEventArgs e)
-        {
-            try
-            {
-                if (e.Row.RowType == DataControlRowType.DataRow)
-                {
-                    //Import selImport = e.Row.DataItem as Import;
-                    //int importId = int.Parse(DataBinder.Eval(e.Row.DataItem, "Id").ToString());
-
-                    //Button cmd = e.Row.FindControl("cmdDelete") as Button;
-                    //cmd.CommandArgument = importId.ToString();
-
-                    string importId = gvImport.DataKeys[e.Row.RowIndex].Value.ToString();
-                    GridView gvImpFiles = e.Row.FindControl("gvImpFiles") as GridView;
-                    //gvImpFiles.DataSource = College.GetColleges();
-                    // DataSourceID="odsCollege" DataKeyNames="Id"
-                    // GetData(string.Format("select top 3 * from Orders where CustomerId='{0}'", importId));
-                    //gvImpFiles.DataBind();
-                }
-            }
-            catch (Exception ex)
-            {
-                var myCustomValidator = new CustomValidator();
-                myCustomValidator.IsValid = false;
-                myCustomValidator.ErrorMessage = ex.Message;
-                Page.Validators.Add(myCustomValidator);
-            }
-        }
-
+        //handle button clicks
         protected void gvImport_RowCommand(object sender, GridViewCommandEventArgs e)
         {
+            //delete selected import
             if (e.CommandName == "DeleteImp")
             {
                 int importId;
@@ -257,29 +373,159 @@ namespace CompteResultat
                     gvImport.DataBind();
                 }
             }
+            if (e.CommandName == "DeleteImpAll")
+            {
+                int importId;
+
+                if (Int32.TryParse(e.CommandArgument.ToString(), out importId))
+                {
+                    //### delete also import files
+                    //BLImport.CleanTablesForSpecificImportID(importId, false);
+
+                    //refresh the data grid
+                    gvImport.DataBind();
+                }
+            }
+            //show import files in explorer
             if (e.CommandName == "RedirectFMImport")
             {
                 string importPath = e.CommandArgument.ToString();
+                string importDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports");
 
                 if (importPath != "")
                 {
-                    Response.Redirect("~/FMImport.aspx?path=" + importPath);
+                    if(Directory.Exists(importPath))
+                        Response.Redirect("~/FMImport.aspx?path=" + importPath);
+                    else
+                        Response.Redirect("~/FMImport.aspx?path=" + importDirectory);
                 }
             }
         }
 
-        protected void chkImport_CheckedChanged(object sender, EventArgs e)
+        protected void gvImpFiles_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            try
+            {
+                if (e.Row.RowType == DataControlRowType.DataRow)
+                {                                        
+                }
+            }
+            catch (Exception ex)
+            {
+                var myCustomValidator = new CustomValidator();
+                myCustomValidator.IsValid = false;
+                myCustomValidator.ErrorMessage = ex.Message;
+                Page.Validators.Add(myCustomValidator);
+            }
+        }
+
+
+        #region SECONDARY UI METHODS
+
+        protected void OnSorting(object sender, GridViewSortEventArgs e)
+        {
+            BindMainGrid(e.SortExpression);
+        }
+
+        protected void cmdSearch_Click(object sender, EventArgs e)
+        {
+            FilterByImport();
+        }
+
+        protected void FilterByImport()
+        {
+            string searchText = txtImportFilter.Text;
+            if (searchText == null || searchText == "")
+                gvImport.DataSource = Import.GetImports();
+            else
+                gvImport.DataSource = Import.GetImportsByName(searchText);
+
+            gvImport.DataBind();
+        }
+
+        protected void radioReportType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (radioReportType.SelectedIndex == 0)
+            {
+                //all imports
+                gvImport.DataSource = Import.GetImports();
+
+            }
+            else if (radioReportType.SelectedIndex == 1)
+            {
+                //only archived
+                gvImport.DataSource = Import.GetImportsWithOrWithoutArchive(true);
+            }
+            else
+            {
+                //only active imports
+                gvImport.DataSource = Import.GetImportsWithOrWithoutArchive(false);
+            }
+
+            gvImport.DataBind();
+        }
+
+        #endregion
+
+
+
+        #region NO LONGER REQUIRED
+
+        //verify which checkboxes are selected => create an object => deserilize object => call JS function with deserialized obj
+        protected void Page_Load_OLD(object sender, EventArgs e)
+        {
+
+            List<GVSelection> gvSelections = new List<GVSelection>();
+
+            //check the hidden field in each row and if the value is: "expanded", add the id of the corresponding imageID
+            //to the string that is used as an arg to call the ExpandImages JS function
+            string imageIds = "";
+            foreach (GridViewRow row in gvImport.Rows)
+            {
+                bool exp = false;
+                Image imgPlusMinus = (Image)row.FindControl("imgPlusMinus");
+                HiddenField hdnState = (HiddenField)row.FindControl("hdnState");
+                CheckBox chkImport = (CheckBox)row.FindControl("chkImport");
+                GridView gvChild = (GridView)row.FindControl("gvImpFiles");
+
+                //int importId = Convert.ToInt32(gvImport.DataKeys[row.RowIndex].Value);
+
+                if (hdnState.Value == "expanded")
+                {
+                    exp = true;
+                }
+
+                List<string> fileChkIds = new List<string>();
+                bool someSelections = false;
+                foreach (GridViewRow row2 in gvChild.Rows)
+                {
+                    CheckBox chkImport2 = (CheckBox)row2.FindControl("chkImport2");
+                    if (chkImport2.Checked)
+                    {
+                        someSelections = true;
+                        fileChkIds.Add(chkImport2.ClientID);
+                    }
+
+                }
+
+                gvSelections.Add(new GVSelection { expanded = exp, imageId = imgPlusMinus.ClientID, chkId = chkImport.ClientID, fileChkIds = fileChkIds });
+            }
+
+            string json = JsonConvert.SerializeObject(gvSelections);
+            
+            ClientScript.RegisterStartupScript(this.GetType(), "Javascript", string.Format("ExpandImages('{0}');", json), true);
+        }
+
+        protected void chkImport_CheckedChanged_OLD(object sender, EventArgs e)
         {
             CheckBox chk = (CheckBox)sender;
-            
+
             GridViewRow gvr = (GridViewRow)chk.NamingContainer;
-            //string id = gvImport.Rows[gvr.RowIndex].Value.ToString();
             int importId = Convert.ToInt32(gvImport.DataKeys[gvr.RowIndex].Value);
             GridView gvImpFiles = (GridView)gvr.FindControl("gvImpFiles");
             foreach (GridViewRow row in gvImpFiles.Rows)
             {
                 CheckBox cb = (CheckBox)row.FindControl("chkImport2");
-                //check all boxes
                 if (chk.Checked)
                 {
                     cb.Checked = true;
@@ -289,34 +535,26 @@ namespace CompteResultat
                     cb.Checked = false;
                 }
             }
-            
 
-
-            //string cellvalue = gvImport.Rows[gvr.RowIndex].Cells[1].Text;
-            //Button cmd = e.Row.FindControl("cmdDelete") as Button;
-
-                //GridView gvImpFiles = (GridView)row.FindControl("gvImpFiles");
-                //foreach (GridViewRow row in gvImpFiles.Rows)
-                //{
-                //    // Access the CheckBox
-                //    CheckBox cb = (CheckBox)row.FindControl("chkImport");
-
-                //    int importId = Convert.ToInt32(gvImport.DataKeys[row.RowIndex].Value);
-
-                //    if (cb != null && cb.Checked)
-                //    {
-                //        GridView gvImpFiles = (GridView)row.FindControl("gvImpFiles");
-
-                //        foreach (GridViewRow row2 in gvImpFiles.Rows)
-                //        {
-                //            CheckBox cb2 = (CheckBox)row2.FindControl("chkImport2");
-                //            importId = Convert.ToInt32(gvImpFiles.DataKeys[row2.RowIndex].Value);
-                //        }
-                //    }
-                //}
-
+            //string cellvalue = gvImport.Rows[gvr.RowIndex].Cells[1].Text; 
         }
 
-        
+
+        #endregion
+
+    }
+
+    public class GVSelection
+    {
+        public bool expanded { get; set; }
+        public string imageId { get; set; }
+        public string chkId { get; set; }
+        public List<string> fileChkIds { get; set; }
+    }
+
+    public class GVProperties
+    {
+        public int numberOfImportFilesSelected { get; set; }
+        public int numberOfDifferntImports { get; set; }
     }
 }
