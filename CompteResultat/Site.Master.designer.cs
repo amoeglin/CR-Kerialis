@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CompteResultat {
-    
-    
-    public partial class Site {
-        
+namespace CompteResultat
+{
+
+
+    public partial class Site
+    {
+
         /// <summary>
         /// HeadContent control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ContentPlaceHolder HeadContent;
-        
+
         /// <summary>
         /// form1 control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
-        
+
         /// <summary>
         /// HeadLoginView control.
         /// </summary>
@@ -38,7 +40,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.LoginView HeadLoginView;
-        
+
         /// <summary>
         /// SoftVersion control.
         /// </summary>
@@ -47,7 +49,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label SoftVersion;
-        
+
         /// <summary>
         /// Menu1 control.
         /// </summary>
@@ -56,7 +58,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Menu Menu1;
-        
+
         /// <summary>
         /// menu control.
         /// </summary>
@@ -65,7 +67,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Menu menu;
-        
+
         /// <summary>
         /// MainContent control.
         /// </summary>
@@ -74,7 +76,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ContentPlaceHolder MainContent;
-        
+
         /// <summary>
         /// imgLogo control.
         /// </summary>
@@ -83,7 +85,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Image imgLogo;
-        
+
         /// <summary>
         /// SoftVersion2 control.
         /// </summary>

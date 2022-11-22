@@ -840,7 +840,7 @@ namespace CompteResultat.BL
                 importTable.Columns.AddRange(new DataColumn[] { impFile });
 
                 //get import path => read all files in directory
-                var imports = Import.GetImportsWithOrWithoutArchive(true);
+                var imports = Import.GetImports("OnlyArchived", "DESC", "All"); // GetImportsWithOrWithoutArchive(true);
 
                 if (imports.Any())
                 {

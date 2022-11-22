@@ -19,10 +19,10 @@ namespace CompteResultat.DAL
 
         public static List<Import> GetImports()
         {
-            return GetImports("Date", "ASC");
+            return GetImports("Date", "ASC", "All");
         }
 
-        public static List<Import> GetImports(string sortExpression, string sortDirection)
+        public static List<Import> GetImports(string sortExpression, string sortDirection, string sortExpressionArchived)
         {
             try
             {
@@ -30,75 +30,66 @@ namespace CompteResultat.DAL
 
                 using (var context = new CompteResultatEntities())
                 {
+                    if (sortExpressionArchived == "Archived")
+                        imports = context.Imports.Where(i => i.Archived == true).ToList();
+                    else if (sortExpressionArchived == "NonArchived")
+                        imports = context.Imports.Where(i => i.Archived == false).ToList();
+                    else
+                        imports = context.Imports.ToList();
+
                     if (sortExpression == "Name")
                     {
                         if(sortDirection == "ASC")
-                            imports = context.Imports.OrderBy(i => i.Name).ToList();
+                            imports = imports.OrderBy(i => i.Name).ToList();
                         else
-                            imports = context.Imports.OrderByDescending(i => i.Name).ToList();
+                            imports = imports.OrderByDescending(i => i.Name).ToList();
                     }
                     else if (sortExpression == "UserName")
                     {
                         if (sortDirection == "ASC")
-                            imports = context.Imports.OrderBy(i => i.UserName).ToList();
+                            imports = imports.OrderBy(i => i.UserName).ToList();
                         else
-                            imports = context.Imports.OrderByDescending(i => i.UserName).ToList();
+                            imports = imports.OrderByDescending(i => i.UserName).ToList();
                     }
                     else if (sortExpression == "Archived")
                     {
                         if (sortDirection == "ASC")
-                            imports = context.Imports.OrderBy(i => i.Archived).ToList();
+                            imports = imports.OrderBy(i => i.Archived).ToList();
                         else
-                            imports = context.Imports.OrderByDescending(i => i.Archived).ToList();
+                            imports = imports.OrderByDescending(i => i.Archived).ToList();
                     }
                     else if (sortExpression == "Date")
                     {
                         if (sortDirection == "ASC")
-                            imports = context.Imports.OrderBy(i => i.Date).ToList();
+                            imports = imports.OrderBy(i => i.Date).ToList();
                         else
-                            imports = context.Imports.OrderByDescending(i => i.Date).ToList();
+                            imports = imports.OrderByDescending(i => i.Date).ToList();
+                    }
+                    else if (sortExpression == "ImportPath")
+                    {
+                        if (sortDirection == "ASC")
+                            imports = imports.OrderBy(i => i.ImportPath).ToList();
+                        else
+                            imports = imports.OrderByDescending(i => i.ImportPath).ToList();
+                    }
+                    else if (sortExpression == "OnlyArchived")
+                    {
+                        if (sortDirection == "ASC")
+                            imports = imports.Where(i => i.Archived == true).OrderBy(i => i.Date).ToList();
+                        else
+                            imports = imports.Where(i => i.Archived == true).OrderByDescending(i => i.Date).ToList();
+                    }
+                    else if (sortExpression == "OnlyNonArchived")
+                    {
+                        if (sortDirection == "ASC")
+                            imports = imports.Where(i => i.Archived == false).OrderBy(i => i.Date).ToList();
+                        else
+                            imports = imports.Where(i => i.Archived == false).OrderByDescending(i => i.Date).ToList();
                     }
                     else
-                        imports = context.Imports.OrderByDescending(i => i.Date).ToList();
-                }                
-
-                return imports;
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.Message);
-                throw ex;
-            }
-        }
-
-        public static List<Import> GetImportsWithoutArchive(string sortExpression)
-        {
-            try
-            {
-                List<Import> imports;
-
-                using (var context = new CompteResultatEntities())
-                {
-                    if (sortExpression == "Name")
-                    {
-                        imports = context.Imports.OrderBy(i => i.Name).ToList();
-                    }
-                    else if (sortExpression == "UserName")
-                    {
-                        imports = context.Imports.OrderBy(i => i.UserName).ToList();
-                    }
-                    else if (sortExpression == "Archived")
-                    {
-                        imports = context.Imports.OrderBy(i => i.Archived).ToList();                        
-                    }
-                    else if (sortExpression == "Date")
-                    {
-                        imports = context.Imports.OrderByDescending(i => i.Date).ToList();                        
-                    }
-                    else
-                        imports = context.Imports.OrderByDescending(i => i.Date).ToList();
+                        imports = imports.OrderByDescending(i => i.Date).ToList();
                 }
-
+                
                 return imports;
             }
             catch (Exception ex)
@@ -107,6 +98,7 @@ namespace CompteResultat.DAL
                 throw ex;
             }
         }
+        
         public static List<Import> GetImportsByName(string searchText)
         {
             try
@@ -125,18 +117,12 @@ namespace CompteResultat.DAL
                 throw ex;
             }
         }
-
-        public static List<Import> GetImportsWithOrWithoutArchive(bool onlyArchived)
+      
+        public static List<Import> GetImportsWithoutArchive(string sortExpression)
         {
             try
             {
-                List<Import> imports;
-
-                using (var context = new CompteResultatEntities())
-                {
-                    imports = context.Imports.Where(i => i.Archived == onlyArchived).OrderByDescending(i => i.Date).ToList();
-                }
-
+                List<Import> imports = GetImports(sortExpression, "ASC", "NonArchived"); 
                 return imports;
             }
             catch (Exception ex)
@@ -165,14 +151,14 @@ namespace CompteResultat.DAL
             }
         }
 
-        public static void UpdateArchivedFlagAndImportName(int id, string importName)
+        public static void UpdateArchivedFlagAndImportName(int id, bool archived, string importName)
         {
             try
             {
                 using (var context = new CompteResultatEntities())
                 {
                     Import imp = context.Imports.Where(i => i.Id == id).ToList()[0];
-                    imp.Archived = false;
+                    imp.Archived = archived;
                     imp.Name = importName;
 
                     context.SaveChanges();

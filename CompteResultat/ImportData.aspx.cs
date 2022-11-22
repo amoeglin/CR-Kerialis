@@ -591,9 +591,7 @@ namespace CompteResultat
 
                 if (Int32.TryParse(e.CommandArgument.ToString(), out importId))
                 {                    
-                    BLImport.CleanTablesForSpecificImportID(importId, false);
-                    
-                    //refresh the data grid
+                    BLImport.CleanTablesForSpecificImportID(importId, true, false);                    
                     gvImport.DataBind();
                 }
             }

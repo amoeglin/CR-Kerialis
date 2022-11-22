@@ -67,10 +67,11 @@
                 </asp:LoginView>
                 <asp:Label  ID="SoftVersion" runat="server" Text="Label"></asp:Label>
             </div>
-
+            
             <% if (IsAdmin == false ){ %>
 
-                <div id="navbar" class="clear hideSkiplink" style="display:none;">
+                <%--style="display:none;"--%>
+                <div id="navbar" class="clear hideSkiplink" >
                     <asp:Menu ID="Menu1" runat="server" CssClass="menu" EnableViewState="false"
                         IncludeStyleBlock="false" Orientation="Horizontal">
                         <Items>                       
@@ -95,16 +96,13 @@
                                 <asp:MenuItem NavigateUrl="~/GestionFraisSante.aspx" Text="Frais Sante" />
                                 <asp:MenuItem NavigateUrl="~/GestionEntreprises.aspx" Text="Paramètres des Entreprises" /> 
                                 <asp:MenuItem NavigateUrl="~/FMImport.aspx" Text="Gestion des Imports" /> 
-                            </asp:MenuItem>  
-                            
-                                               
+                            </asp:MenuItem>   
                         </Items>
                     </asp:Menu>
                 </div>
 
             <%} %>
-            <% else{ %>
-
+            <% else{ %>            
                 <div class="clear hideSkiplink" >
                     <asp:Menu  ID="menu" runat="server" CssClass="menu" EnableViewState="false" style="display:none;"
                         IncludeStyleBlock="false" Orientation="Horizontal">
@@ -139,6 +137,7 @@
                 </div>
 
             <%} %>
+            
 
         </div>
 
@@ -247,6 +246,7 @@
         </div>
       </div>
     </div>
+
 
 </body>
 </html>

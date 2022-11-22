@@ -264,8 +264,10 @@
     <Content Include="Images\company.png" />
     <Content Include="Images\contract.png" />
     <Content Include="Images\cr.jpg" />
+    <Content Include="Images\dbDisabled.png" />
     <Content Include="Images\deleteAll.png" />
     <Content Include="Images\deleteDB.png" />
+    <Content Include="Images\deleteDisabled.png" />
     <Content Include="Images\deletePath.jpg" />
     <Content Include="Images\deletePath16.jpg" />
     <Content Include="Images\FM16.jpg" />

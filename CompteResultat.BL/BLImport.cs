@@ -134,15 +134,21 @@ namespace CompteResultat.BL
         public void DoImport()
         {
             ImportFile impFile;
+            int importId = 0; 
 
             try
             {
-                // ***** Add a new line to the Import table and get the corresponding Id
-
-                //### if ID is not NULL, set Archived flag to false and update the import name - otherwise create a new import
-                Import imp = new Import { Name = ImportName, Date = DateTime.Today.Date, UserName = UserName, ImportPath = ImportDirectory, Archived=false };
-                int importId = Import.Insert(imp);
-                ImportId = importId;
+                // if ImportId is 0, create a new import - otherwise, set Archived flag to false and update the import name 
+                if (ImportId == 0)
+                {
+                    Import imp = new Import { Name = ImportName, Date = DateTime.Today.Date, UserName = UserName, ImportPath = ImportDirectory, Archived = false };
+                    importId = Import.Insert(imp);
+                    ImportId = importId;
+                } else
+                {
+                    importId = ImportId;
+                    Import.UpdateArchivedFlagAndImportName(ImportId, false, ImportName);
+                }
 
 
                 // ***** Transform the uploaded csv files so they correspond with our DB schema
@@ -681,18 +687,16 @@ namespace CompteResultat.BL
                 }
 
                 // update groups, exp & cadencier
-                //### very slow - fix this
-                if (false)
-                {
-                    if (UpdateGroupes)
-                        BLGroupsAndGaranties.RecreateGroupsGarantiesSanteFromPresta();
+                //### very slow - fix this                
+                if (UpdateGroupes)
+                    BLGroupsAndGaranties.RecreateGroupsGarantiesSanteFromPresta();
 
-                    if (UpdateExperience)
-                        BLExperience.RecreateExperienceFromPresta();
+                if (UpdateExperience)
+                    BLExperience.RecreateExperienceFromPresta();
 
-                    if (UpdateCad)
-                        BLCadencier.RecreateCadencier();
-                }
+                if (UpdateCad)
+                    BLCadencier.RecreateCadencier();
+               
 
                 //Update TypePrevoyance
                 if (File.Exists(UploadPathDecompPrev) || File.Exists(UploadPathSinistrPrev) || File.Exists(UploadPathCotPrev) || File.Exists(UploadPathProv) || File.Exists(UploadPathProvOuverture))
@@ -702,7 +706,7 @@ namespace CompteResultat.BL
                 C_TempOtherFields.DeleteRowsWithImportId(ImportId);
 
                 //Delete originally uploaded as well as the converted CSV Files
-                CleanupImportFiles(UploadPath, UserName);
+                CleanupUploadDirectory(UploadPath, UserName);
 
             }
             catch (Exception ex)
@@ -716,8 +720,9 @@ namespace CompteResultat.BL
 
                     if (ImportId != 0)
                     {
-                        CleanTablesForSpecificImportID(ImportId, true);
-                        CleanupImportFiles(UploadPath, UserName);
+                        CleanTablesForSpecificImportID(ImportId, false, true);
+                        CleanupUploadDirectory(UploadPath, UserName);
+                        CleanupImportDirectory(ImportDirectory);
                     }
                 }
                 catch (Exception rbEx)
@@ -731,9 +736,9 @@ namespace CompteResultat.BL
                     throw ex;
                 }
             }
-        }       
+        }
 
-        public static void CleanTablesForSpecificImportID(int importId, bool isRollback)
+        public static void CleanTablesForSpecificImportID(int importId, bool isArchive, bool isRollback)
         {
             try
             {
@@ -767,10 +772,18 @@ namespace CompteResultat.BL
                     sql = @"TRUNCATE TABLE _TempOtherFields;";
                     context.Database.ExecuteSqlCommand(sql, importId);
 
-                    //### modify Archive to true
-                    //sql = @"DELETE FROM Import WHERE Id = {0};";
-                    sql = @"UPDATE Import SET Archived = 1 where Id = {0};";
-                    context.Database.ExecuteSqlCommand(sql, importId);
+                    //modify Archive to true
+                    if (isArchive)
+                    {
+                        sql = @"UPDATE Import SET Archived = 1 where Id = {0};";
+                        context.Database.ExecuteSqlCommand(sql, importId);
+                    } else
+                    {
+                        sql = @"DELETE FROM ImportFiles WHERE ImportId = {0};";
+                        context.Database.ExecuteSqlCommand(sql, importId);
+                        sql = @"DELETE FROM Import WHERE Id = {0};";
+                        context.Database.ExecuteSqlCommand(sql, importId);
+                    }
                 }
 
                 if (isRollback)
@@ -787,26 +800,33 @@ namespace CompteResultat.BL
             }
         }
 
-        public static void CleanupImportFiles(string UploadPath, string UserName)
+        public static void CleanupUploadDirectory(string uploadPath, string userName)
         { 
             try
             {
                 //delete all files with the specified user prefix
-                List<string> fileList = Directory.GetFiles(UploadPath, UserName + "_*", SearchOption.TopDirectoryOnly).ToList();
+                List<string> fileList = Directory.GetFiles(uploadPath, userName + "_*", SearchOption.TopDirectoryOnly).ToList();
                 foreach (string fle in fileList)
                 {
                     if(File.Exists(fle))
                         File.Delete(fle);
                 }
 
-                //if (File.Exists(UploadPathPrest)) File.Delete(UploadPathPrest);
-                //if (File.Exists(UploadPathCot)) File.Delete(UploadPathCot);
-                //if (File.Exists(UploadPathDemo)) File.Delete(UploadPathDemo);
+                //if (File.Exists(UploadPathPrest)) File.Delete(UploadPathPrest);                
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
 
-                //if (File.Exists(NewPrestCSV)) File.Delete(NewPrestCSV);
-                //if (File.Exists(NewCotCSV)) File.Delete(NewCotCSV);
-                //if (File.Exists(NewDemoCSV)) File.Delete(NewDemoCSV);
-                //if (File.Exists(NewOtherFieldsCSV)) File.Delete(NewOtherFieldsCSV);
+        public static void CleanupImportDirectory(string impoertPath)
+        {
+            try
+            {
+                if(Directory.Exists(impoertPath))
+                    Directory.Delete(impoertPath, true);                       
             }
             catch (Exception ex)
             {

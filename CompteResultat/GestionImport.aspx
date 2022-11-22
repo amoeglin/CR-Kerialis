@@ -1,7 +1,8 @@
 ﻿<%@ Page Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="GestionImport.aspx.cs" Inherits="CompteResultat.GestionImport" EnableViewState="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     
     <script type="text/javascript">
         
@@ -11,7 +12,7 @@
         $(document).ready(function () {
             $("#cmdImport").click(function (evt) {
                 $("#divLoading").css("display", "block");
-            });
+            });            
         });            
 
         function ExpandImages(strGVState) {
@@ -98,7 +99,18 @@
             }
         }
 
-        //handle treeview scroll - save last scroll position
+        function OpenConfirmdeleteModal(deleteAllOrDB) {            
+            if (deleteAllOrDB == "ALL") {
+                $('#modalDeleteDescr').text('Est-ce que vous voulez vraiment supprimer toutes les données de la base de données ainsi que tous les fichiers d’importation archivés associés à cette importation ?')
+                $('#confirmDeleteModal').modal('show');
+            }
+            else {
+                $('#modalDeleteDescr').text('Est-ce que vous voulez vraiment supprimer toutes les données de la base de données associés à cette importation ?')
+                $('#confirmDeleteModal').modal('show');
+            }
+        }
+
+        //handle scroll - save last scroll position
         $(function () {
             //recover the scroll postion
             $("#gvDiv").scrollTop($("#HiddenScrollTop").val());
@@ -110,13 +122,14 @@
             });
         })
 
-        //### not needed
+
+        //not needed
         window.onload = function () {
             //grid = document.getElementById('<%= this.gvImport.ClientID %>');
             //rows = grid.getElementsByTagName('tr');
             //upperBound = parseInt('<%= this.gvImport.Rows.Count %>');
             //rows = grid.getElementsByTagName('tr');
-        }     
+        } 
 
     </script>
        
@@ -132,7 +145,8 @@
                     <h1 style="font-weight:600"><asp:Literal  ID="Literal1" runat="server">Gestion des données importées</asp:Literal> </h1>                                 
                 </td>            
             </tr>
-            <tr>
+
+            <tr style="display:none">
                 <td>
                     <table border="0" style="display:block">
                         <tr style="height:40px; text-align:left; vertical-align:middle">
@@ -152,9 +166,10 @@
                             </td>
                             <td>
                                 <asp:TextBox ID="txtImportFilter" CssClass="element" style="width: 180px; margin-left:10px; margin-right:20px; margin-bottom:5px" runat="server" 
-                                    ClientIDMode="Static" AutoPostBack="true" ></asp:TextBox> 
+                                    ClientIDMode="Static" ></asp:TextBox> 
                             <td>
-                                <asp:Button CssClass="ButtonBigBlue" style="width:100px; vertical-align:central; padding:0px; margin-bottom: -19px; " id="cmdSearch" Text="Rechercher" runat="server" OnClick="cmdSearch_Click" ClientIDMode="Static" /> &nbsp; 
+                                <asp:Button CssClass="ButtonBigBlue" style="width:100px; vertical-align:central; padding:0px; margin-bottom: -19px; " id="cmdSearch" Text="Rechercher" runat="server" 
+                                    OnClick="cmdSearch_Click" ClientIDMode="Static" AutoPostBack="true"  /> &nbsp; 
                             </td>          
                         </tr>
                     </table>
@@ -162,12 +177,9 @@
             </tr>
 
             <tr>
-                <td colspan="2">                   
-                    <%--<asp:HiddenField ID="hdn" runat="server" Value="5" />--%>
-
+                <td colspan="2"> 
                     <asp:HiddenField ID = "HiddenScrollTop" runat="server" Value="0" ClientIDMode="Static" />
 
-                    <%-- wrap the Gridview in a div that defines a scrollbar --%>
                     <div id="gvDiv" style="height: 450px; width: 1580px; overflow-y: scroll;overflow-x: hidden; border: 1px solid #A9A9A9; color:#3A4F63; text-decoration:none; "> 
                         
                         <asp:GridView CellPadding="5" ID="gvImport" runat="server" DataKeyNames="Id" AutoGenerateColumns="False" OnSorting="OnSorting"
@@ -205,8 +217,6 @@
 
                             <asp:TemplateField HeaderText="">
                                 <ItemTemplate>
-                                    <%--<asp:HiddenField ID="hdnState" runat="server" Value="collapsed" /> --%>
-                                    <%--<asp:CheckBox OnCheckedChanged="chkImport_CheckedChanged" ID="CheckBox1" runat="server" AutoPostBack="True" />--%>
                                     <asp:CheckBox ID="chkImport" runat="server" onclick="javascript:SelectChildBoxes(this);" Checked="false" />
                                 </ItemTemplate>
                             </asp:TemplateField>
@@ -218,26 +228,24 @@
                             <asp:BoundField DataField="ImportPath" HeaderText="Dossier Import" SortExpression="ImportPath" ItemStyle-Wrap="True" HeaderStyle-Width="1000px" />
                             <asp:BoundField DataField="Archived" HeaderText="Archivé" SortExpression="Archived"  />
 
-                            <asp:TemplateField HeaderText="">
+                            <asp:TemplateField Visible="false">
                                 <ItemTemplate>
                                     <asp:ImageButton Width="24" Height="24" style="margin-right:10px;" ImageUrl="~/Images/folder.png" ID="cmdFileManager" runat="server"  
                                         CommandName="RedirectFMImport" CommandArgument='<%# Bind("ImportPath") %>' /> 
                                 </ItemTemplate>
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="">
+                            <asp:TemplateField Visible="false">
                                 <ItemTemplate>
-                                    <asp:ImageButton Width="24" Height="24" style="margin-right:10px;" ImageUrl="~/Images/deleteDB.png" ID="cmdDelete" runat="server"  
-                                        CommandName="DeleteImp" CommandArgument='<%# Bind("ID") %>' ToolTip="Delete only imported data from the database"
-                                        OnClientClick="return confirm('Confirmer la suppression du lot ?');"  /> 
+                                    <asp:ImageButton Width="24" Height="24" style="margin-right:10px;" ImageUrl="~/Images/deleteDB.png" ID="cmdDeleteDB" runat="server"  
+                                          OnClick="ConfirmDelete" ToolTip="Supprimer toutes les données de la base de données associés à cette importation" />
                                 </ItemTemplate>
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="">
+                            <asp:TemplateField Visible="false">
                                 <ItemTemplate>
                                     <asp:ImageButton Width="24" Height="24" style="margin-right:10px;" ImageUrl="~/Images/deleteAll.png" ID="cmdDeleteAll" runat="server"  
-                                        CommandName="DeleteImpAll" CommandArgument='<%# Bind("ID") %>' ToolTip="Delete all data in the database as well as all import files "
-                                        OnClientClick="return confirm('Confirmer la suppression du lot ?');"  /> 
+                                          OnClick="ConfirmDelete" ToolTip="Supprimer toutes les données de la base de données ainsi que tous les fichiers d’importation archivés associés à cette importation" />
                                 </ItemTemplate>
                             </asp:TemplateField>
 
@@ -266,10 +274,10 @@
                 <td>
                     <table border="0" style="display:block">
                         <tr style="height:40px; text-align:left; vertical-align:middle">
-                            <td style="text-align:left;">
+                            <td style="text-align:left; display:none">
                                 <label id="Label2"  style="font-weight:500; margin-right:15px;" runat="server" >Date Prov Ouverture : </label>
                             </td>
-                            <td>
+                            <td style="display:none">
                                 <asp:TextBox style="margin-bottom:5px;" runat="server" ID="txtProvOuvertureDate" TextMode="Date" Width="200"  />
                             <td>
                             
@@ -305,5 +313,29 @@
 
     </div>
 
+     <div  class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog"  role="document">
+        <div class="modal-content " style="background-color: #D0EFEE; color:#00606B; font-weight:500">
+          <div class="modal-header">
+            <h3 class="modal-title" style="font-size:17px; font-weight:500; color:red;" id="deleteModalTitle">Suppression des données d’importation !</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" style="font-size:15px;">
+              <div class="container">  
+                <div class="row">
+                    <div class="col-md-12 " id="modalDeleteDescr"></div>                    
+                </div>                  
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-info" data-dismiss="modal">Fermer</button>
+            <asp:Button ID="btnConfirmDeleteAll" runat="server" Text="Oui" OnClick="btnDeleteAll_Click" CssClass="btn btn-danger" />            
+          </div>
+        </div>
+      </div>
+    </div>
 
+   
 </asp:Content>
