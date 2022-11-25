@@ -38,14 +38,14 @@
     
     <div style="float:left; margin-top: 10px;">
 
-        <table>
+        <table border="0">
         <tr style="height:40px; text-align:left; vertical-align:text-top; margin-bottom: 10px; margin-top:200px; ">
             <td style=" margin-top:200px; " colspan="2"> 
                 <h1><asp:Literal  ID="Literal8" runat="server">Import Santé</asp:Literal> </h1>                                 
             </td>            
         </tr>
 
-        <tr style="text-align:center">
+        <tr style="text-align:center; height:50px;">
             <td style="text-align:left; width: 180px;">
                 <label>Prestations Santé : </label>                  
             </td>
@@ -57,8 +57,8 @@
             </td>            
         </tr>
 
-        <tr style="text-align:center">
-            <td style="text-align:left;">
+        <tr style="text-align:center; height:50px;">
+            <td style="text-align:left;margin-top:300px;">
                 <label>Cotisations Santé : </label>                  
             </td>
             <td style="text-align:left;">
@@ -69,7 +69,7 @@
             </td>            
         </tr>
 
-        <tr style="text-align:center">
+        <tr style="text-align:center; height:50px;">
             <td style="text-align:left;">
                 <label>Démographie : </label>                  
             </td>
@@ -80,17 +80,18 @@
                 <asp:Button CssClass="ButtonBigBlue" style="vertical-align:middle; display: inline; width: 105px; height: 23px; margin-top:0px; margin-bottom: 3px;" ID="cmdSelectDemo" runat="server" Text="Sélectionner" />                  
             </td>            
         </tr>
+            <tr style="height:20px;"><td></td></tr>
         </table>
 
 
-        <table>
-        <tr style="height:50px; text-align:left; vertical-align:text-top">
+        <table border="0">
+        <tr style="height:50px; text-align:left; vertical-align:text-top; height:50px;">
             <td colspan="3" style="text-align:left; width: 180px;"> 
                 <h1><asp:Literal  ID="Literal2" runat="server">Import Prévoyance</asp:Literal> </h1>                                 
             </td>             
         </tr>
 
-         <tr style="text-align:center">
+         <tr style="text-align:center; height:50px;">
             <td style="text-align:left; width: 180px;">
                 <label>Décomptes Prévoyance : </label>                  
             </td>            
@@ -102,7 +103,7 @@
             </td>            
         </tr>
 
-        <tr style="text-align:center">
+        <tr style="text-align:center; height:50px;">
             <td style="text-align:left;">
                 <label>Sinistres Prévoyance : </label>                  
             </td>
@@ -114,7 +115,7 @@
             </td>            
         </tr>
 
-        <tr style="text-align:center">
+        <tr style="text-align:center; height:50px;">
             <td style="text-align:left;">
                 <label>Cotisations Prévoyance : </label>                  
             </td>
@@ -126,7 +127,7 @@
             </td>            
         </tr>
 
-        <tr style="text-align:center">
+        <tr style="text-align:center; height:50px;">
             <td style="text-align:left;">
                 <label>Provisions à la clôture : </label>                  
             </td>
@@ -138,7 +139,7 @@
             </td>            
         </tr>
 
-        <tr style="text-align:center">
+        <tr style="text-align:center; height:50px;">
             <td style="text-align:left;">
                 <label>Provisions à l'ouverture : </label>                  
             </td>            
@@ -190,13 +191,13 @@
             </td>            
         </tr>
 
-        <tr style="height:50px; text-align:left; vertical-align:text-top">
+        <tr style="height:50px; text-align:left; vertical-align:text-top; display:none">
             <td colspan="2"> 
                 <h1><asp:Literal  ID="Literal1" runat="server">Gestion des données importées</asp:Literal> </h1>                                 
             </td>            
         </tr>
 
-        <tr>
+        <tr style="display:none">
             <td colspan="2">
                 <asp:ObjectDataSource DataObjectTypeName="CompteResultat.DAL.Import" ID="odsImport" runat="server" TypeName="CompteResultat.DAL.Import" 
                     SelectMethod="GetImportsWithoutArchive" SortParameterName="sortExpression" ></asp:ObjectDataSource>
@@ -248,7 +249,7 @@
 
     </div>
     
-    <div id="divImportSante" style="margin-top: 10px; margin-left: 30px; background-color:#D0EFEE; float:left"     >
+    <div id="divImportSante" style="margin-top: 60px; margin-left: 70px; background-color:#D0EFEE; float:left"     >
         <table  border="0"  >
             <tr >
                 <td style="width: 30px;">

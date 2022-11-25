@@ -72,6 +72,11 @@
             for (var i = 0; i < chkBoxes.length; i++) {
                 if (chkBoxes[i].id != chkParent) {
                     var chkId = chkBoxes[i].id
+
+                    //###
+                    //chkBoxes[i].checked = parentIsChecked
+                    //$(':checkbox#' + chkBoxes[i].id).attr('checked', parentIsChecked);
+
                     for (var j = 0; j < allCheckBoxes.length; j++) {
                         if (allCheckBoxes[j].id == chkId) {
                             allCheckBoxes[j].checked = parentIsChecked
@@ -82,7 +87,24 @@
             }
         }
 
+        function UnselectBoxes(chkBox) {
+            var isChecked = chkBox.checked            
+            var allCheckBoxes = $(':checkbox')            
+
+            for (var j = 0; j < allCheckBoxes.length; j++) {
+                if (allCheckBoxes[j].id == chkBox.id) {
+                    console.log(allCheckBoxes.length, j, chkBox.id )
+                    allCheckBoxes[j].checked = isChecked
+                    $(':checkbox#' + allCheckBoxes[j].id).attr('checked', isChecked);
+                }
+            }
+        }
+
         function ToggleImage(image) { 
+
+            //console.log('BEFORE: ', $(image).parent().parent().parent().html())
+            //console.log($(image).closest("tr").html())
+
             if (image.title == 'Collapse') {                
                 image.src = expandImage;
                 image.title = 'Expand';
@@ -97,7 +119,9 @@
 
                 $(image).prev()[0].value = "expanded"
             }
-        }
+
+            //console.log('AFTER: ', $(image).parent().html())
+        }        
 
         function OpenConfirmdeleteModal(deleteAllOrDB) {            
             if (deleteAllOrDB == "ALL") {
@@ -146,23 +170,23 @@
                 </td>            
             </tr>
 
-            <tr style="display:none">
+            <tr style="display:block">
                 <td>
                     <table border="0" style="display:block">
                         <tr style="height:40px; text-align:left; vertical-align:middle">
-                            <td style="width:130px;">                
-                                <label id="lblImportType"  style=" margin-right:5px; font-weight:500; " runat="server" >Display Imports :</label>
+                            <td style="width:190px;">                
+                                <label id="lblImportType"  style=" margin-right:5px; font-weight:500; margin-bottom:12px; " runat="server" >Afficher les importations :</label>
                             </td>
                             <td style="" >
                                 <asp:RadioButtonList ValidateRequestMode="Disabled" AutoPostBack="true" style="font-weight:400;" RepeatDirection="Horizontal" 
                                     ID="radioReportType" OnSelectedIndexChanged="radioReportType_SelectedIndexChanged" runat="server" >
-                                    <asp:ListItem style="margin-right:10px;" Selected><span style="" />&nbsp; Imports</asp:ListItem>
-                                    <asp:ListItem style="margin-right:10px">&nbsp; Only Archived</asp:ListItem>
-                                    <asp:ListItem style="margin-right:10px;">&nbsp; Only Active Imports</asp:ListItem>                    
+                                    <asp:ListItem style="margin-right:10px;" Selected><span style="" />&nbsp; Toutes les importations</asp:ListItem>
+                                    <asp:ListItem style="margin-right:10px">&nbsp; Seulement imports actifs</asp:ListItem>
+                                    <asp:ListItem style="margin-right:10px;">&nbsp; Seulement imports inactifs</asp:ListItem>                    
                                 </asp:RadioButtonList>                                                
                             </td>
                             <td>
-                                <label id="Label1"  style="margin-left:50px; font-weight:500;" runat="server" >Search by import name :</label>
+                                <label id="Label1"  style="margin-left:50px; font-weight:500;" runat="server" >Recherche par nom d’importation :</label>
                             </td>
                             <td>
                                 <asp:TextBox ID="txtImportFilter" CssClass="element" style="width: 180px; margin-left:10px; margin-right:20px; margin-bottom:5px" runat="server" 
@@ -200,7 +224,7 @@
                                             <Columns>
                                                 <asp:TemplateField HeaderText="">
                                                     <ItemTemplate>
-                                                        <asp:CheckBox ID="chkImport2" runat="server" Checked="false"  />
+                                                        <asp:CheckBox onclick="javascript:UnselectBoxes(this);" ID="chkImport2" runat="server" Checked="false"  />
                                                     </ItemTemplate>
                                                 </asp:TemplateField>                                                
 
@@ -222,27 +246,27 @@
                             </asp:TemplateField>
 
                             <asp:BoundField Visible="false" DataField="Id"  /> <%--HeaderText="Id" SortExpression="Id"--%>
-                            <asp:BoundField DataField="Name" HeaderText="Nom du lot" SortExpression="Name" />
-                            <asp:BoundField DataField="Date" DataFormatString="{0:d}" HeaderText="Date Import" SortExpression="Date" />
+                            <asp:BoundField DataField="Name" HeaderText="Nom du lot" SortExpression="Name" HeaderStyle-Width="105px" ItemStyle-Wrap="False" />
+                            <asp:BoundField DataField="Date" DataFormatString="{0:d}" HeaderText="Date Import" SortExpression="Date" HeaderStyle-Width="105px" ItemStyle-Wrap="False" />
                             <asp:BoundField DataField="UserName" HeaderText="Utilisateur" SortExpression="UserName"  />
-                            <asp:BoundField DataField="ImportPath" HeaderText="Dossier Import" SortExpression="ImportPath" ItemStyle-Wrap="True" HeaderStyle-Width="1000px" />
-                            <asp:BoundField DataField="Archived" HeaderText="Archivé" SortExpression="Archived"  />
+                            <asp:BoundField DataField="ImportPath" HeaderText="Dossier Import" SortExpression="ImportPath" ItemStyle-Wrap="False" HeaderStyle-Width="800px" />
+                            <asp:BoundField DataField="Archived" HeaderText="Import Active" SortExpression="Archived"  />
 
-                            <asp:TemplateField Visible="false">
+                            <asp:TemplateField Visible="true">
                                 <ItemTemplate>
                                     <asp:ImageButton Width="24" Height="24" style="margin-right:10px;" ImageUrl="~/Images/folder.png" ID="cmdFileManager" runat="server"  
                                         CommandName="RedirectFMImport" CommandArgument='<%# Bind("ImportPath") %>' /> 
                                 </ItemTemplate>
                             </asp:TemplateField>
 
-                            <asp:TemplateField Visible="false">
+                            <asp:TemplateField Visible="true">
                                 <ItemTemplate>
                                     <asp:ImageButton Width="24" Height="24" style="margin-right:10px;" ImageUrl="~/Images/deleteDB.png" ID="cmdDeleteDB" runat="server"  
                                           OnClick="ConfirmDelete" ToolTip="Supprimer toutes les données de la base de données associés à cette importation" />
                                 </ItemTemplate>
                             </asp:TemplateField>
 
-                            <asp:TemplateField Visible="false">
+                            <asp:TemplateField Visible="true">
                                 <ItemTemplate>
                                     <asp:ImageButton Width="24" Height="24" style="margin-right:10px;" ImageUrl="~/Images/deleteAll.png" ID="cmdDeleteAll" runat="server"  
                                           OnClick="ConfirmDelete" ToolTip="Supprimer toutes les données de la base de données ainsi que tous les fichiers d’importation archivés associés à cette importation" />
@@ -274,10 +298,10 @@
                 <td>
                     <table border="0" style="display:block">
                         <tr style="height:40px; text-align:left; vertical-align:middle">
-                            <td style="text-align:left; display:none">
+                            <td style="text-align:left; ">
                                 <label id="Label2"  style="font-weight:500; margin-right:15px;" runat="server" >Date Prov Ouverture : </label>
                             </td>
-                            <td style="display:none">
+                            <td style="">
                                 <asp:TextBox style="margin-bottom:5px;" runat="server" ID="txtProvOuvertureDate" TextMode="Date" Width="200"  />
                             <td>
                             

@@ -84,8 +84,12 @@ namespace CompteResultat
         {
             int numberOfImportFilesSelected = 0;
             int numberOfDifferntImports = 0;
+            int itemsPerImport = 0;
+            int itemsPerImportSelected = 0;
             List<int> importIds = new List<int>();
             GVProperties props = new GVProperties();
+
+            props.numberOItemsSelectedIsSmallerThanTotalItems = false;
 
             foreach (GridViewRow row in gvImport.Rows)
             {
@@ -96,11 +100,18 @@ namespace CompteResultat
 
                 GridView gvImpFiles = (GridView)row.FindControl("gvImpFiles");
 
+                itemsPerImport = 0;
+                itemsPerImportSelected = 0;
+
                 foreach (GridViewRow row2 in gvImpFiles.Rows)
-                {
+                {                    
+                    itemsPerImport++;
+
                     CheckBox cb2 = (CheckBox)row2.FindControl("chkImport2");
                     if (cb2 != null && cb2.Checked)
                     {
+                        itemsPerImportSelected++;
+
                         int idFile = Convert.ToInt32(gvImpFiles.DataKeys[row2.RowIndex].Value);
                         numberOfImportFilesSelected++;
                         importIds.Add(importId);
@@ -109,12 +120,14 @@ namespace CompteResultat
                         props.singleSelectId = importId;
                         props.singleSelectName = importName;
                     }
-                }                
+                }
+                if (itemsPerImportSelected < itemsPerImport && itemsPerImportSelected > 0)
+                    props.numberOItemsSelectedIsSmallerThanTotalItems = true;
             }
 
             importIds = importIds.Distinct().ToList();
             numberOfDifferntImports = importIds.Count();
-
+            
             props.numberOfDifferntImports = numberOfDifferntImports;
             props.numberOfImportFilesSelected = numberOfImportFilesSelected;
 
@@ -139,7 +152,7 @@ namespace CompteResultat
             try
             {
                 GVProperties props = ScanGrid();
-                
+
                 //validation: Import name must be provided and at least 1 element must be selected
                 if (txtNomImport.Text == "")
                     throw new Exception("Il faudra renseigner un nom pour l’import dans le champ 'Nom Import' !");
@@ -171,7 +184,7 @@ namespace CompteResultat
                     int importId = Convert.ToInt32(gvImport.DataKeys[row.RowIndex].Value);
                     string impName = row.Cells[3].Text;
                     string importPath = row.Cells[6].Text;
-                    bool archived = row.Cells[7].Text == "OUI" ? true : false;
+                    bool archived = row.Cells[7].Text == "OUI" ? false : true;
                     
                     GridView gvImpFiles = (GridView)row.FindControl("gvImpFiles");
 
@@ -199,11 +212,12 @@ namespace CompteResultat
                             //if several imports were selected in the GV, use the importId we created above                             
                             blImp.ImportId = impId;
 
-                            if (props.numberOfDifferntImports == 1)
+                            if (props.numberOfDifferntImports == 1 && !props.numberOItemsSelectedIsSmallerThanTotalItems)
                             {
                                 //if we have only 1 import, we are creating a new import in the Import table and we delete the old one
-                                BLImport.CleanTablesForSpecificImportID(importId, false, false); 
-                                BLImport.CleanupImportDirectory(importPath);
+                                BLImport.CleanTablesForSpecificImportID(importId, false, false);
+                                if (idFile == props.lastId)
+                                    BLImport.CleanupImportDirectory(importPath);
                             } else
                             {
                                 //none of the old import files in the Imports directory are deleted 
@@ -365,20 +379,20 @@ namespace CompteResultat
                     TableCell statusCell = e.Row.Cells[7];
                     if (statusCell.Text == "True")
                     {
-                        statusCell.Text = "OUI";
+                        statusCell.Text = "NON";
                         imgBtn.Enabled = false;
                         imgBtn.ImageUrl = "~/Images/dbDisabled.png";
                     }
                     else
                     {
-                        statusCell.Text = "NON";
+                        statusCell.Text = "OUI";
                         imgBtn.Enabled = true;
                         imgBtn.ImageUrl = "~/Images/deleteDB.png";
                     }
 
                     bool archived = Boolean.Parse((DataBinder.Eval(e.Row.DataItem, "Archived").ToString()));
 
-                    if (archived)
+                    if (!archived)
                     {
                         e.Row.Attributes.Add("style", "background-color:#FFFF74");
                     }
@@ -475,17 +489,17 @@ namespace CompteResultat
             }
             else if (radioReportType.SelectedIndex == 1)
             {
-                //only archived
-                this.SortExpression = "OnlyArchived";
-                this.SortExpressionArchived = "Archived";
-                gvImport.DataSource = Import.GetImports("OnlyArchived", "DESC", "Archived");
-            }
-            else
-            {
                 //only active imports
                 this.SortExpression = "OnlyNonArchived";
                 this.SortExpressionArchived = "NonArchived";
                 gvImport.DataSource = Import.GetImports("OnlyNonArchived", "DESC", "NonArchived");
+            }
+            else
+            {
+                //only archived
+                this.SortExpression = "OnlyArchived";
+                this.SortExpressionArchived = "Archived";
+                gvImport.DataSource = Import.GetImports("OnlyArchived", "DESC", "Archived");                
             }
 
             gvImport.DataBind();
@@ -609,6 +623,13 @@ namespace CompteResultat
 
         #endregion
 
+        protected void chkImport2_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox chk = (CheckBox)sender;
+            bool checked1 = chk.Checked;
+
+
+        }
     }
 
     public class GVSelection
@@ -621,10 +642,29 @@ namespace CompteResultat
 
     public class GVProperties
     {
-        public int numberOfImportFilesSelected { get; set; }
+        public int numberOfImportFilesSelected { get; set; }        
         public int numberOfDifferntImports { get; set; }
         public int lastId { get; set; }
         public int singleSelectId { get; set; }
         public string singleSelectName { get; set; }
+        public bool numberOItemsSelectedIsSmallerThanTotalItems { get; set; }
+    }
+
+    public static class Utility
+    {
+        public static List<T> FindControlsOfType<T>(Control ctlRoot)
+        {
+            List<T> controlsFound = new List<T>();
+
+            if (typeof(T).IsInstanceOfType(ctlRoot))
+                controlsFound.Add((T)(object)ctlRoot);
+
+            foreach (Control ctlTemp in ctlRoot.Controls)
+            {
+                controlsFound.AddRange(FindControlsOfType<T>(ctlTemp));
+            }
+
+            return controlsFound;
+        }
     }
 }
