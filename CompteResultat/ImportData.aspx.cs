@@ -551,7 +551,9 @@ namespace CompteResultat
             //    Page.Validators.Add(myCustomValidator);
             //}
             catch (Exception ex) {
-                Directory.Delete(importDirectory, true);
+                if(Directory.Exists(importDirectory))
+                    Directory.Delete(importDirectory, true);
+
                 UICommon.HandlePageError(ex, this.Page, "cmdImport_Click");
             }
             finally

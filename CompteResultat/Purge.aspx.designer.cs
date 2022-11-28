@@ -7,20 +7,31 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CompteResultat {
-    
-    
-    public partial class Purge {
-        
+namespace CompteResultat
+{
+
+
+    public partial class Purge
+    {
+
         /// <summary>
-        /// Literal9 control.
+        /// Literal1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal Literal9;
-        
+        protected global::System.Web.UI.WebControls.Literal Literal1;
+
+        /// <summary>
+        /// chkPurgeAll control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkPurgeAll;
+
         /// <summary>
         /// cmdPurge control.
         /// </summary>
@@ -29,7 +40,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button cmdPurge;
-        
+
         /// <summary>
         /// divLoading control.
         /// </summary>

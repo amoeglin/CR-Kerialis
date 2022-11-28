@@ -6,6 +6,8 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using CompteResultat.DAL;
 using System.Threading;
+using CompteResultat.BL;
+using System.IO;
 
 namespace CompteResultat
 {
@@ -55,6 +57,15 @@ namespace CompteResultat
 
                         //For all imports, set Archived to true - all associated data is already deleted
                         context.Database.ExecuteSqlCommand("UPDATE Import SET Archived = 1");
+
+                        if(chkPurgeAll.Checked)
+                        {
+                            context.Database.ExecuteSqlCommand("truncate table[CompteResultat].[dbo].[ImportFiles]");
+                            context.Database.ExecuteSqlCommand("truncate table[CompteResultat].[dbo].[Import]");
+
+                            string importDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports");
+                            BLImport.CleanupImportDirectory(importDirectory);
+                        }
 
                         //context.SaveChanges();
                         dbContextTransaction.Commit();

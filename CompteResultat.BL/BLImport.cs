@@ -141,7 +141,8 @@ namespace CompteResultat.BL
                 // if ImportId is 0, create a new import - otherwise, set Archived flag to false and update the import name 
                 if (ImportId == 0)
                 {
-                    Import imp = new Import { Name = ImportName, Date = DateTime.Today.Date, UserName = UserName, ImportPath = ImportDirectory, Archived = false };
+                    DateTime dtProvOuverture = DateTime.Parse(ProvOuverture);
+                    Import imp = new Import { Name = ImportName, Date = DateTime.Today.Date, UserName = UserName, ImportPath = ImportDirectory, Archived = false, ProvOuvertureDate= dtProvOuverture };
                     importId = Import.Insert(imp);
                     ImportId = importId;
                 } else
@@ -831,7 +832,7 @@ namespace CompteResultat.BL
             catch (Exception ex)
             {
                 log.Error(ex.Message);
-                throw ex;
+                //throw ex;
             }
         }
 

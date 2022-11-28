@@ -13,12 +13,16 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
     
-    <div style="float: left; width: 400px; margin-top:0px;">
+    <div style="float: left; width: 800px; margin-top:0px;">
+        <h1><asp:Literal  ID="Literal1" runat="server">Purge des données :</asp:Literal> </h1>  
         <table>
             <tr style="height:50px; text-align:left; vertical-align:text-top">
-                <td colspan="3"> 
+                <%--<td colspan="3"> 
                     <h1><asp:Literal  ID="Literal9" runat="server">Purge des données :</asp:Literal> </h1>                                 
-                </td> 
+                </td> --%>
+                <td>
+                    <asp:CheckBox ID="chkPurgeAll" runat="server" Text="&nbsp;Supprimer également les imports archivées "  />
+                </td>
                 <td>
                     <asp:Button CssClass="ButtonBigBlue ButtonInline" style="vertical-align:middle; display: inline; width: 100px; height: 25px; margin-top:16px; margin-left: 15px; " 
                     OnClientClick="return confirm('Est-ce que vous êtes sur de vouloir supprimer tous les données de la base des données ?');"                         

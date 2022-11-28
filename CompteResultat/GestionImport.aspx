@@ -2,6 +2,13 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
 
+    <style type="text/css">
+        .Hide
+        {
+            display: none;
+        }
+    </style>
+
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     
     <script type="text/javascript">
@@ -125,11 +132,11 @@
 
         function OpenConfirmdeleteModal(deleteAllOrDB) {            
             if (deleteAllOrDB == "ALL") {
-                $('#modalDeleteDescr').text('Est-ce que vous voulez vraiment supprimer toutes les données de la base de données ainsi que tous les fichiers d’importation archivés associés à cette importation ?')
+                $('#modalDeleteDescr').text('Est-ce que vous voulez vraiment supprimer toutes les données de la base de données ainsi que tous les fichiers d’import archivés associés à cet import ?')
                 $('#confirmDeleteModal').modal('show');
             }
             else {
-                $('#modalDeleteDescr').text('Est-ce que vous voulez vraiment supprimer toutes les données de la base de données associés à cette importation ?')
+                $('#modalDeleteDescr').text('Est-ce que vous voulez vraiment supprimer toutes les données de la base de données associés à cet import ?')
                 $('#confirmDeleteModal').modal('show');
             }
         }
@@ -175,18 +182,18 @@
                     <table border="0" style="display:block">
                         <tr style="height:40px; text-align:left; vertical-align:middle">
                             <td style="width:190px;">                
-                                <label id="lblImportType"  style=" margin-right:5px; font-weight:500; margin-bottom:12px; " runat="server" >Afficher les importations :</label>
+                                <label id="lblImportType"  style=" margin-right:5px; font-weight:500; margin-bottom:12px; " runat="server" >Afficher les imports :</label>
                             </td>
                             <td style="" >
                                 <asp:RadioButtonList ValidateRequestMode="Disabled" AutoPostBack="true" style="font-weight:400;" RepeatDirection="Horizontal" 
                                     ID="radioReportType" OnSelectedIndexChanged="radioReportType_SelectedIndexChanged" runat="server" >
-                                    <asp:ListItem style="margin-right:10px;" Selected><span style="" />&nbsp; Toutes les importations</asp:ListItem>
+                                    <asp:ListItem style="margin-right:10px;" Selected><span style="" />&nbsp; Tous les imports</asp:ListItem>
                                     <asp:ListItem style="margin-right:10px">&nbsp; Seulement imports actifs</asp:ListItem>
                                     <asp:ListItem style="margin-right:10px;">&nbsp; Seulement imports inactifs</asp:ListItem>                    
                                 </asp:RadioButtonList>                                                
                             </td>
                             <td>
-                                <label id="Label1"  style="margin-left:50px; font-weight:500;" runat="server" >Recherche par nom d’importation :</label>
+                                <label id="Label1"  style="margin-left:50px; font-weight:500;" runat="server" >Recherche par nom d’import :</label>
                             </td>
                             <td>
                                 <asp:TextBox ID="txtImportFilter" CssClass="element" style="width: 180px; margin-left:10px; margin-right:20px; margin-bottom:5px" runat="server" 
@@ -204,7 +211,7 @@
                 <td colspan="2"> 
                     <asp:HiddenField ID = "HiddenScrollTop" runat="server" Value="0" ClientIDMode="Static" />
 
-                    <div id="gvDiv" style="height: 450px; width: 1580px; overflow-y: scroll;overflow-x: hidden; border: 1px solid #A9A9A9; color:#3A4F63; text-decoration:none; "> 
+                    <div id="gvDiv" style="height: 450px; width: 1660px; overflow-y: scroll;overflow-x: hidden; border: 1px solid #A9A9A9; color:#3A4F63; text-decoration:none; "> 
                         
                         <asp:GridView CellPadding="5" ID="gvImport" runat="server" DataKeyNames="Id" AutoGenerateColumns="False" OnSorting="OnSorting"
                         OnRowDataBound="gvImport_RowDataBound" OnRowCommand="gvImport_RowCommand" AllowSorting="true" AllowPaging="false"   >
@@ -218,7 +225,8 @@
                                             ImageUrl="Images/plus.png" ToolTip="Expand" AutoPostBack="True" />
 
                                     <asp:Panel ID="pnlOrders" runat="server" Style="display: none">
-                                        <asp:GridView ID="gvImpFiles" CellPadding="5" runat="server" AutoGenerateColumns="false" CssClass="ChildGrid" DataKeyNames="Id" >
+                                        <asp:GridView OnRowDataBound="gvImpFiles_RowDataBound" ID="gvImpFiles" CellPadding="5" runat="server" AutoGenerateColumns="false" 
+                                            CssClass="ChildGrid" DataKeyNames="Id" >
                                             <RowStyle BackColor="#D0EFEE" /> 
 
                                             <Columns>
@@ -229,9 +237,15 @@
                                                 </asp:TemplateField>                                                
 
                                                 <asp:BoundField Visible="false" DataField="Id" HeaderText="Id" SortExpression="Id" />
-                                                <asp:BoundField DataField="FileGroup" HeaderText="File Group" SortExpression="FileGroup" />  
-                                                <asp:BoundField DataField="FileType" HeaderText="File Type" SortExpression="FileType" />   
-                                                <asp:BoundField DataField="FileName" HeaderText="File Name" SortExpression="FileName" />  
+                                                <asp:BoundField DataField="FileGroup" HeaderText="Group" SortExpression="FileGroup" />  
+                                                <asp:BoundField DataField="FileType" HeaderText="Type" SortExpression="FileType" />   
+                                                <asp:BoundField DataField="FileName" HeaderText="Nom Fichier" SortExpression="FileName" />  
+                                                
+                                                <asp:TemplateField HeaderText="Date Prov Ouverture">
+                                                    <ItemTemplate>                                                        
+                                                        <asp:Label ID="lblProvOuverture" runat="server" Text="-"  />
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>  
 
                                             </Columns>
                                         </asp:GridView>
@@ -250,7 +264,8 @@
                             <asp:BoundField DataField="Date" DataFormatString="{0:d}" HeaderText="Date Import" SortExpression="Date" HeaderStyle-Width="105px" ItemStyle-Wrap="False" />
                             <asp:BoundField DataField="UserName" HeaderText="Utilisateur" SortExpression="UserName"  />
                             <asp:BoundField DataField="ImportPath" HeaderText="Dossier Import" SortExpression="ImportPath" ItemStyle-Wrap="False" HeaderStyle-Width="800px" />
-                            <asp:BoundField DataField="Archived" HeaderText="Import Active" SortExpression="Archived"  />
+                            <asp:BoundField DataField="Archived" HeaderText="Import Actif" SortExpression="Archived"  />
+                            <asp:BoundField DataField="ProvOuvertureDate" HeaderText="" ItemStyle-CssClass="Hide" HeaderStyle-CssClass="Hide"  />
 
                             <asp:TemplateField Visible="true">
                                 <ItemTemplate>
@@ -262,14 +277,14 @@
                             <asp:TemplateField Visible="true">
                                 <ItemTemplate>
                                     <asp:ImageButton Width="24" Height="24" style="margin-right:10px;" ImageUrl="~/Images/deleteDB.png" ID="cmdDeleteDB" runat="server"  
-                                          OnClick="ConfirmDelete" ToolTip="Supprimer toutes les données de la base de données associés à cette importation" />
+                                          OnClick="ConfirmDelete" ToolTip="Supprimer toutes les données de la base de données associés à cet import" />
                                 </ItemTemplate>
                             </asp:TemplateField>
 
                             <asp:TemplateField Visible="true">
                                 <ItemTemplate>
                                     <asp:ImageButton Width="24" Height="24" style="margin-right:10px;" ImageUrl="~/Images/deleteAll.png" ID="cmdDeleteAll" runat="server"  
-                                          OnClick="ConfirmDelete" ToolTip="Supprimer toutes les données de la base de données ainsi que tous les fichiers d’importation archivés associés à cette importation" />
+                                          OnClick="ConfirmDelete" ToolTip="Supprimer toutes les données de la base de données ainsi que tous les fichiers d’import archivés associés à cet import" />
                                 </ItemTemplate>
                             </asp:TemplateField>
 
@@ -341,7 +356,7 @@
       <div class="modal-dialog"  role="document">
         <div class="modal-content " style="background-color: #D0EFEE; color:#00606B; font-weight:500">
           <div class="modal-header">
-            <h3 class="modal-title" style="font-size:17px; font-weight:500; color:red;" id="deleteModalTitle">Suppression des données d’importation !</h3>
+            <h3 class="modal-title" style="font-size:17px; font-weight:500; color:red;" id="deleteModalTitle">Suppression des données d’import !</h3>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>

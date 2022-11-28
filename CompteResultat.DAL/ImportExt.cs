@@ -117,7 +117,31 @@ namespace CompteResultat.DAL
                 throw ex;
             }
         }
-      
+
+        public static Import GetImportById(int id)
+        {
+            try
+            {
+                Import import;
+                using (var context = new CompteResultatEntities())
+                {
+                    var elements = context.Imports.Where(i => i.Id == id);
+
+                    if (elements.Any())
+                        import = elements.First();
+                    else
+                        import = null;
+                }
+
+                return import;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
         public static List<Import> GetImportsWithoutArchive(string sortExpression)
         {
             try
