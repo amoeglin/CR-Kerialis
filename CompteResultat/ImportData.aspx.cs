@@ -51,8 +51,9 @@ namespace CompteResultat
 
                 if (!IsPostBack)
                 {
+                    int year = DateTime.Now.Year;
                     if(txtProvOuvertureDate.Text == "")
-                        txtProvOuvertureDate.Text = "2020-01-01";
+                        txtProvOuvertureDate.Text = (year-1).ToString() + "-01-01";
 
                     gvImport.Sort("Date", SortDirection.Descending);
 

@@ -263,7 +263,7 @@
                             <asp:BoundField DataField="Name" HeaderText="Nom du lot" SortExpression="Name" HeaderStyle-Width="105px" ItemStyle-Wrap="False" />
                             <asp:BoundField DataField="Date" DataFormatString="{0:d}" HeaderText="Date Import" SortExpression="Date" HeaderStyle-Width="105px" ItemStyle-Wrap="False" />
                             <asp:BoundField DataField="UserName" HeaderText="Utilisateur" SortExpression="UserName"  />
-                            <asp:BoundField DataField="ImportPath" HeaderText="Dossier Import" SortExpression="ImportPath" ItemStyle-Wrap="False" HeaderStyle-Width="800px" />
+                            <asp:BoundField DataField="ImportPath" HeaderText="Dossier Import" SortExpression="ImportPath" ItemStyle-Wrap="True" HeaderStyle-Width="850px" />
                             <asp:BoundField DataField="Archived" HeaderText="Import Actif" SortExpression="Archived"  />
                             <asp:BoundField DataField="ProvOuvertureDate" HeaderText="" ItemStyle-CssClass="Hide" HeaderStyle-CssClass="Hide"  />
 
