@@ -64,6 +64,11 @@ namespace CompteResultat
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            string analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse");
+            if (!Directory.Exists(analyseDirectory)) Directory.CreateDirectory(analyseDirectory);
+            string importsDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports");
+            if (!Directory.Exists(importsDirectory)) Directory.CreateDirectory(importsDirectory);
+
             if (!this.IsPostBack)
             {
                 //txtProvOuvertureDate.Text = DateTime.Now.ToShortDateString();
@@ -156,13 +161,14 @@ namespace CompteResultat
         }
 
         protected void cmdImport_Click(object sender, EventArgs e)
-        { 
+        {
             //generic properties 
             bool hasErr = false;
             int impId = 0;
             bool updateGroupCadExp = false;
             string uploadDirectory = Path.Combine(Request.PhysicalApplicationPath, C.uploadFolder);
             string newImportDirectory = "";
+            string analyseDirectory = "";
 
             DateTime dtProvOuverture;
             string provOuverture;
@@ -192,6 +198,11 @@ namespace CompteResultat
                 // create new import folder - if at least one file was selected                
                 newImportDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports", importName + "-" + DateTime.Now.ToString("s").Replace(":", "-"));
                 Directory.CreateDirectory(newImportDirectory);
+
+                //Delete Aalyse directory & re-create it
+                analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse", importName);
+                BLImport.CleanupImportDirectory(analyseDirectory);
+                Directory.CreateDirectory(analyseDirectory);
 
                 //if several import directories were selected, create a global ImportId  in the DB for all those selected imports
                 if (props.numberOfDifferntImports > 0)
@@ -287,7 +298,10 @@ namespace CompteResultat
                                     //if we have only 1 import, we are creating a new import in the Import table and we delete the old one
                                     BLImport.CleanTablesForSpecificImportID(importId, false, false);
                                     if (idFile == props.lastId)
+                                    {
                                         BLImport.CleanupImportDirectory(importPath);
+                                        //### delete analyse
+                                    }
                                 }
                                 else
                                 {
@@ -312,7 +326,7 @@ namespace CompteResultat
             catch (Exception ex)
             {
                 hasErr = true;
-                //### cleanup
+                //### cleanup Analyse
                 BLImport.CleanupImportDirectory(newImportDirectory);
                 //Directory.Delete(importDirectory, true);
                 UICommon.HandlePageError(ex, this.Page, "cmdImport_Click");
@@ -335,7 +349,7 @@ namespace CompteResultat
             {
                 if (fileType == C.cIMPFILETYPECOT)
                 {
-                    paths.uploadPathCot = uploadFilePath;                        
+                    paths.uploadPathCot = uploadFilePath;
                 }
                 else if (fileType == C.cIMPFILETYPEDEMO)
                 {
@@ -373,7 +387,8 @@ namespace CompteResultat
             return paths;
         }
 
-        protected BLImport GetImportBasicConfig(UploadPaths uplPaths, string importName, string provOuverture, string importDirectory, bool updateGroupCadExp)
+        protected BLImport GetImportBasicConfig(UploadPaths uplPaths, string importName, string provOuverture, 
+            string importDirectory, bool updateGroupCadExp)
         {
             string csvSep = WebConfigurationManager.AppSettings["CSVSEP"];
             string userName = User.Identity.Name;
@@ -384,6 +399,7 @@ namespace CompteResultat
             bool updateGroupes = updateGroupCadExp;
             bool updateExperience = updateGroupCadExp;
             bool updateCad = updateGroupCadExp;
+            bool analyseData = updateGroupCadExp;
 
             string prefix = userName + "_";
             string newPrestEntCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.PrestationsEntMOG.ToString() + ".csv");
@@ -419,7 +435,7 @@ namespace CompteResultat
                     configStringPrest, configStringDemo, configStringCot, configStringOtherFields, configStringCotPrev, configStringSinistrPrev, configStringDecompPrev, configStringProv,
                     tableForOtherFields, importName, csvSep, uploadDirectory, importDirectory, uplPaths.uploadPathPrest, uplPaths.uploadPathCot, uplPaths.uploadPathDemo,
                     uplPaths.uploadPathCotPrev, uplPaths.uploadPathSinistrPrev, uplPaths.uploadPathDecompPrev, uplPaths.uploadPathProv, uplPaths.uploadPathProvOuverture,
-                    newExpCSV, configStringExp, uploadPathExp, forceCompanySubsid, updateGroupes, updateExperience, updateCad, provOuverture);
+                    newExpCSV, configStringExp, uploadPathExp, forceCompanySubsid, updateGroupes, updateExperience, updateCad, analyseData, provOuverture);
 
             return imp;
         }
@@ -432,23 +448,24 @@ namespace CompteResultat
                 {
                     //Import selImport = e.Row.DataItem as Import;
                     //int importId = int.Parse(DataBinder.Eval(e.Row.DataItem, "Id").ToString());
-
                     //Button cmd = e.Row.FindControl("cmdDelete") as Button;
-                    //cmd.CommandArgument = importId.ToString();
+                    //cmd.CommandArgument = importId.ToString();                    
 
-                    ImageButton imgBtn = e.Row.FindControl("cmdDeleteDB") as ImageButton; 
+                    ImageButton cmdDelDB = e.Row.FindControl("cmdDeleteDB") as ImageButton;
+                    ImageButton cmdAnalyseFld = e.Row.FindControl("cmdAnalyseFolder") as ImageButton;
+                   
                     TableCell statusCell = e.Row.Cells[7];
                     if (statusCell.Text == "True")
                     {
                         statusCell.Text = "NON";
-                        imgBtn.Enabled = false;
-                        imgBtn.ImageUrl = "~/Images/dbDisabled.png";
+                        cmdDelDB.Enabled = false;
+                        cmdDelDB.ImageUrl = "~/Images/dbDisabled.png";
                     }
                     else
                     {
                         statusCell.Text = "OUI";
-                        imgBtn.Enabled = true;
-                        imgBtn.ImageUrl = "~/Images/deleteDB.png";
+                        cmdDelDB.Enabled = true;
+                        cmdDelDB.ImageUrl = "~/Images/deleteDB.png";
                     }
 
                     TableCell provOuvertureCell = e.Row.Cells[8];
@@ -459,13 +476,27 @@ namespace CompteResultat
                     }
 
                     bool archived = Boolean.Parse((DataBinder.Eval(e.Row.DataItem, "Archived").ToString()));
-
                     if (!archived)
                     {
                         e.Row.Attributes.Add("style", "background-color:#FFFF74");
                     }
 
                     int importId = int.Parse(gvImport.DataKeys[e.Row.RowIndex].Value.ToString());
+                    int isDiff = VerifyIfDiffernce(importId);
+                    cmdAnalyseFld.Visible = false;
+                    if (isDiff == 1) //OK
+                    {
+                        cmdAnalyseFld.Visible = true;
+                        cmdAnalyseFld.Enabled = true;
+                        cmdAnalyseFld.ImageUrl = "~/Images/analyseOK-y.png";
+                    }
+                    else if (isDiff == 2) //KO
+                    {
+                        cmdAnalyseFld.Visible = true;
+                        cmdAnalyseFld.Enabled = true;
+                        cmdAnalyseFld.ImageUrl = "~/Images/analyse-y.png";
+                    }
+
                     GridView gvImpFiles = e.Row.FindControl("gvImpFiles") as GridView;
                     gvImpFiles.DataSource = ImportFile.GetImportFilesForId(importId);
                     gvImpFiles.DataBind();
@@ -480,27 +511,62 @@ namespace CompteResultat
             }
         }
 
+        protected void gvImport_RowCreated(object sender, GridViewRowEventArgs e)
+        {
+            //e.Row.Cells[12].Visible = true; 
+        }
+
         protected void gvImpFiles_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             try
             {
-                //GridViewRow Gv2Row = (GridViewRow)((LinkButton)e.CommandSource).NamingContainer;
-                //GridView Childgrid = (GridView)(gvImpFiles.Parent.Parent);
-                //GridViewRow Gv1Row = (GridViewRow)(Childgrid.NamingContainer);
-                //GridView Parentgrid = (GridView)(Gv1Row.Parent.Parent);
-                //GridViewRow gvRow = e.Row.Parent.Parent.Parent.Parent as GridViewRow; 
-
                 if (e.Row.RowType == DataControlRowType.DataRow)
                 {
+                    //var myRow = ((e.Row.NamingContainer.Parent.Parent.Parent) as GridViewRow);
+                    GridViewRow mainGridViewRow = ((e.Row.NamingContainer.Parent.Parent.Parent) as GridViewRow);
+                    string importId = gvImport.DataKeys[mainGridViewRow.RowIndex].Value.ToString();
+                    string importName = mainGridViewRow.Cells[3].Text;                    
+
                     TableCell groupCell = e.Row.Cells[3];
                     TableCell provOuvertureCell = e.Row.Cells[5];
-
+                    //e.Row.Cells[13].Text = importName; // import name
                     if (groupCell.Text == C.cIMPFILETYPEPROVOUV)
                     {
                         if (DateProvOuverture != "-")
                         {
                             provOuvertureCell.Text = DateProvOuverture;
                         }
+                    }
+
+                    string diffText = e.Row.Cells[12].Text;
+                    ImageButton imgBtn = e.Row.FindControl("cmdAnalyseFile") as ImageButton;
+                    imgBtn.AlternateText = importName;
+                    int isDifference = 0; //0: not analysed, 1: ok, 2: KO
+                    try
+                    {
+                         isDifference = int.Parse((DataBinder.Eval(e.Row.DataItem, "IsDifference").ToString()));
+                    }
+                    catch (Exception ex1) { 
+                        //if the DB vale for IsDifference is Null, we get an exception here
+                    }
+
+                    if (isDifference == 1)
+                    {
+                        //OK
+                        imgBtn.Visible = true;
+                        imgBtn.Enabled = true;
+                        imgBtn.ImageUrl = "~/Images/analyseOK-g.png";
+                    }
+                    else if (isDifference == 2)
+                    {
+                        //KO
+                        imgBtn.Visible = true;
+                        imgBtn.Enabled = true;
+                        imgBtn.ImageUrl = "~/Images/analyse-g.png";
+                    } else
+                    {
+                        //not analyzed
+                        imgBtn.Visible = false;
                     }
 
                 }
@@ -517,7 +583,7 @@ namespace CompteResultat
 
         //handle button clicks
         protected void gvImport_RowCommand(object sender, GridViewCommandEventArgs e)
-        {
+        {              
             //return;
             
             //if (e.CommandName == "DeleteImp")
@@ -558,7 +624,142 @@ namespace CompteResultat
                         Response.Redirect("~/FMImport.aspx?path=" + importDirectory);
                 }
             }
+
+            if (e.CommandName == "RedirectFMAnalyse")
+            {
+                string importPath = e.CommandArgument.ToString();
+                string importDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse");
+
+                if (importPath != "")
+                {
+                    if (Directory.Exists(importPath))
+                        Response.Redirect("~/FMImport.aspx?path=" + importPath);
+                    else
+                        Response.Redirect("~/FMImport.aspx?path=" + importDirectory);
+                }
+            }
         }
+
+        protected void gvImpFiles_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            if (e.CommandName == "RedirectFMAnalyse")
+            {
+                ImageButton cmdAnalyseFile = e.CommandSource as ImageButton;
+                string importName = cmdAnalyseFile.AlternateText;
+
+                string fileName = e.CommandArgument.ToString();
+                string importDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse", importName);
+                //string filePath = Path.Combine(importDirectory, fileName);
+
+                if (importDirectory != "")
+                {
+                    if (Directory.Exists(importDirectory))
+                        Response.Redirect("~/FMImport.aspx?path=" + importDirectory);
+                }
+
+                //Download File
+                //FileInfo file = new FileInfo(filePath);
+                //if (file.Exists)
+                //{                    
+                    //Response.Clear();
+                    //Response.ClearHeaders();
+                    //Response.ClearContent();
+
+                    //Response.ContentType = @"application\octet-stream";
+                    //Response.AppendHeader("content-disposition", "attachment; filename=" + file.Name);
+                    //Response.AddHeader("Content-Length", file.Length.ToString());
+
+                    //Response.Flush();
+                    ////Response.TransmitFile(file.FullName);
+                    //Response.WriteFile(file.FullName);
+                    //Response.End();
+                //}
+            }
+
+        }
+
+        protected void gvImpFiles_RowCreated(object sender, GridViewRowEventArgs e)
+        {
+            //e.Row.Cells[12].Visible = true;
+        }
+
+        private int VerifyIfDiffernce(int id)
+        {
+            int diff = 0;
+            int cnt = 0;
+            int cntOk = 0;
+
+            List<ImportFile> impFiles = ImportFile.GetImportFilesForId(id);
+            int ok = impFiles.Where(x => x.IsDifference == 1).ToList().Count();
+            int ko = impFiles.Where(x => x.IsDifference == 2).ToList().Count();
+
+            if (ko > 0) { diff = 2; }
+            else if (impFiles.Count() == ok) { diff = 1; }
+
+            //using (var context = new CompteResultatEntities())
+            //{
+            //    string sql = $@"SELECT count(*) FROM ImportFiles WHERE ImportId = {id} AND IsDifference = 2";
+            //    cnt = context.Database.SqlQuery<int>(sql).First();
+
+            //    sql = $@"SELECT count(*) FROM ImportFiles WHERE ImportId = {id} AND IsDifference = 1";
+            //    cntOk = context.Database.SqlQuery<int>(sql).First();
+            //}
+
+            //if (cnt > 0) { diff = 2; }
+            //else
+            //{
+            //    string sql = $@"SELECT count(*) FROM ImportFiles WHERE ImportId = {id} AND IsDifference = 2";
+            //    cnt = context.Database.SqlQuery<int>(sql).First();
+            //}
+            return diff;
+        }
+
+        protected void cmdAnalyse_Click(object sender, EventArgs e)
+        {
+            //get basic params            
+            string importsDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports");
+            string analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse");
+
+            try
+            {
+                //iterate all grid rows
+                foreach (GridViewRow row in gvImport.Rows)
+                {
+                    int importId = Convert.ToInt32(gvImport.DataKeys[row.RowIndex].Value);
+                    string impName = row.Cells[3].Text;
+                    string importPath = row.Cells[6].Text;
+                    bool archived = row.Cells[7].Text == "OUI" ? false : true;
+                    bool analyseDone = BLAnalyse.VerifyIfAnalyseDone(importId);
+
+                    if (!chkOnlyNonAnalyzed.Checked || (chkOnlyNonAnalyzed.Checked && !analyseDone))
+                    {
+                        GridView gvImpFiles = (GridView)row.FindControl("gvImpFiles");
+
+                        foreach (GridViewRow row2 in gvImpFiles.Rows)
+                        {
+                            int idFile = Convert.ToInt32(gvImpFiles.DataKeys[row2.RowIndex].Value);
+                            string fileGroup = row2.Cells[2].Text;
+                            string fileType = row2.Cells[3].Text;
+                            string fileName = row2.Cells[4].Text;
+                            string dateProvOuv = row2.Cells[5].Text;
+                            fileType = fileType.Replace("D&#233;comptes", "Décomptes");
+                            fileType = fileType.Replace("Provisions Cl&#244;ture", "Provisions Clôture");
+                            string importFile = Path.Combine(importPath, "TF_" + fileName);
+
+                            BLAnalyse.AnalyseData(importFile, fileGroup, fileType, importId);
+                        }
+                    }
+                }
+
+                //refresh the data grid
+                BindMainGrid();
+
+            } catch (Exception ex) { 
+                UICommon.HandlePageError(ex, this.Page, "GestionImport::cmdAnalyse_Click"); 
+            }
+       
+        }
+
 
         #region SECONDARY UI METHODS
 
@@ -640,6 +841,10 @@ namespace CompteResultat
             {
                 BLImport.CleanTablesForSpecificImportID(importId, false, false);
                 BLImport.CleanupImportDirectory(importDir);
+                //delete Analyse directory
+                string importName = row.Cells[3].Text;
+                string analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse", importName);
+                BLImport.CleanupImportDirectory(analyseDirectory);
             }
             else if (DeleteAllOrDB == "DB")
             {
@@ -650,7 +855,6 @@ namespace CompteResultat
         }
 
         #endregion
-
 
 
         #region NO LONGER REQUIRED
@@ -724,9 +928,9 @@ namespace CompteResultat
         }
 
 
-        #endregion
 
-        
+        #endregion
+                
     }
 
     public class GVSelection

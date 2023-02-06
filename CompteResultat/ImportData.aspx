@@ -10,21 +10,111 @@
 
     </style>
 
+    <script src="scripts/jquery-3.1.1.min.js" type="text/javascript"></script>
+
     <script type="text/javascript">
 
+        var selectedFiles;
+        var uploadFile = "";
+
         $(document).ready(function () { 
+            var box = document.getElementById("dropBox");
+            box.addEventListener("dragenter", OnDragEnter, false);
+            box.addEventListener("dragover", OnDragOver, false);
+            box.addEventListener("dragleave", OnDragLeave, false);
+            box.addEventListener("drop", OnDrop, false);
+
+            var outerContainerBox = document.getElementById("outerContainer")
+            outerContainerBox.addEventListener("drop", OnDropOB, false);
+            outerContainerBox.addEventListener("dragover", OnDragOverOB, false);
+
             $("#cmdImport").click(function (evt) {
                 $("#divLoading").css("display", "block");
-            });  
+            });            
+
+            $("#uploadDropFile").click(function () {
+                var data = new FormData();
+                for (var i = 0; i < selectedFiles.length; i++) {
+                    data.append(selectedFiles[i].name, selectedFiles[i]);
+                    console.log(selectedFiles[i])
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "FileHandler.ashx",
+                    contentType: false,
+                    processData: false,
+                    data: data,
+
+                    success: function (result) {
+                        console.log(result)
+                        uploadFile = result
+                        location.reload();
+                    },
+                    error: function () {
+                        //alert("There was error uploading files!");
+                    }
+                });
+            });
         }); 
+
+        function OnDragOver(e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            $("#dropBox").css({ 'background-color': '#D0E4E1', 'font-size': '110%' });
+            $("#dropIcon").attr("src", "/Images/drop2.png");
+            $("#dropIcon2").attr("src", "/Images/drop2.png");
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function OnDragLeave(e) {
+            $("#dropBox").css({ 'background-color': '#D0EFEE', 'font-size': '100%' });
+            $("#dropIcon").attr("src", "/Images/drop1.png");
+            $("#dropIcon2").attr("src", "/Images/drop1.png");
+        }
+
+        function OnDragEnter(e) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+
+        function OnDrop(e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            $("#dropBox").css({ 'background-color': '#D0EFEE', 'font-size': '100%' });
+            $("#dropIcon").attr("src", "/Images/drop2.png");
+            $("#dropIcon2").attr("src", "/Images/drop2.png");
+            selectedFiles = e.dataTransfer.files;
+            //console.log(e.dataTransfer.files[0].name)
+            //$("#dropBox").text(selectedFiles[0].name);
+
+            $("#uploadDropFile").trigger("click");
+            return false;
+        }
+
+        function OnDropOB(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            console.log("drop")
+            return false;
+        }
+        function OnDragOverOB(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            console.log("over")
+            return false;
+        }
      
-   </script>
+    </script>
        
 </asp:Content>
 
 
-
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
+
+<div id="outerContainer" style="width:1700px; height:670px;">
     
     <%-- 
     <div id="wrapper">
@@ -249,7 +339,7 @@
 
     </div>
     
-    <div id="divImportSante" style="margin-top: 60px; margin-left: 70px; background-color:#D0EFEE; float:left"     >
+    <div id="divImportSante" class="aaa" style="margin-top: 60px; margin-left: 70px; background-color:#D0EFEE; float:left; width:600px;"     >
         <table  border="0"  >
             <tr >
                 <td style="width: 30px;">
@@ -281,12 +371,39 @@
                     <asp:CheckBox Checked="true" ID="chkCad" runat="server" Text="&nbsp;METTRE A JOUR le Cadencier " Font-Size="Small" />              
                 </td>                      
             </tr>
+            <tr >
+                <td >
+                <td style="">
+                    <asp:CheckBox Checked="true" ID="chkAnalyse" runat="server" Text="&nbsp;CONTROLER les données importées dans la base " Font-Size="Small" />              
+                </td>                      
+            </tr>
         </table>
+    </div>    
+
+    <div id="dropBox" style="position: relative; border: 4px solid #0099B1; text-align: center; border-radius: 16px; margin-top: 20px; margin-left: 70px; 
+        background-color:#D0EFEE; float:left; width:600px; height:70px; display:none">
+        <img id="dropIcon" src="/Images/drop1.png" style="width:40px; margin-top:10px; margin-right:20px;">
+        <span style="display: inline-block; vertical-align: middle; margin-top:10px; font-size: 100%; font-weight:bold; ">Déposer le fichier d'import ici</span>
+        <img id="dropIcon2" src="/Images/drop1.png" style="width:40px; margin-top:10px; margin-left:20px;">
+        <%--<asp:Image runat="server" ID="Image1" Width="200" Height="200" ImageUrl="~/Images/folder.png" />--%>            
+    </div>
+    <div style="display:none">        
+        <input id="uploadDropFile" type="button" value="Importer"  />                              
     </div>
 
+    <asp:Panel ID="pnlAnalyse" Visible="false" runat="server" style="border: 4px solid #0099B1; text-align: left; border-radius: 16px; margin-top: 20px; margin-left: 70px; background-color:#D0EFEE; 
+        float:left; width:600px; height:300px;">
+        <div id="cont1" runat="server" style="margin-left:20px; margin-top:10px;">
+            <asp:Literal ID="litAnalyse" runat="server" Text="Test"  />            
+        </div>        
+    </asp:Panel>
+    
     <div runat="server" id="divLoading"  style="display:none" ClientIDMode="Static" >
         <img width="100px" height="100px" style="margin: 70px 50px 10px 50px;" src="Images/ajax-loader.gif" />
     </div>
 
+</div>
 
 </asp:Content>
+
+

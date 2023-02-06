@@ -323,6 +323,13 @@ warning 6002: The table/view 'CompteResultat.dbo.IMContrDistrib' does not have a
           <Property Name="FileGroup" Type="nvarchar" MaxLength="15" />
           <Property Name="FileType" Type="nvarchar" MaxLength="100" />
           <Property Name="FileName" Type="nvarchar" MaxLength="255" />
+          <Property Name="NbRowsDb" Type="int" />
+          <Property Name="NbRowsCsv" Type="int" />
+          <Property Name="AmountDb" Type="float" />
+          <Property Name="AmountCsv" Type="float" />
+          <Property Name="DifferenceRows" Type="int" />
+          <Property Name="DifferenceAmount" Type="float" />
+          <Property Name="IsDifference" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -476,6 +483,16 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="MotifClo" Type="nvarchar" MaxLength="50" />
           <Property Name="DatePayment" Type="date" />
         </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
         <EntityType Name="TypePrevoyance">
           <Key>
             <PropertyRef Name="Id" />
@@ -483,6 +500,12 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CodeSinistre" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="LabelSinistre" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="UserRoles">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <Association Name="FK_Company_Company">
           <End Role="Company" Type="Self.Company" Multiplicity="0..1" />
@@ -711,7 +734,9 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySet Name="ReportFile" EntityType="Self.ReportFile" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ReportTemplate" EntityType="Self.ReportTemplate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SinistrePrev" EntityType="Self.SinistrePrev" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TypePrevoyance" EntityType="Self.TypePrevoyance" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserRoles" EntityType="Self.UserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="_TempOtherFields" EntityType="Self._TempOtherFields" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [_TempOtherFields].[ImportId] AS [ImportId], 
@@ -1213,6 +1238,8 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySet Name="FraisPrevoyances" EntityType="CompteResultatModel.FraisPrevoyance" />
           <EntitySet Name="FraisSantes" EntityType="CompteResultatModel.FraisSante" />
           <EntitySet Name="ImportFiles" EntityType="CompteResultatModel.ImportFile" />
+          <EntitySet Name="sysdiagrams" EntityType="CompteResultatModel.sysdiagram" />
+          <EntitySet Name="UserRoles" EntityType="CompteResultatModel.UserRole" />
         </EntityContainer>
         <EntityType Name="ReportTemplate">
           <Key>
@@ -1451,6 +1478,29 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="FileGroup" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
           <Property Name="FileType" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="FileName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="NbRowsDb" Type="Int32" />
+          <Property Name="NbRowsCsv" Type="Int32" />
+          <Property Name="AmountDb" Type="Double" />
+          <Property Name="AmountCsv" Type="Double" />
+          <Property Name="DifferenceRows" Type="Int32" />
+          <Property Name="DifferenceAmount" Type="Double" />
+          <Property Name="IsDifference" Type="Int32" />
+        </EntityType>
+        <EntityType Name="sysdiagram">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="UserRole">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1991,11 +2041,36 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySetMapping Name="ImportFiles">
             <EntityTypeMapping TypeName="CompteResultatModel.ImportFile">
               <MappingFragment StoreEntitySet="ImportFiles">
+                <ScalarProperty Name="IsDifference" ColumnName="IsDifference" />
+                <ScalarProperty Name="DifferenceAmount" ColumnName="DifferenceAmount" />
+                <ScalarProperty Name="DifferenceRows" ColumnName="DifferenceRows" />
+                <ScalarProperty Name="AmountCsv" ColumnName="AmountCsv" />
+                <ScalarProperty Name="AmountDb" ColumnName="AmountDb" />
+                <ScalarProperty Name="NbRowsCsv" ColumnName="NbRowsCsv" />
+                <ScalarProperty Name="NbRowsDb" ColumnName="NbRowsDb" />
                 <ScalarProperty Name="FileName" ColumnName="FileName" />
                 <ScalarProperty Name="FileType" ColumnName="FileType" />
                 <ScalarProperty Name="FileGroup" ColumnName="FileGroup" />
                 <ScalarProperty Name="ImportId" ColumnName="ImportId" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="CompteResultatModel.sysdiagram">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="definition" ColumnName="definition" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserRoles">
+            <EntityTypeMapping TypeName="CompteResultatModel.UserRole">
+              <MappingFragment StoreEntitySet="UserRoles">
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -36,7 +36,20 @@ namespace CompteResultat
         protected void Page_Load(object sender, EventArgs e)
         {
             try
-            {
+            {                
+                //string fileToAnalyse = Request.QueryString["fileToAnalyse"];  
+                if(Session["singleFileUpload"] != null && Session["singleFileUpload"] != "" )
+                {
+                    string fileToAnalyse = Session["singleFileUpload"] as string;
+                    Session["singleFileUpload"] = "";
+                    //pnlAnalyse.Visible = true;
+
+                    //### perform the analysis => return result as HTML
+
+                    //litAnalyse.Text = "<b>Result: </b><br><br>some text...<br>More text...";    
+                    string res = BLAnalyse.ManualFileAnalyse(fileToAnalyse);
+                }
+
                 cmdSelectPrest.Attributes.Add("onclick", "jQuery('#" + uplPrest.ClientID + "').click();return false;");
                 cmdSelectCot.Attributes.Add("onclick", "jQuery('#" + uplCot.ClientID + "').click();return false;");
                 cmdSelectDemo.Attributes.Add("onclick", "jQuery('#" + uplDemo.ClientID + "').click();return false;");
@@ -255,11 +268,13 @@ namespace CompteResultat
             string userName = "";
             string uploadDirectory = "";
             string importDirectory = "";
+            string analyseDirectory = "";
             bool hasErr = false;
             bool forceCompanySubsid = chkForceCompSubsid.Checked;
             bool updateGroupes = chkGroupes.Checked;
             bool updateExperience = chkExp.Checked;
             bool updateCad = chkCad.Checked;
+            bool analyseData = chkAnalyse.Checked;
 
             try
             {
@@ -268,7 +283,8 @@ namespace CompteResultat
                 //initial configuration
                 userName = User.Identity.Name;
                 uploadDirectory = Path.Combine(Request.PhysicalApplicationPath, C.uploadFolder);
-                importDirectory = Path.Combine(Request.PhysicalApplicationPath, "Import");
+                importDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports");
+                analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse");
 
                 string prefix = userName + "_";
                 string uploadPathPrest = Path.Combine(uploadDirectory, prefix + txtPrestPath.Text);
@@ -351,7 +367,12 @@ namespace CompteResultat
                 //string dateTimeToday = DateTime.Now.ToString("s").Replace(":", "-");
                 importDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports", importName + "-" + DateTime.Now.ToString("s").Replace(":", "-"));
                 Directory.CreateDirectory(importDirectory);
-                
+
+                //Delete Aalyse directory & re-create it
+                analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse", importName);
+                BLImport.CleanupImportDirectory(analyseDirectory);
+                Directory.CreateDirectory(analyseDirectory);
+
                 if (uploadPrestFile != null && uploadPrestFile.FileName.Length > 0 && txtPrestPath.Text != "")
                 {                    
                     uploadPrestFile.SaveAs(uploadPathPrest);
@@ -455,7 +476,6 @@ namespace CompteResultat
                     }
                 }
 
-
                 //verify CotisatPrev Data
                 if (File.Exists(uploadPathCotPrev))
                 {
@@ -533,7 +553,7 @@ namespace CompteResultat
                     configStringPrest, configStringDemo, configStringCot, configStringOtherFields, configStringCotPrev, configStringSinistrPrev, configStringDecompPrev, configStringProv,
                     tableForOtherFields, importName, csvSep, uploadDirectory, importDirectory, uploadPathPrest, uploadPathCot, uploadPathDemo,
                     uploadPathCotPrev, uploadPathSinistrPrev, uploadPathDecompPrev, uploadPathProv, uploadPathProvOuverture, newExpCSV, configStringExp, uploadPathExp, forceCompanySubsid, 
-                    updateGroupes, updateExperience, updateCad, provOuverture);
+                    updateGroupes, updateExperience, updateCad, analyseData, provOuverture);
 
                 imp.DoImport();
 

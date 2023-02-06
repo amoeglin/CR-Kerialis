@@ -19,5 +19,12 @@ namespace CompteResultat.DAL
         public string FileGroup { get; set; }
         public string FileType { get; set; }
         public string FileName { get; set; }
+        public Nullable<int> NbRowsDb { get; set; }
+        public Nullable<int> NbRowsCsv { get; set; }
+        public Nullable<double> AmountDb { get; set; }
+        public Nullable<double> AmountCsv { get; set; }
+        public Nullable<int> DifferenceRows { get; set; }
+        public Nullable<double> DifferenceAmount { get; set; }
+        public Nullable<int> IsDifference { get; set; }
     }
 }

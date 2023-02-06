@@ -274,6 +274,8 @@ namespace CompteResultat.Common
         public static string cIMPFILETYPESIN = "Sinistres";
         public static string cIMPFILETYPEPROVCLOT = "Provisions Clôture";
         public static string cIMPFILETYPEPROVOUV = "Provisions Ouverture";
+        public static string cIMPFILETYPEEXP = "Experience";
+        public static string cIMPFILETYPEPROV = "Provisions";
 
 
         //Excel Sheets

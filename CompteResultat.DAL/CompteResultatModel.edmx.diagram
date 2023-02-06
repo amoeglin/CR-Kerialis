@@ -46,6 +46,8 @@
         <EntityTypeShape EntityType="CompteResultatModel.FraisPrevoyance" Width="1.5" PointX="12.375" PointY="13.75" />
         <EntityTypeShape EntityType="CompteResultatModel.FraisSante" Width="1.5" PointX="14.375" PointY="11.75" />
         <EntityTypeShape EntityType="CompteResultatModel.ImportFile" Width="1.5" PointX="14.375" PointY="14.75" />
+        <EntityTypeShape EntityType="CompteResultatModel.sysdiagram" Width="1.5" PointX="15.375" PointY="0.75" />
+        <EntityTypeShape EntityType="CompteResultatModel.UserRole" Width="1.5" PointX="15.375" PointY="3.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

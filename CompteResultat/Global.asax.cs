@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Security;
 using System.Web.SessionState;
 using System.Web.Configuration;
+using System.IO;
 
 using log4net;
 using CompteResultat.Common;
@@ -16,10 +17,16 @@ namespace CompteResultat
 {
     public class Global : System.Web.HttpApplication
     {
-
         protected void Application_Start(object sender, EventArgs e)
         {
             log4net.Config.XmlConfigurator.Configure();
+
+            string analyseDirectory = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data", "Analyse");
+            if (!Directory.Exists(analyseDirectory)) Directory.CreateDirectory(analyseDirectory);
+            string importsDirectory = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data", "Imports");
+            if (!Directory.Exists(importsDirectory)) Directory.CreateDirectory(importsDirectory);
+            string uploadTempDirectory = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data", "UploadTemp");
+            if (!Directory.Exists(uploadTempDirectory)) Directory.CreateDirectory(uploadTempDirectory);
 
             C.imageFolder = WebConfigurationManager.AppSettings["ImageFolder"];
             C.imageRelFolder = G.GetRelativeFolderPath(C.imageFolder);

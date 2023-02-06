@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CompteResultat {
-    
-    
-    public partial class ImportData {
-        
+namespace CompteResultat
+{
+
+
+    public partial class ImportData
+    {
+
         /// <summary>
         /// Literal8 control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal Literal8;
-        
+
         /// <summary>
         /// uplPrest control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload uplPrest;
-        
+
         /// <summary>
         /// txtPrestPath control.
         /// </summary>
@@ -38,7 +40,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPrestPath;
-        
+
         /// <summary>
         /// imgDelPrestSante control.
         /// </summary>
@@ -47,7 +49,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ImageButton imgDelPrestSante;
-        
+
         /// <summary>
         /// cmdSelectPrest control.
         /// </summary>
@@ -56,7 +58,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button cmdSelectPrest;
-        
+
         /// <summary>
         /// uplCot control.
         /// </summary>
@@ -65,7 +67,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload uplCot;
-        
+
         /// <summary>
         /// txtCotPath control.
         /// </summary>
@@ -74,7 +76,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtCotPath;
-        
+
         /// <summary>
         /// imgSelectCot control.
         /// </summary>
@@ -83,7 +85,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ImageButton imgSelectCot;
-        
+
         /// <summary>
         /// cmdSelectCot control.
         /// </summary>
@@ -92,7 +94,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button cmdSelectCot;
-        
+
         /// <summary>
         /// uplDemo control.
         /// </summary>
@@ -101,7 +103,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload uplDemo;
-        
+
         /// <summary>
         /// txtDemoPath control.
         /// </summary>
@@ -110,7 +112,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtDemoPath;
-        
+
         /// <summary>
         /// imgSelectDemo control.
         /// </summary>
@@ -119,7 +121,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ImageButton imgSelectDemo;
-        
+
         /// <summary>
         /// cmdSelectDemo control.
         /// </summary>
@@ -128,7 +130,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button cmdSelectDemo;
-        
+
         /// <summary>
         /// Literal2 control.
         /// </summary>
@@ -137,7 +139,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal Literal2;
-        
+
         /// <summary>
         /// uplDecompPrev control.
         /// </summary>
@@ -146,7 +148,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload uplDecompPrev;
-        
+
         /// <summary>
         /// txtDecompPrevPath control.
         /// </summary>
@@ -155,7 +157,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtDecompPrevPath;
-        
+
         /// <summary>
         /// imgSelectDecompPrev control.
         /// </summary>
@@ -164,7 +166,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ImageButton imgSelectDecompPrev;
-        
+
         /// <summary>
         /// cmdSelectDecompPrev control.
         /// </summary>
@@ -173,7 +175,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button cmdSelectDecompPrev;
-        
+
         /// <summary>
         /// uplSinistrePrev control.
         /// </summary>
@@ -182,7 +184,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload uplSinistrePrev;
-        
+
         /// <summary>
         /// txtSinistrePrevPath control.
         /// </summary>
@@ -191,7 +193,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtSinistrePrevPath;
-        
+
         /// <summary>
         /// imgSelectSinistrePrev control.
         /// </summary>
@@ -200,7 +202,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ImageButton imgSelectSinistrePrev;
-        
+
         /// <summary>
         /// cmdSelectSinistrePrev control.
         /// </summary>
@@ -209,7 +211,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button cmdSelectSinistrePrev;
-        
+
         /// <summary>
         /// uplCotPrev control.
         /// </summary>
@@ -218,7 +220,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload uplCotPrev;
-        
+
         /// <summary>
         /// txtCotPrevPath control.
         /// </summary>
@@ -227,7 +229,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtCotPrevPath;
-        
+
         /// <summary>
         /// imgSelectCotPrev control.
         /// </summary>
@@ -236,7 +238,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ImageButton imgSelectCotPrev;
-        
+
         /// <summary>
         /// cmdSelectCotPrev control.
         /// </summary>
@@ -245,7 +247,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button cmdSelectCotPrev;
-        
+
         /// <summary>
         /// uplProv control.
         /// </summary>
@@ -254,7 +256,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload uplProv;
-        
+
         /// <summary>
         /// txtProvPath control.
         /// </summary>
@@ -263,7 +265,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtProvPath;
-        
+
         /// <summary>
         /// ImageButton2 control.
         /// </summary>
@@ -272,7 +274,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ImageButton ImageButton2;
-        
+
         /// <summary>
         /// cmdSelectProv control.
         /// </summary>
@@ -281,7 +283,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button cmdSelectProv;
-        
+
         /// <summary>
         /// uplProvOuverture control.
         /// </summary>
@@ -290,7 +292,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload uplProvOuverture;
-        
+
         /// <summary>
         /// txtProvOuvertureDate control.
         /// </summary>
@@ -299,7 +301,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtProvOuvertureDate;
-        
+
         /// <summary>
         /// txtProvOuverturePath control.
         /// </summary>
@@ -308,7 +310,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtProvOuverturePath;
-        
+
         /// <summary>
         /// ImageButton3 control.
         /// </summary>
@@ -317,7 +319,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ImageButton ImageButton3;
-        
+
         /// <summary>
         /// cmdSelectProvOuverture control.
         /// </summary>
@@ -326,7 +328,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button cmdSelectProvOuverture;
-        
+
         /// <summary>
         /// Literal3 control.
         /// </summary>
@@ -335,7 +337,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal Literal3;
-        
+
         /// <summary>
         /// uplExp control.
         /// </summary>
@@ -344,7 +346,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload uplExp;
-        
+
         /// <summary>
         /// txtExpPath control.
         /// </summary>
@@ -353,7 +355,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtExpPath;
-        
+
         /// <summary>
         /// ImageButton1 control.
         /// </summary>
@@ -362,7 +364,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ImageButton ImageButton1;
-        
+
         /// <summary>
         /// cmdSelectExp control.
         /// </summary>
@@ -371,7 +373,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button cmdSelectExp;
-        
+
         /// <summary>
         /// txtNomImport control.
         /// </summary>
@@ -380,7 +382,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtNomImport;
-        
+
         /// <summary>
         /// cmdImport control.
         /// </summary>
@@ -389,7 +391,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button cmdImport;
-        
+
         /// <summary>
         /// ValSummary control.
         /// </summary>
@@ -398,7 +400,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ValidationSummary ValSummary;
-        
+
         /// <summary>
         /// Literal1 control.
         /// </summary>
@@ -407,7 +409,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal Literal1;
-        
+
         /// <summary>
         /// odsImport control.
         /// </summary>
@@ -416,7 +418,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ObjectDataSource odsImport;
-        
+
         /// <summary>
         /// gvImport control.
         /// </summary>
@@ -425,7 +427,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gvImport;
-        
+
         /// <summary>
         /// chkForceCompSubsid control.
         /// </summary>
@@ -434,7 +436,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chkForceCompSubsid;
-        
+
         /// <summary>
         /// chkExp control.
         /// </summary>
@@ -443,7 +445,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chkExp;
-        
+
         /// <summary>
         /// chkGroupes control.
         /// </summary>
@@ -452,7 +454,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chkGroupes;
-        
+
         /// <summary>
         /// chkCad control.
         /// </summary>
@@ -461,7 +463,43 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chkCad;
-        
+
+        /// <summary>
+        /// chkAnalyse control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkAnalyse;
+
+        /// <summary>
+        /// pnlAnalyse control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlAnalyse;
+
+        /// <summary>
+        /// cont1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl cont1;
+
+        /// <summary>
+        /// litAnalyse control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litAnalyse;
+
         /// <summary>
         /// divLoading control.
         /// </summary>

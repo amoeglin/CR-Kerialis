@@ -214,7 +214,7 @@
                     <div id="gvDiv" style="height: 450px; width: 1660px; overflow-y: scroll;overflow-x: hidden; border: 1px solid #A9A9A9; color:#3A4F63; text-decoration:none; "> 
                         
                         <asp:GridView CellPadding="5" ID="gvImport" runat="server" DataKeyNames="Id" AutoGenerateColumns="False" OnSorting="OnSorting"
-                        OnRowDataBound="gvImport_RowDataBound" OnRowCommand="gvImport_RowCommand" AllowSorting="true" AllowPaging="false"   >
+                        OnRowDataBound="gvImport_RowDataBound" OnRowCommand="gvImport_RowCommand" AllowSorting="true" AllowPaging="false" OnRowCreated="gvImport_RowCreated"   >
                         <%--<AlternatingRowStyle BackColor="White" />--%>
 
                         <Columns>                             
@@ -225,8 +225,8 @@
                                             ImageUrl="Images/plus.png" ToolTip="Expand" AutoPostBack="True" />
 
                                     <asp:Panel ID="pnlOrders" runat="server" Style="display: none">
-                                        <asp:GridView OnRowDataBound="gvImpFiles_RowDataBound" ID="gvImpFiles" CellPadding="5" runat="server" AutoGenerateColumns="false" 
-                                            CssClass="ChildGrid" DataKeyNames="Id" >
+                                        <asp:GridView ID="gvImpFiles" OnRowCreated="gvImpFiles_RowCreated" OnRowDataBound="gvImpFiles_RowDataBound" CellPadding="5" 
+                                            runat="server" AutoGenerateColumns="false" CssClass="ChildGrid" DataKeyNames="Id" OnRowCommand="gvImpFiles_RowCommand" >
                                             <RowStyle BackColor="#D0EFEE" /> 
 
                                             <Columns>
@@ -245,7 +245,30 @@
                                                     <ItemTemplate>                                                        
                                                         <asp:Label ID="lblProvOuverture" runat="server" Text="-"  />
                                                     </ItemTemplate>
-                                                </asp:TemplateField>  
+                                                </asp:TemplateField> 
+                                                
+                                                <asp:BoundField DataField="NbRowsCsv" HeaderText="Nb Lignes Fichier" /> 
+                                                <asp:BoundField DataField="AmountCsv" HeaderText="Montants Fichier" />
+                                                <asp:BoundField DataField="NbRowsDb" HeaderStyle-BackColor="" ItemStyle-BackColor="#F7A000" HeaderText="Nb Lignes Base" />
+                                                <asp:BoundField DataField="AmountDb" ItemStyle-BackColor="#F7A000" HeaderText="Montants Base" />
+                                                <asp:BoundField DataField="DifferenceRows" ItemStyle-BackColor="#37BBE8" HeaderText="Ecart Nb Lignes" />
+                                                <asp:BoundField DataField="DifferenceAmount" ItemStyle-BackColor="#37BBE8" HeaderText="Ecart Montants" />
+
+                                                <asp:BoundField Visible="false" DataField="IsDifference"  />
+                                                
+                                                <%--<asp:TemplateField Visible="false" >
+                                                    <ItemTemplate>
+                                                        <asp:HiddenField ID="hdnNameImport" Value="" runat="server"  />
+                                                    </ItemTemplate>
+                                                </asp:TemplateField> --%>
+
+                                                <asp:TemplateField Visible="true">
+                                                    <ItemTemplate>
+                                                        <asp:ImageButton Width="24" Height="24" style="margin-right:0px;" ImageUrl="~/Images/analyse-g.png" ID="cmdAnalyseFile" runat="server"  
+                                                              CommandName="RedirectFMAnalyse" CommandArgument='<%# Bind("FileName") %>'   /> 
+                                                        <%-- <%#Eval("FileName")+","+ Eval("FileGroup")%>     CommandArgument='<%# Bind("FileName") %>'    --%>
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
 
                                             </Columns>
                                         </asp:GridView>
@@ -288,6 +311,13 @@
                                 </ItemTemplate>
                             </asp:TemplateField>
 
+                            <asp:TemplateField Visible="true">
+                                <ItemTemplate>
+                                    <asp:ImageButton Width="24" Height="24" style="margin-right:0px;" ImageUrl="~/Images/analyse-y.png" ID="cmdAnalyseFolder" runat="server"  
+                                          CommandName="RedirectFMAnalyse" CommandArgument='<%# Bind("Name") %>'   />                                   
+                                </ItemTemplate>
+                            </asp:TemplateField>
+
                         </Columns>
                         <EditRowStyle BackColor="#00A8BC" />
                         <FooterStyle BackColor="#00A8BC" Font-Bold="True" ForeColor="White" />
@@ -325,14 +355,28 @@
                             </td>
                             <td>
                                 <asp:TextBox ID="txtNomImport" CssClass="element" style="width:300px; margin-left:10px; margin-right:20px; margin-bottom:5px" runat="server" ClientIDMode="Static"  ></asp:TextBox> 
+                            </td>
+                               
                             <td>
-                                <asp:Button CssClass="ButtonBigBlue" style="vertical-align:middle;  width: 105px;     
+                                <asp:Button CssClass="ButtonBigBlue" style="vertical-align:middle;  width: 105px; margin-right:40px;     
                                     padding:0px; margin-bottom: -19px; " id="cmdImport" Text="Importer" runat="server" OnClick="cmdImport_Click" ClientIDMode="Static" /> &nbsp; 
+                            </td>
+                            <td>
+                                <asp:Button CssClass="ButtonBigBlue" style="vertical-align:middle;  width: 220px; margin-right:20px;      
+                                    padding:0px; margin-bottom: -19px; " id="cmdAnalyse" Text="Analyse des données importées" runat="server" OnClick="cmdAnalyse_Click" ClientIDMode="Static" /> &nbsp; 
                             </td>
                             <td>
                                 <div runat="server" id="divLoading"  style="display:none" ClientIDMode="Static" >
                                     <img width="50px" height="50px" style="margin-left:50px;" src="Images/ajax-loader.gif" />
                                 </div>
+                            </td>
+                        </tr>
+                        <tr><td></td><td></td><td></td><td></td><td></td>
+                            <td style="">
+                                <asp:CheckBox Checked="true" ID="chkAnalyse" runat="server" Text="&nbsp;&nbsp;Avec analyse" Font-Size="Small" />              
+                            </td>
+                            <td style="">
+                                <asp:CheckBox Checked="true" ID="chkOnlyNonAnalyzed" runat="server" Text="&nbsp;&nbsp;Only not yet analyzed imports..." Font-Size="Small" />              
                             </td>
                         </tr>
                     </table>

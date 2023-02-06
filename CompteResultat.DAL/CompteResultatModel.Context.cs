@@ -59,6 +59,8 @@ namespace CompteResultat.DAL
         public virtual DbSet<FraisPrevoyance> FraisPrevoyances { get; set; }
         public virtual DbSet<FraisSante> FraisSantes { get; set; }
         public virtual DbSet<ImportFile> ImportFiles { get; set; }
+        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
+        public virtual DbSet<UserRole> UserRoles { get; set; }
     
         public virtual ObjectResult<Nullable<double>> SPGetSumPrestaForDossier(string dossier, Nullable<System.DateTime> dateArret)
         {

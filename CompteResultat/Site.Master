@@ -96,6 +96,7 @@
                                 <asp:MenuItem NavigateUrl="~/GestionFraisSante.aspx" Text="Frais Sante" />
                                 <asp:MenuItem NavigateUrl="~/GestionEntreprises.aspx" Text="Paramètres des Entreprises" /> 
                                 <asp:MenuItem NavigateUrl="~/FMImport.aspx" Text="Gestion des Imports" /> 
+                                <asp:MenuItem NavigateUrl="~/FMAnalyse.aspx" Text="Gestion des Controles" /> 
                             </asp:MenuItem>   
                         </Items>
                     </asp:Menu>
@@ -129,6 +130,7 @@
                                 <asp:MenuItem NavigateUrl="~/GestionFraisSante.aspx" Text="Frais Sante" />
                                 <asp:MenuItem NavigateUrl="~/GestionEntreprises.aspx" Text="Paramètres des Entreprises" />
                                 <asp:MenuItem NavigateUrl="~/FMImport.aspx" Text="Gestion des Imports" /> 
+                                <asp:MenuItem NavigateUrl="~/FMAnalyse.aspx" Text="Gestion des Controles" /> 
                             </asp:MenuItem> 
                             
                             <asp:MenuItem Value="Purge" NavigateUrl="~/Purge.aspx" Text="Purge" />                         

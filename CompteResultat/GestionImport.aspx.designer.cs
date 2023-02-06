@@ -132,6 +132,15 @@ namespace CompteResultat
         protected global::System.Web.UI.WebControls.Button cmdImport;
 
         /// <summary>
+        /// cmdAnalyse control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button cmdAnalyse;
+
+        /// <summary>
         /// divLoading control.
         /// </summary>
         /// <remarks>
@@ -139,6 +148,24 @@ namespace CompteResultat
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl divLoading;
+
+        /// <summary>
+        /// chkAnalyse control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkAnalyse;
+
+        /// <summary>
+        /// chkOnlyNonAnalyzed control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkOnlyNonAnalyzed;
 
         /// <summary>
         /// ValSummary control.

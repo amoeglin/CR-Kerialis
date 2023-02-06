@@ -178,6 +178,9 @@
     <Compile Include="SinistrePrev.cs">
       <DependentUpon>CompteResultatModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="sysdiagram.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="TempExpDataExt.cs" />
     <Compile Include="ContractExt.cs" />
     <Compile Include="SinistrePrevExt.cs" />
@@ -204,6 +207,9 @@
       <DependentUpon>CompteResultatModel.tt</DependentUpon>
     </Compile>
     <Compile Include="TypePrevoyanceExt.cs" />
+    <Compile Include="UserRole.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
