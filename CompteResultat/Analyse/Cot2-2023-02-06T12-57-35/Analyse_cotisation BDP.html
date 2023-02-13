@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+        <title>Analysis Report</title>
+
+		<style>
+			.container { width: 1920px !important; }
+			hr {
+			margin-top: 1rem;
+			margin-bottom: 1rem;
+			border: 0;
+			border-top: 3px solid rgba(0, 0, 0, 0.1);
+			}			
+		</style>
+    </head>
+    <body>
+        <div class="mx-auto p-4 my-3 text-white text-center" style="background-color: #00a8bc; width:1700px">
+            <h1>Analysis Report</h1>
+            <p>D:\_ROBERT\_IT\Projects\zzzCM\CR-Kerialis\CompteResultat\App_Data\Imports\Cot2-2023-02-06T12-57-35\cotisation BDP.csv - 1 ko</p>
+
+            <div class="mx-auto text-left p-4 my-3 text-secondary" style="background-color: #d0efee; width:1600px;">                
+                <h2>General information:</h2>
+				<p>
+				<div class="row">
+                    <div class="col-sm">Group des donnees: SANTE</div>
+                    <div class="col-sm">Type des donnees: Cotisation</div>
+                </div>
+				<div class="row">
+                    <div class="col-sm">Nb rows in DB: 11</div>
+                    <div class="col-sm">Nb rows in CSV: 10</div>
+                </div>
+				<div class="row">
+                    <div class="col-sm">Total cotisations dans la base des données : 1006641,67</div>
+                    <div class="col-sm">Total cotisations dans le fichier d'import : 1004555,07</div>
+                </div>				
+				</p>
+				<div class="row text-danger" style="">
+                    <div class="col-sm"><i><b>Différence nb des lignes entre la base et le fichier d'import : -1</b></i></div>
+                    <div class="col-sm"><i><b>Différence cotisations entre la base et le fichier d'import : -2086,6</b></i></div>
+                </div>				
+            </div>
+
+			<div class="mx-auto text-left p-4 my-3 text-secondary" style="background-color: #d0efee; width:1600px;">                
+                <h2 class="mb-3" >Missing Lines:</h2>
+				<h5 class="mb-3" style="width:100%; background-color: bisque;">Lines found in DB, missing in import file:</h5>
+				<div>
+					<div class="table-responsive">
+					<table class='table table-bordered table-info'><thead class='thead-dark small'><tr><th>Id</th><th>ImportId</th><th>AssureurName</th><th>ContractId</th><th>Company</th><th>Subsid</th><th>CodeCol</th><th>Year</th><th>DebPrime</th><th>FinPrime</th><th>Cotisation</th><th>WithOption</th><th>CotisationBrute</th><th>CodeSinistre</th></tr></thead><tbody><tr><td>136</td><td>12</td><td>KERIALIS_ENTREPRISE</td><td>SUR MESURE</td><td>47500207</td><td>47500207</td><td>Ens Pers</td><td>2021</td><td>01/01/2021 00:00:00</td><td>31/12/2021 00:00:00</td><td>8047,86</td><td>Oui</td><td>11199,79</td><td></td></tr><tr><td>143</td><td>12</td><td>KERIALIS_ENTREPRISE</td><td>SUR MESURE</td><td>47525653</td><td>47525653</td><td>Ens Pers</td><td>2020</td><td>01/01/2020 00:00:00</td><td>31/12/2020 00:00:00</td><td>1498,79</td><td>Non</td><td>2085,6</td><td></td></tr></tbody></table>
+					</div>
+				</div>
+
+					<!-- <i><b>Id of row in database: </b></i>133<br>
+					<i><b>SQL: </b></i>SELECT * FROM Cotisations WHERE Id = 133 <br>
+					<i><b>Data: </b></i>133	12	KERIALIS_ENTREPRISE	SUR MESURE	47500207	4750020 <br><br> -->
+					
+					<!-- <b>Potentially corresponding row in import file:</b><br>
+					<i><b>Line number: </b></i>25 <br>
+					<i><b>Data: </b></i>133	12	KERIALIS_ENTREPRISE	SUR MESURE	47500207	47500207... <br><br> -->
+				
+					<!-- <hr> -->
+				
+				<hr style="margin-bottom: 30px; border-top: 4px solid #0099B1;">
+
+				<h5 class="mb-3" style="width:100%; background-color: bisque;">Lines found in import file, missing in DB:</h5>
+				<div>
+					<div class="table-responsive">
+					<table class='table table-bordered table-info'><thead class='thead-dark small'><tr><th>Nb.</th><th>ImportId</th><th>AssureurName</th><th>ContractId</th><th>Company</th><th>Subsid</th><th>CodeCol</th><th>Year</th><th>DebPrime</th><th>FinPrime</th><th>Cotisation</th><th>WithOption</th><th>CotisationBrute</th><th>CodeSinistre</th></tr></thead><tbody><tr><td>5</td><td>12</td><td>KERIALIS_ENTREPRISE</td><td>SUR MESURE</td><td>47500207</td><td>47500207</td><td>Ens Pers</td><td>2021</td><td>01/01/2021</td><td>31/12/2021</td><td>8047,86</td><td>Oui</td><td>11198,79</td><td></td></tr></tbody></table>
+					</div>
+				</div>
+
+					<!-- <p>
+					<i><b>Line number: </b></i>133<br>					
+					<i><b>Data: </b></i>133	12	KERIALIS_ENTREPRISE	SUR MESURE	261717,72 <br><br>
+					<b>Potentially corresponding row in DB:</b><br>
+					<i><b>Id of row in database: </b></i>25 <br>
+					<i><b>SQL: </b></i>SELECT * FROM Cotisations WHERE Id = 133 <br>
+					<i><b>Data: </b></i>133	12	KERIALIS_ENTREPRISE	SUR MESURE	261717,72 <br><br>
+					</p>
+					<hr> -->
+				
+			</div>
+        </div>
+    </body>
+</html>
