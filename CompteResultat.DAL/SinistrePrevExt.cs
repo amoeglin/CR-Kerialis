@@ -16,6 +16,29 @@ namespace CompteResultat.DAL
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static SinistrePrev GetSinistrePrevtById(int id)
+        {
+            try
+            {
+                SinistrePrev sin = null;
+                using (var context = new CompteResultatEntities())
+                {
+                    var elements = context.SinistrePrevs.Where(c => c.Id == id);
+
+                    if (elements.Any())
+                    {
+                        sin = elements.First();
+                    }
+                }
+                return sin;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
         public static List<ExcelGlobalSinistreData> GetSinistreGlobalEntData(List<int> years, List<string> companyList)
         {
             try

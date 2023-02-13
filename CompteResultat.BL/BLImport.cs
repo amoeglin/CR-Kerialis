@@ -136,7 +136,10 @@ namespace CompteResultat.BL
         public void DoImport()
         {
             ImportFile impFile;
-            int importId = 0; 
+            int importId = 0;
+            string impFileTF = "";
+            string fileGroup = "";
+            string fileType = "";
 
             try
             {
@@ -173,6 +176,9 @@ namespace CompteResultat.BL
                     //we need to perform 2 imports for the following 2 assureurs : ASSUREEUR_PRODUIT && ASSUREUR_ENTREPRISE
                     //TransformFile(UploadPathPrest, CSVSep, ConfigStringPrest, NewPrestCSV, "Id", importId, C.eImportFile.PrestaSante, ForceCompanySubsid);
                     //Thread.Sleep(500);
+                    fileGroup = C.cIMPFILEGROUPSANTE;
+                    fileType = C.cIMPFILETYPEPREST;
+                    impFileTF = Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathPrest).Replace(UserName + "_", ""));
 
                     impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPSANTE, FileType = C.cIMPFILETYPEPREST, 
                         FileName = Path.GetFileName(UploadPathPrest).Replace(UserName + "_", ""), IsDifference=0 };
@@ -193,12 +199,16 @@ namespace CompteResultat.BL
                     if (File.Exists(NewPrestEntCSV))
                     {
                         FileInfo fi = new FileInfo(NewPrestEntCSV);
-                        fi.CopyTo(Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathPrest).Replace(UserName + "_", "")));
+                        fi.CopyTo(impFileTF);
                     }
                 }
 
                 if (File.Exists(UploadPathCot))
                 {
+                    fileGroup = C.cIMPFILEGROUPSANTE;
+                    fileType = C.cIMPFILETYPECOT;                    
+                    impFileTF = Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathCot).Replace(UserName + "_", ""));
+
                     impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPSANTE, FileType = C.cIMPFILETYPECOT, 
                         FileName = Path.GetFileName(UploadPathCot).Replace(UserName + "_", ""), IsDifference=0 };
                     ImportFile.Insert(impFile);
@@ -217,12 +227,16 @@ namespace CompteResultat.BL
                     if (File.Exists(NewCotEntCSV))
                     {
                         FileInfo fi = new FileInfo(NewCotEntCSV);
-                        fi.CopyTo(Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathCot).Replace(UserName + "_", "")));
+                        fi.CopyTo(impFileTF);
                     }
                 }
 
                 if (File.Exists(UploadPathDemo))
                 {
+                    fileGroup = C.cIMPFILEGROUPSANTE;
+                    fileType = C.cIMPFILETYPEDEMO;
+                    impFileTF = Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathDemo).Replace(UserName + "_", ""));
+
                     impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPSANTE, FileType = C.cIMPFILETYPEDEMO,
                         FileName = Path.GetFileName(UploadPathDemo).Replace(UserName + "_", ""), IsDifference=0 };
                     ImportFile.Insert(impFile);
@@ -240,12 +254,16 @@ namespace CompteResultat.BL
                     if (File.Exists(NewDemoEntCSV))
                     {
                         FileInfo fi = new FileInfo(NewDemoEntCSV);
-                        fi.CopyTo(Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathDemo).Replace(UserName + "_", "")));
+                        fi.CopyTo(impFileTF);
                     }
                 }
 
                 if (File.Exists(UploadPathCotPrev))
                 {
+                    fileGroup = C.cIMPFILEGROUPPREV;
+                    fileType = C.cIMPFILETYPECOT;
+                    impFileTF = Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathCotPrev).Replace(UserName + "_", ""));
+
                     impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPPREV, FileType = C.cIMPFILETYPECOT, 
                         FileName = Path.GetFileName(UploadPathCotPrev).Replace(UserName + "_", ""), IsDifference=0 };
                     ImportFile.Insert(impFile);
@@ -263,12 +281,16 @@ namespace CompteResultat.BL
                     if (File.Exists(NewCotPrevCSV))
                     {
                         FileInfo fi = new FileInfo(NewCotPrevCSV);
-                        fi.CopyTo(Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathCotPrev).Replace(UserName + "_", "")));
+                        fi.CopyTo(impFileTF);
                     }
                 }
 
                 if (File.Exists(UploadPathSinistrPrev))
                 {
+                    fileGroup = C.cIMPFILEGROUPPREV;
+                    fileType = C.cIMPFILETYPESIN;
+                    impFileTF = Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathSinistrPrev).Replace(UserName + "_", ""));
+
                     impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPPREV, FileType = C.cIMPFILETYPESIN, 
                         FileName = Path.GetFileName(UploadPathSinistrPrev).Replace(UserName + "_", ""), IsDifference=0 };
                     ImportFile.Insert(impFile);
@@ -286,12 +308,16 @@ namespace CompteResultat.BL
                     if (File.Exists(NewSinistrePrevCSV))
                     {
                         FileInfo fi = new FileInfo(NewSinistrePrevCSV);
-                        fi.CopyTo(Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathSinistrPrev).Replace(UserName + "_", "")));
+                        fi.CopyTo(impFileTF);
                     }
                 }
 
                 if (File.Exists(UploadPathDecompPrev))
                 {
+                    fileGroup = C.cIMPFILEGROUPPREV;
+                    fileType = C.cIMPFILETYPEDECOMP;
+                    impFileTF = Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathDecompPrev).Replace(UserName + "_", ""));
+
                     impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPPREV, FileType = C.cIMPFILETYPEDECOMP, 
                         FileName = Path.GetFileName(UploadPathDecompPrev).Replace(UserName + "_", ""), IsDifference=0 };
                     ImportFile.Insert(impFile);
@@ -309,12 +335,16 @@ namespace CompteResultat.BL
                     if (File.Exists(NewDecompPrevCSV))
                     {
                         FileInfo fi = new FileInfo(NewDecompPrevCSV);
-                        fi.CopyTo(Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathDecompPrev).Replace(UserName + "_", "")));
+                        fi.CopyTo(impFileTF);
                     }
                 }
 
                 if (File.Exists(UploadPathProv))
                 {
+                    fileGroup = C.cIMPFILEGROUPPREV;
+                    fileType = C.cIMPFILETYPEPROV;
+                    impFileTF = Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathProv).Replace(UserName + "_", ""));
+
                     impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPPREV, FileType = C.cIMPFILETYPEPROVCLOT, 
                         FileName = Path.GetFileName(UploadPathProv).Replace(UserName + "_", ""), IsDifference=0 };
                     ImportFile.Insert(impFile);
@@ -332,12 +362,16 @@ namespace CompteResultat.BL
                     if (File.Exists(NewProvCSV))
                     {
                         FileInfo fi = new FileInfo(NewProvCSV);
-                        fi.CopyTo(Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathProv).Replace(UserName + "_", "")));
+                        fi.CopyTo(impFileTF);
                     }
                 }
 
                 if (File.Exists(UploadPathProvOuverture))
                 {
+                    fileGroup = C.cIMPFILEGROUPPREV;
+                    fileType = C.cIMPFILETYPEPROV;
+                    impFileTF = Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathProvOuverture).Replace(UserName + "_", ""));
+
                     impFile = new ImportFile { ImportId = ImportId, FileGroup = C.cIMPFILEGROUPPREV, FileType = C.cIMPFILETYPEPROVOUV, 
                         FileName = Path.GetFileName(UploadPathProvOuverture).Replace(UserName + "_", "") , IsDifference=0};
                     ImportFile.Insert(impFile);
@@ -355,7 +389,7 @@ namespace CompteResultat.BL
                     if (File.Exists(NewProvOuvertureCSV))
                     {
                         FileInfo fi = new FileInfo(NewProvOuvertureCSV);
-                        fi.CopyTo(Path.Combine(ImportDirectory, "TF_" + Path.GetFileName(UploadPathProvOuverture).Replace(UserName + "_", "")));
+                        fi.CopyTo(impFileTF);
                     }
                 }
 
@@ -751,7 +785,9 @@ namespace CompteResultat.BL
 
                 if (AnalyseData)
                 {
-                    //BLCadencier.RecreateCadencier();
+                    fileType = fileType.Replace("D&#233;comptes", "Décomptes");
+                    fileType = fileType.Replace("Provisions Cl&#244;ture", "Provisions Clôture");
+                    BLAnalyse.AnalyseData(impFileTF, fileGroup, fileType, importId);
                 }
 
 
@@ -1458,7 +1494,7 @@ namespace CompteResultat.BL
                 }
                 else
                 {
-                    throw new Exception("Il faudra spécifier un fichier du type .csv, .xls ou .xlsx dans le champ 'Fichier CSV Prestations' !");
+                    throw new Exception("Il faudra spécifier un fichier du type .csv, .xls ou .xlsx !");
                 }
 
                 return missingColumns;

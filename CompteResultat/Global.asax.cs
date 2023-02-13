@@ -21,7 +21,7 @@ namespace CompteResultat
         {
             log4net.Config.XmlConfigurator.Configure();
 
-            string analyseDirectory = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data", "Analyse");
+            string analyseDirectory = Path.Combine(HttpRuntime.AppDomainAppPath, "Analyse");
             if (!Directory.Exists(analyseDirectory)) Directory.CreateDirectory(analyseDirectory);
             string importsDirectory = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data", "Imports");
             if (!Directory.Exists(importsDirectory)) Directory.CreateDirectory(importsDirectory);

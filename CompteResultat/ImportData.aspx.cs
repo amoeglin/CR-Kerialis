@@ -42,12 +42,9 @@ namespace CompteResultat
                 {
                     string fileToAnalyse = Session["singleFileUpload"] as string;
                     Session["singleFileUpload"] = "";
-                    //pnlAnalyse.Visible = true;
+                    pnlAnalyse.Visible = true;
 
-                    //### perform the analysis => return result as HTML
-
-                    //litAnalyse.Text = "<b>Result: </b><br><br>some text...<br>More text...";    
-                    string res = BLAnalyse.ManualFileAnalyse(fileToAnalyse);
+                    litAnalyse.Text = BLAnalyse.ManualFileAnalyse(fileToAnalyse);                    
                 }
 
                 cmdSelectPrest.Attributes.Add("onclick", "jQuery('#" + uplPrest.ClientID + "').click();return false;");
@@ -284,7 +281,7 @@ namespace CompteResultat
                 userName = User.Identity.Name;
                 uploadDirectory = Path.Combine(Request.PhysicalApplicationPath, C.uploadFolder);
                 importDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports");
-                analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse");
+                analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "Analyse");
 
                 string prefix = userName + "_";
                 string uploadPathPrest = Path.Combine(uploadDirectory, prefix + txtPrestPath.Text);
@@ -369,7 +366,7 @@ namespace CompteResultat
                 Directory.CreateDirectory(importDirectory);
 
                 //Delete Aalyse directory & re-create it
-                analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse", importName);
+                analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "Analyse", importName);
                 BLImport.CleanupImportDirectory(analyseDirectory);
                 Directory.CreateDirectory(analyseDirectory);
 

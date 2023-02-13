@@ -13,7 +13,7 @@
 
         <dx:ASPxFileManager style="margin-top:20px;" ID="ASPxFileManager2" runat="server">
             
-            <settings EnableMultiSelect="true" rootfolder="~/App_Data/Analyse" AllowedFileExtensions=".csv, .xlsx, .xlsm" />
+            <settings EnableMultiSelect="true" rootfolder="~/App_Data/Analyse" AllowedFileExtensions=".html, .csv, .xlsx, .xlsm" />
             <SettingsFileList View="Details">
             </SettingsFileList>
             <SettingsEditing AllowDelete="True" AllowDownload="True" AllowRename="True" />

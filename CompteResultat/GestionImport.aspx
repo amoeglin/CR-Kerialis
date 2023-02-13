@@ -13,7 +13,7 @@
     
     <script type="text/javascript">
         
-        var collapseImage = 'images/minus.png';
+        var collapseImage = 'images/minus.png'; 
         var expandImage = 'images/plus.png';
         
         $(document).ready(function () {
@@ -265,10 +265,17 @@
                                                 <asp:TemplateField Visible="true">
                                                     <ItemTemplate>
                                                         <asp:ImageButton Width="24" Height="24" style="margin-right:0px;" ImageUrl="~/Images/analyse-g.png" ID="cmdAnalyseFile" runat="server"  
-                                                              CommandName="RedirectFMAnalyse" CommandArgument='<%# Bind("FileName") %>'   /> 
+                                                              CommandName="RedirectFMAnalyse2" CommandArgument='<%# Bind("FileName") %>'   /> 
+                                                        
                                                         <%-- <%#Eval("FileName")+","+ Eval("FileGroup")%>     CommandArgument='<%# Bind("FileName") %>'    --%>
                                                     </ItemTemplate>
                                                 </asp:TemplateField>
+
+                                                <%--<asp:TemplateField Visible="true">
+                                                    <ItemTemplate>
+                                                        <asp:HyperLink Target="_blank" href="Analyse\test.html" runat="server">AAA</asp:HyperLink>    
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>--%>
 
                                             </Columns>
                                         </asp:GridView>
@@ -363,7 +370,7 @@
                             </td>
                             <td>
                                 <asp:Button CssClass="ButtonBigBlue" style="vertical-align:middle;  width: 220px; margin-right:20px;      
-                                    padding:0px; margin-bottom: -19px; " id="cmdAnalyse" Text="Analyse des données importées" runat="server" OnClick="cmdAnalyse_Click" ClientIDMode="Static" /> &nbsp; 
+                                    padding:0px; margin-bottom: -19px; " id="cmdAnalyse" Text="Controle des données importées" runat="server" OnClick="cmdAnalyse_Click" ClientIDMode="Static" /> &nbsp; 
                             </td>
                             <td>
                                 <div runat="server" id="divLoading"  style="display:none" ClientIDMode="Static" >
@@ -373,10 +380,10 @@
                         </tr>
                         <tr><td></td><td></td><td></td><td></td><td></td>
                             <td style="">
-                                <asp:CheckBox Checked="true" ID="chkAnalyse" runat="server" Text="&nbsp;&nbsp;Avec analyse" Font-Size="Small" />              
+                                <asp:CheckBox Checked="true" ID="chkAnalyse" runat="server" Text="&nbsp;&nbsp;Avec controle" Font-Size="Small" />              
                             </td>
                             <td style="">
-                                <asp:CheckBox Checked="true" ID="chkOnlyNonAnalyzed" runat="server" Text="&nbsp;&nbsp;Only not yet analyzed imports..." Font-Size="Small" />              
+                                <asp:CheckBox Checked="true" ID="chkOnlyNonAnalyzed" runat="server" Text="&nbsp;&nbsp;Uniquement les imports pas encore contrôlées" Font-Size="Small" />              
                             </td>
                         </tr>
                     </table>

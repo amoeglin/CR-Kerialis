@@ -16,6 +16,31 @@ namespace CompteResultat.DAL
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static CotisatSante GetCotisatById(int id)
+        {
+            try
+            {
+                CotisatSante cotisat = null;
+
+                using (var context = new CompteResultatEntities())
+                {
+                    var elements = context.CotisatSantes.Where(c => c.Id == id);
+
+                    if (elements.Any())
+                    {
+                        cotisat = elements.First();
+                    }
+                }
+
+                return cotisat;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
         public static List<ExcelGlobalCotisatData> GetCotisatGlobalEntData(List<int> years, List<string> companyList)
         {
             try

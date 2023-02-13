@@ -64,7 +64,7 @@ namespace CompteResultat
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            string analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse");
+            string analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "Analyse");
             if (!Directory.Exists(analyseDirectory)) Directory.CreateDirectory(analyseDirectory);
             string importsDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports");
             if (!Directory.Exists(importsDirectory)) Directory.CreateDirectory(importsDirectory);
@@ -166,6 +166,7 @@ namespace CompteResultat
             bool hasErr = false;
             int impId = 0;
             bool updateGroupCadExp = false;
+            bool doAnalyse = chkAnalyse.Checked;
             string uploadDirectory = Path.Combine(Request.PhysicalApplicationPath, C.uploadFolder);
             string newImportDirectory = "";
             string analyseDirectory = "";
@@ -195,12 +196,13 @@ namespace CompteResultat
 
                 string importName = txtNomImport.Text;
 
-                // create new import folder - if at least one file was selected                
-                newImportDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports", importName + "-" + DateTime.Now.ToString("s").Replace(":", "-"));
+                // create new import folder - if at least one file was selected  
+                string dateTimePart = DateTime.Now.ToString("s").Replace(":", "-");
+                newImportDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports", importName + "-" + dateTimePart);
                 Directory.CreateDirectory(newImportDirectory);
 
                 //Delete Aalyse directory & re-create it
-                analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse", importName);
+                analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "Analyse", importName + "-" + dateTimePart);
                 BLImport.CleanupImportDirectory(analyseDirectory);
                 Directory.CreateDirectory(analyseDirectory);
 
@@ -288,7 +290,7 @@ namespace CompteResultat
                               
                                 UploadPaths uplPaths = GetUploadFilePaths(uploadFilePath, fileGroup, fileType);
 
-                                BLImport blImp = GetImportBasicConfig(uplPaths, importName, provOuverture, newImportDirectory, updateGroupCadExp);
+                                BLImport blImp = GetImportBasicConfig(uplPaths, importName, provOuverture, newImportDirectory, updateGroupCadExp, doAnalyse);
 
                                 //if several imports were selected in the GV, use the importId we created above                             
                                 blImp.ImportId = impId;
@@ -388,7 +390,7 @@ namespace CompteResultat
         }
 
         protected BLImport GetImportBasicConfig(UploadPaths uplPaths, string importName, string provOuverture, 
-            string importDirectory, bool updateGroupCadExp)
+            string importDirectory, bool updateGroupCadExp, bool doAnalyse)
         {
             string csvSep = WebConfigurationManager.AppSettings["CSVSEP"];
             string userName = User.Identity.Name;
@@ -399,7 +401,7 @@ namespace CompteResultat
             bool updateGroupes = updateGroupCadExp;
             bool updateExperience = updateGroupCadExp;
             bool updateCad = updateGroupCadExp;
-            bool analyseData = updateGroupCadExp;
+            bool analyseData = doAnalyse;
 
             string prefix = userName + "_";
             string newPrestEntCSV = Path.Combine(uploadDirectory, prefix + C.eMOGImportFile.PrestationsEntMOG.ToString() + ".csv");
@@ -525,7 +527,9 @@ namespace CompteResultat
                     //var myRow = ((e.Row.NamingContainer.Parent.Parent.Parent) as GridViewRow);
                     GridViewRow mainGridViewRow = ((e.Row.NamingContainer.Parent.Parent.Parent) as GridViewRow);
                     string importId = gvImport.DataKeys[mainGridViewRow.RowIndex].Value.ToString();
-                    string importName = mainGridViewRow.Cells[3].Text;                    
+                    string importName = mainGridViewRow.Cells[3].Text;
+                    string analyseDirectory = mainGridViewRow.Cells[6].Text;
+                    analyseDirectory = Path.GetFileName(analyseDirectory);
 
                     TableCell groupCell = e.Row.Cells[3];
                     TableCell provOuvertureCell = e.Row.Cells[5];
@@ -540,7 +544,7 @@ namespace CompteResultat
 
                     string diffText = e.Row.Cells[12].Text;
                     ImageButton imgBtn = e.Row.FindControl("cmdAnalyseFile") as ImageButton;
-                    imgBtn.AlternateText = importName;
+                    imgBtn.AlternateText = importName + "&&" + analyseDirectory;
                     int isDifference = 0; //0: not analysed, 1: ok, 2: KO
                     try
                     {
@@ -628,7 +632,7 @@ namespace CompteResultat
             if (e.CommandName == "RedirectFMAnalyse")
             {
                 string importPath = e.CommandArgument.ToString();
-                string importDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse");
+                string importDirectory = Path.Combine(Request.PhysicalApplicationPath, "Analyse");
 
                 if (importPath != "")
                 {
@@ -642,37 +646,49 @@ namespace CompteResultat
 
         protected void gvImpFiles_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            if (e.CommandName == "RedirectFMAnalyse")
+            if (e.CommandName == "RedirectFMAnalyse2")
             {
                 ImageButton cmdAnalyseFile = e.CommandSource as ImageButton;
-                string importName = cmdAnalyseFile.AlternateText;
+                string importData = cmdAnalyseFile.AlternateText;
+                string[] arrImportData = importData.Split(new string[] { "&&" }, StringSplitOptions.None);
+                string importName = arrImportData[0];
+                string analysePath = arrImportData[1];                
 
-                string fileName = e.CommandArgument.ToString();
-                string importDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse", importName);
-                //string filePath = Path.Combine(importDirectory, fileName);
+                string fName = e.CommandArgument.ToString();
+                fName = fName.Replace(".csv", ".html");
+                fName = fName.Replace(".xls", ".html");
+                fName = fName.Replace(".xlsx", ".html");
+                fName = "Analyse_" + fName;
 
-                if (importDirectory != "")
+                string analyseDirectory = Path.Combine("Analyse", analysePath, fName);
+                analyseDirectory = analyseDirectory.Replace("\\", "/");
+
+                //ScriptManager.RegisterStartupScript(Page, typeof(Page), "Open", @"window.open('Analyse/test.html');", true);
+                ScriptManager.RegisterStartupScript(Page, typeof(Page), "Open", "window.open('" + analyseDirectory + "');", true);
+
+                if (analyseDirectory != "")
                 {
-                    if (Directory.Exists(importDirectory))
-                        Response.Redirect("~/FMImport.aspx?path=" + importDirectory);
+                    //if (Directory.Exists(analysePath)){
+                    //    Response.Redirect("~/FMImport.aspx?path=" + analysePath);
+                    //}
                 }
 
                 //Download File
                 //FileInfo file = new FileInfo(filePath);
                 //if (file.Exists)
                 //{                    
-                    //Response.Clear();
-                    //Response.ClearHeaders();
-                    //Response.ClearContent();
+                //Response.Clear();
+                //Response.ClearHeaders();
+                //Response.ClearContent();
 
-                    //Response.ContentType = @"application\octet-stream";
-                    //Response.AppendHeader("content-disposition", "attachment; filename=" + file.Name);
-                    //Response.AddHeader("Content-Length", file.Length.ToString());
+                //Response.ContentType = @"application\octet-stream";
+                //Response.AppendHeader("content-disposition", "attachment; filename=" + file.Name);
+                //Response.AddHeader("Content-Length", file.Length.ToString());
 
-                    //Response.Flush();
-                    ////Response.TransmitFile(file.FullName);
-                    //Response.WriteFile(file.FullName);
-                    //Response.End();
+                //Response.Flush();
+                ////Response.TransmitFile(file.FullName);
+                //Response.WriteFile(file.FullName);
+                //Response.End();
                 //}
             }
 
@@ -718,7 +734,7 @@ namespace CompteResultat
         {
             //get basic params            
             string importsDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Imports");
-            string analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse");
+            string analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "Analyse");
 
             try
             {
@@ -843,7 +859,7 @@ namespace CompteResultat
                 BLImport.CleanupImportDirectory(importDir);
                 //delete Analyse directory
                 string importName = row.Cells[3].Text;
-                string analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "App_Data", "Analyse", importName);
+                string analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "Analyse", importName);
                 BLImport.CleanupImportDirectory(analyseDirectory);
             }
             else if (DeleteAllOrDB == "DB")

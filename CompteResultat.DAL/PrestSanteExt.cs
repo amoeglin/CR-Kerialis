@@ -16,6 +16,30 @@ namespace CompteResultat.DAL
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static PrestSante GetPrestaById(int id)
+        {
+            try
+            {
+                PrestSante presta = null;
+
+                using (var context = new CompteResultatEntities())
+                {
+                    var elements = context.PrestSantes.Where(c => c.Id == id);
+
+                    if (elements.Any())
+                    {
+                        presta = elements.First();
+                    }
+                }
+                return presta;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
         public static List<CumulPresta> CumulPrestaData()
         {
             try

@@ -17,7 +17,7 @@
         var selectedFiles;
         var uploadFile = "";
 
-        $(document).ready(function () { 
+        $(document).ready(function () {  
             var box = document.getElementById("dropBox");
             box.addEventListener("dragenter", OnDragEnter, false);
             box.addEventListener("dragover", OnDragOver, false);
@@ -33,6 +33,7 @@
             });            
 
             $("#uploadDropFile").click(function () {
+                $("#divLoading").css("display", "block");
                 var data = new FormData();
                 for (var i = 0; i < selectedFiles.length; i++) {
                     data.append(selectedFiles[i].name, selectedFiles[i]);
@@ -61,7 +62,7 @@
             e.stopPropagation();
             e.preventDefault();
 
-            $("#dropBox").css({ 'background-color': '#D0E4E1', 'font-size': '110%' });
+            $("#dropBox").css({ 'background-color': '#FFFF74', 'font-size': '110%' });
             $("#dropIcon").attr("src", "/Images/drop2.png");
             $("#dropIcon2").attr("src", "/Images/drop2.png");
             e.dataTransfer.dropEffect = 'move';
@@ -114,7 +115,7 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
-<div id="outerContainer" style="width:1700px; height:670px;">
+<div id="outerContainer" style="width:1700px; height:700px;">
     
     <%-- 
     <div id="wrapper">
@@ -265,7 +266,7 @@
         
         <tr style="height:50px;"><td colspan="2"><hr /></td></tr>
 
-        <tr style="text-align:center">
+        <tr style="text-align:center;">
             <td style="text-align:left;">
                 <label>Nom Import : </label>                  
             </td>
@@ -274,8 +275,9 @@
                 <asp:Button CssClass="ButtonBigBlue" style="vertical-align:middle; display: inline; width: 105px; height: 23px; margin-top:0px; margin-bottom: 3px;" ID="cmdImport" runat="server" Text="Importer" OnClick="cmdImport_Click" ClientIDMode="Static" />                              
             </td>            
         </tr>
+        <tr style="text-align:center; height:20px;"></tr>
 
-        <tr style="height:20px; text-align:left">
+        <tr style="height:60px; text-align:left; text-wrap:normal;">
             <td colspan="2"> 
                 <asp:ValidationSummary ForeColor="Red" ID="ValSummary" runat="server" />                                    
             </td>            
@@ -380,7 +382,7 @@
         </table>
     </div>    
 
-    <div id="dropBox" style="position: relative; border: 4px solid #0099B1; text-align: center; border-radius: 16px; margin-top: 20px; margin-left: 70px; 
+    <div id="dropBox" style="border: 4px solid #0099B1; text-align: center; border-radius: 16px; margin-top: 20px; margin-left: 70px; 
         background-color:#D0EFEE; float:left; width:600px; height:70px; display:none">
         <img id="dropIcon" src="/Images/drop1.png" style="width:40px; margin-top:10px; margin-right:20px;">
         <span style="display: inline-block; vertical-align: middle; margin-top:10px; font-size: 100%; font-weight:bold; ">Déposer le fichier d'import ici</span>
@@ -394,11 +396,11 @@
     <asp:Panel ID="pnlAnalyse" Visible="false" runat="server" style="border: 4px solid #0099B1; text-align: left; border-radius: 16px; margin-top: 20px; margin-left: 70px; background-color:#D0EFEE; 
         float:left; width:600px; height:300px;">
         <div id="cont1" runat="server" style="margin-left:20px; margin-top:10px;">
-            <asp:Literal ID="litAnalyse" runat="server" Text="Test"  />            
+            <asp:Literal ID="litAnalyse" runat="server" Text=""  />            
         </div>        
     </asp:Panel>
     
-    <div runat="server" id="divLoading"  style="display:none" ClientIDMode="Static" >
+    <div runat="server" id="divLoading"  style="display:none; position: absolute; left: 1250px; top: 470px;" ClientIDMode="Static" >
         <img width="100px" height="100px" style="margin: 70px 50px 10px 50px;" src="Images/ajax-loader.gif" />
     </div>
 

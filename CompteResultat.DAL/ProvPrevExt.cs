@@ -17,6 +17,29 @@ namespace CompteResultat.DAL
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static ProvPrev GetProvPrevtById(int id)
+        {
+            try
+            {
+                ProvPrev prev = null;
+                using (var context = new CompteResultatEntities())
+                {
+                    var elements = context.ProvPrevs.Where(c => c.Id == id);
+
+                    if (elements.Any())
+                    {
+                        prev = elements.First();
+                    }
+                }
+                return prev;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
         public static List<ProvPrev> GetProvPrevForContracts(List<string> assurList, List<string> parentCompanyList, List<string> companyList,
             List<string> contrIds, string college, DateTime debutPeriod, DateTime finPeriod, DateTime dateArret, C.eTypeComptes typeComptes)
         {

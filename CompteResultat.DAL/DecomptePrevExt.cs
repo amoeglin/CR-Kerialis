@@ -17,6 +17,29 @@ namespace CompteResultat.DAL
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static DecomptePrev GetDecomptById(int id)
+        {
+            try
+            {
+                DecomptePrev decomp = null;
+                using (var context = new CompteResultatEntities())
+                {
+                    var elements = context.DecomptePrevs.Where(c => c.Id == id);
+
+                    if (elements.Any())
+                    {
+                        decomp = elements.First();
+                    }
+                }
+                return decomp;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
         public static List<ExcelGlobalDecompteData> GetDecompteGlobalEntData(List<int> years, List<string> companyList, DateTime dateArret)
         {
             try

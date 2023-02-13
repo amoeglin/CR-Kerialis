@@ -16,6 +16,29 @@ namespace CompteResultat.DAL
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static Demography GetDemoById(int id)
+        {
+            try
+            {
+                Demography demo = null;
+
+                using (var context = new CompteResultatEntities())
+                {
+                    var elements = context.Demographies.Where(c => c.Id == id);
+
+                    if (elements.Any())
+                    {
+                        demo = elements.First();
+                    }
+                }
+                return demo;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
 
         public static void DeleteRowsWithImportId(int importId)
         {
@@ -35,7 +58,6 @@ namespace CompteResultat.DAL
                 throw ex;
             }
         }
-
 
         public static List<CDemoData> GetDemoDataFromSP(string assurList, string parentCompanyList, string companyList, 
             string contractList, DateTime debutPeriode, DateTime finPeriode)
