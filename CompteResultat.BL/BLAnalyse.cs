@@ -52,8 +52,8 @@ namespace CompteResultat.BL
         public static double totalCSV = 0;
         public static double totalSQL = 0;
 
-        //### TEST: update ImportFiles set NbRowsCsv=0, NbRowsDb=0, AmountCsv=0,AmountDb=0,DifferenceAmount=0,DifferenceRows=0,IsDifference=0 where id=9
-        public static void AnalyseData(string importFile, string fileGroup, string fileType, int importId)
+        //### TEST: update ImportFiles set NbRowsCsv=0, NbRowsDb=0, AmountCsv=0,AmountDb=0,DifferenceAmount=0,DifferenceRows=0,IsDifference=0 where ImportId=12 -- where id=9
+        public static void AnalyseData(string importFile, string fileGroup, string fileType, int importId, int importFileId)
         {
             try
             {
@@ -64,8 +64,8 @@ namespace CompteResultat.BL
                     AnalyseSQL(importFile, fileGroup, fileType, importId);
 
                     // totals & #rows are stored in: totalSQL, totalCSV && nbRowsSQL, nbRowsCSV                    
-                    int diffRows = nbRowsCSV - nbRowsSQL;
-                    double diffAmount = Math.Round(totalCSV - totalSQL, 2);
+                    int diffRows = nbRowsSQL - nbRowsCSV;
+                    double diffAmount = Math.Round(totalSQL - totalCSV, 2);
                     int isDiff = 1; //0: not analysed, 1: ok, 2: KO
                     if (diffRows != 0 || diffAmount != 0) isDiff = 2;
 
@@ -78,10 +78,9 @@ namespace CompteResultat.BL
                             sqlUpdate = $@"UPDATE [CompteResultat].[dbo].[ImportFiles] SET NbRowsDb = {nbRowsSQL}, NbRowsCsv = {nbRowsCSV}, 
                                 AmountDb = {totalSQL.ToString().Replace(",", ".")}, AmountCsv = {totalCSV.ToString().Replace(",", ".")}, 
                                 DifferenceRows = {diffRows}, DifferenceAmount = {diffAmount.ToString().Replace(",", ".")}, IsDifference = {isDiff}
-                                WHERE ImportId = {importId}";
+                                WHERE ID = {importFileId}";
                             sqlUpdate = sqlUpdate.Replace(System.Environment.NewLine, "");
-                            //### temporary uncomment
-                            //context.Database.ExecuteSqlCommand(sqlUpdate);
+                            context.Database.ExecuteSqlCommand(sqlUpdate);
                         }
                         catch (Exception exSQL)
                         {
@@ -111,11 +110,22 @@ namespace CompteResultat.BL
                     analyseTemplateFI.CopyTo(analyseFilePath, true);
                     string templateHTML = File.ReadAllText(analyseFilePath);
 
+                    string pdfFile = importFileName.Replace(".csv", ".pdf");
+                    pdfFile = pdfFile.Replace("TF_", "");
+
                     #endregion
 
                     #region ADD GENERIQE DATA - HEADER
-                    FileInfo importFileFI = new FileInfo(originalCSVFilePathName);
+                    FileInfo importFileFI = new FileInfo(importFile);
+                    if (File.Exists(originalCSVFilePathName))
+                        importFileFI = new FileInfo(originalCSVFilePathName);
+                    else if (File.Exists(originalCSVFilePathName.Replace(".csv",".xls")))
+                        importFileFI = new FileInfo(originalCSVFilePathName.Replace(".csv", ".xls"));
+                    else if (File.Exists(originalCSVFilePathName.Replace(".csv", ".xlsx")))
+                        importFileFI = new FileInfo(originalCSVFilePathName.Replace(".csv", ".xlsx"));
+
                     long size = importFileFI.Length / 1000;
+                    templateHTML = templateHTML.Replace("#ReportName", pdfFile);
                     templateHTML = templateHTML.Replace("#NameSize", originalCSVFilePathName + " - " + size + " ko");
                     templateHTML = templateHTML.Replace("#FileGroup", fileGroup);
                     templateHTML = templateHTML.Replace("#FileType", fileType);
@@ -157,7 +167,8 @@ namespace CompteResultat.BL
                             onlySQLDecompPrev = itemsSQLDecompPrev.Except(itemsCSVDecompPrev, new DecompPrevComparer()).ToList();
                             onlyCSVDecompPrev = itemsCSVDecompPrev.Except(itemsSQLDecompPrev, new DecompPrevComparer()).ToList();
                         }
-                        else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                        // else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                        else if (fileType.ToLower().Contains("provisions"))
                         {
                             onlySQLProvPrev = itemsSQLProvPrev.Except(itemsCSVProvPrev, new ProvPrevComparer()).ToList();
                             onlyCSVProvPrev = itemsCSVProvPrev.Except(itemsSQLProvPrev, new ProvPrevComparer()).ToList();
@@ -194,6 +205,7 @@ namespace CompteResultat.BL
                                         cs.CodeCol + tc + cs.Year + tc + cs.DebPrime + tc + cs.FinPrime + tc + cs.Cotisation + tc + cs.WithOption + tc +
                                         cs.CotisationBrute + tc + cs.CodeSinistre + "</td></tr>";
                                 }
+                                data += "</tbody></table>";
                             }
                         }
                         else if (fileType == C.cIMPFILETYPEDEMO)
@@ -208,6 +220,7 @@ namespace CompteResultat.BL
                                     data += "<tr><td>" + cs.Id + tc + cs.ImportId + tc + cs.AssureurName + tc + cs.ContractId + tc + cs.Company + tc + cs.Subsid + tc +
                                         cs.DateDemo + tc + cs.Age + tc + cs.Sexe + tc + cs.CodeCol + tc + cs.Lien + tc + cs.WithOption + "</td></tr>";
                                 }
+                                data += "</tbody></table>";
                             }
                         }
                         else if (fileType == C.cIMPFILETYPEPREST)
@@ -224,6 +237,7 @@ namespace CompteResultat.BL
                                         cs.NombreActe + tc + cs.FraisReel + tc + cs.RembSS + tc + cs.RembAnnexe + tc + cs.RembNous + tc + cs.CAS + tc +
                                         cs.Reseau + tc + cs.DatePayment + tc + cs.PrixUnit + tc + cs.Beneficiaire + "</td></tr>";
                                 }
+                                data += "</tbody></table>";
                             }
                         }
                     }
@@ -242,6 +256,7 @@ namespace CompteResultat.BL
                                         cs.CodeCol + tc + cs.Year + tc + cs.DebPrime + tc + cs.FinPrime + tc + cs.Cotisation + tc +
                                         cs.CotisationBrute + tc + cs.CodeGarantie + "</td></tr>";
                                 }
+                                data += "</tbody></table>";
                             }
                         }
                         else if (fileType == C.cIMPFILETYPEDECOMP)
@@ -257,9 +272,11 @@ namespace CompteResultat.BL
                                         cs.Dossier + tc + cs.CodeCol + tc + cs.Apporteur + tc + cs.Gestionnaire + tc + cs.DatePayement + tc + cs.DateVirement + tc +
                                         cs.DateSin + tc + cs.DebSin + tc + cs.FinSin + tc + cs.DateExtraction + tc + cs.Total + tc + cs.CauseSinistre + "</td></tr>";
                                 }
+                                data += "</tbody></table>";
                             }
                         }
-                        else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                        // else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                        else if (fileType.ToLower().Contains("provisions"))
                         {
                             if (onlySQLProvPrev.Count > 0)
                             {
@@ -275,6 +292,7 @@ namespace CompteResultat.BL
                                         cs.DateProvision + tc + cs.Matricule + tc + cs.Pm + tc + cs.PmPassage + tc + cs.Psap + tc + cs.PmMgdc + tc +
                                         cs.Psi + tc + cs.PmPortabilite + tc + cs.IsComptable +  "</td></tr>";
                                 }
+                                data += "</tbody></table>";
                             }
                         }
                         else if (fileType == C.cIMPFILETYPESIN)
@@ -291,12 +309,13 @@ namespace CompteResultat.BL
                                         cs.DateSinistre + tc + cs.NatureSinistre + tc + cs.CauseSinistre + tc + cs.DebVal + tc + cs.FinVal + tc + cs.DateRecep + tc +
                                         cs.DateRechute + tc + cs.DateClo + tc + cs.MotifClo + tc + cs.DatePayment + "</td></tr>";
                                 }
+                                data += "</tbody></table>";
                             }
                         }
                     }
-
-                    data += "</tbody></table>";
+                    
                     data = data.Replace(Environment.NewLine, "");
+                    if (data == "") data = "Aucune ligne n’est manquante !";
                     templateHTML = templateHTML.Replace("#MissingCSVRows", data);
 
                     #endregion
@@ -314,6 +333,7 @@ namespace CompteResultat.BL
                                 {
                                     data += GetRowFromCSV(importFile, line.RowNumber, tc);
                                 }
+                                data += "</tbody></table>";
                             }
                         }
                         else if (fileType == C.cIMPFILETYPEDEMO)
@@ -325,6 +345,7 @@ namespace CompteResultat.BL
                                 {
                                     data += GetRowFromCSV(importFile, line.RowNumber, tc);
                                 }
+                                data += "</tbody></table>";
                             }
                         }
                         else if (fileType == C.cIMPFILETYPEPREST)
@@ -336,6 +357,7 @@ namespace CompteResultat.BL
                                 {
                                     data += GetRowFromCSV(importFile, line.RowNumber, tc);
                                 }
+                                data += "</tbody></table>";
                             }
                         }
                     }
@@ -350,6 +372,7 @@ namespace CompteResultat.BL
                                 {
                                     data += GetRowFromCSV(importFile, line.RowNumber, tc);
                                 }
+                                data += "</tbody></table>";
                             }
                         }
                         else if (fileType == C.cIMPFILETYPEDECOMP)
@@ -361,9 +384,11 @@ namespace CompteResultat.BL
                                 {
                                     data += GetRowFromCSV(importFile, line.RowNumber, tc);
                                 }
+                                data += "</tbody></table>";
                             }
                         }
-                        else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                        // else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                        else if (fileType.ToLower().Contains("provisions"))
                         {
                             if (onlyCSVProvPrev.Count > 0)
                             {
@@ -372,6 +397,7 @@ namespace CompteResultat.BL
                                 {
                                     data += GetRowFromCSV(importFile, line.RowNumber, tc);
                                 }
+                                data += "</tbody></table>";
                             }
                         }
                         else if (fileType == C.cIMPFILETYPESIN)
@@ -383,11 +409,13 @@ namespace CompteResultat.BL
                                 {
                                     data += GetRowFromCSV(importFile, line.RowNumber, tc);
                                 }
+                                data += "</tbody></table>";
                             }
                         }
                     }
 
                     data = data.Replace(Environment.NewLine, "");
+                    if (data == "") data = "Aucune ligne n’est manquante !";
                     templateHTML = templateHTML.Replace("#MissingDBRows", data);
 
                     #endregion
@@ -434,7 +462,7 @@ namespace CompteResultat.BL
                         cnt++;
                     }
                     myRow += "</td></tr>";
-                    myRow += "</tbody></table>";
+                    //myRow += "</tbody></table>";
                 }
                 return myRow;
             }
@@ -630,7 +658,8 @@ namespace CompteResultat.BL
                                     throw new Exception($@"BLAnalyse: There was a problem loading row #{cnt} of the file: {importFile} into the object UK_DecompPrev => a data type for one of the key columns seems to be wrong!");
                                 }
                             }
-                            else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                            // else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                            else if (fileType.ToLower().Contains("provisions"))
                             {
                                 if (indexes.Count() != 12)
                                     throw new Exception($@"BLAnalyse: A required unique key (5) is missing in Web.config (UK_CSV_ProvPrev) for the file: {importFile}");
@@ -744,7 +773,8 @@ namespace CompteResultat.BL
                         totalCSV = itemsCSVDecompPrev.Sum(x => x.Total);
                         nbRowsCSV = itemsCSVDecompPrev.Count();
                     }
-                    else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                    // else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                    else if (fileType.ToLower().Contains("provisions"))
                     {
                         totalCSV = itemsCSVProvPrev.Sum(x => (x.Pm + x.PmPassage + x.Psap + x.PmMgdc + x.Psi + x.PmPortabilite));
                         nbRowsCSV = itemsCSVProvPrev.Count();
@@ -922,7 +952,8 @@ namespace CompteResultat.BL
                                 throw new Exception($@"BLAnalyse: There was a problem executing the sql query: {sql} - {exUK.Message}");
                             }
                         }
-                        else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                        // else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                        else if (fileType.ToLower().Contains("provisions"))
                         {
                             try
                             {
@@ -946,11 +977,16 @@ namespace CompteResultat.BL
                                     }).ToList<UK_ProvPrev>();
 
                                 totalSQL = itemsSQLProvPrev.Sum(x => (x.Pm + x.PmPassage + x.Psap + x.PmMgdc + x.Psi + x.PmPortabilite));
+
+                                if (fileType.ToLower().Contains("ouverture"))
+                                {
+                                    totalSQL = totalSQL * -1;
+                                }
                                 nbRowsSQL = itemsSQLProvPrev.Count();
                             }
                             catch (Exception exUK)
                             {
-                                throw new Exception($@"BLAnalyse: There was a problem executing the sql query: {sql} - {exUK.Message}");
+                                throw new Exception($@"BLAnalyse: There was a problem executing the sql query: {sql} - {exUK.Message}"); 
                             }
                         }
                         else if (fileType == C.cIMPFILETYPESIN)
@@ -995,12 +1031,16 @@ namespace CompteResultat.BL
         {
             bool done = false;
             int cnt = 0;
+            int cntAll = 0;
             using (var context = new CompteResultatEntities())
             {
-                string sql = $@"SELECT count(*) FROM ImportFiles WHERE ImportId = {id} AND (NbRowsDb Is NOT NULL AND NbRowsDb <> 0)";
+                string sql = $@"SELECT count(*) FROM ImportFiles WHERE ImportId = {id}";
+                cntAll = context.Database.SqlQuery<int>(sql).First();
+
+                sql = $@"SELECT count(*) FROM ImportFiles WHERE ImportId = {id} AND (NbRowsDb Is NOT NULL AND NbRowsDb <> 0)";
                 cnt = context.Database.SqlQuery<int>(sql).First();
             }
-            if (cnt > 0) done = true;
+            if (cnt == cntAll) done = true;
             return done;
         }
 
@@ -1038,10 +1078,19 @@ namespace CompteResultat.BL
                     paths.UK_CSV = WebConfigurationManager.AppSettings["UK_CSV_DecompPrev"];
                     paths.UK_SQL = WebConfigurationManager.AppSettings["UK_SQL_DecompPrev"];
                 }
-                else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                // else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                else if (fileType.ToLower().Contains("provisions"))
                 {
                     paths.UK_CSV = WebConfigurationManager.AppSettings["UK_CSV_ProvPrev"];
                     paths.UK_SQL = WebConfigurationManager.AppSettings["UK_SQL_ProvPrev"];
+
+                    if(fileType.ToLower().Contains("clôture"))
+                    {
+                        paths.UK_SQL = paths.UK_SQL.Replace("###", "0");
+                    } else
+                    {
+                        paths.UK_SQL = paths.UK_SQL.Replace("###", "1");
+                    }
                 }
                 else if (fileType == C.cIMPFILETYPESIN)
                 {
@@ -1105,7 +1154,8 @@ namespace CompteResultat.BL
                         else if (fileType == C.cIMPFILETYPEDECOMP)
                         {
                         }
-                        else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                        // else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                        else if (fileType.ToLower().Contains("provisions"))
                         {
                         }
                         else if (fileType == C.cIMPFILETYPESIN)
@@ -1265,7 +1315,8 @@ namespace CompteResultat.BL
                         else if (fileType == C.cIMPFILETYPEDECOMP)
                         {
                         }
-                        else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                        // else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                        else if (fileType.ToLower().Contains("provisions"))
                         {
                         }
                         else if (fileType == C.cIMPFILETYPESIN)
@@ -1334,7 +1385,8 @@ namespace CompteResultat.BL
                     {
                         templateHTML = templateHTML.Replace("###", "decomp");
                     }
-                    else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                    // else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                    else if (fileType.ToLower().Contains("provisions"))
                     {
                         templateHTML = templateHTML.Replace("###", "provisions");
                     }
@@ -1373,7 +1425,8 @@ namespace CompteResultat.BL
                     else if (fileType == C.cIMPFILETYPEDECOMP)
                     {
                     }
-                    else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                    // else if (fileType == C.cIMPFILETYPEPROVCLOT || fileType == C.cIMPFILETYPEPROVOUV)
+                    else if (fileType.ToLower().Contains("provisions"))
                     {
                     }
                     else if (fileType == C.cIMPFILETYPESIN)

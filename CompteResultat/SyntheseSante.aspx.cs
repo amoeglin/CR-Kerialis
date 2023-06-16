@@ -22,7 +22,7 @@ namespace CompteResultat
         {
             try
             {                
-                lblHeaderSynthese.Text = txtNumberEnt.Text + " Comptes de resultats sante avec les prestations triees par ordre decroissant :";
+                //lblHeaderSynthese.Text = txtNumberEnt.Text + " Comptes de resultats sante avec les prestations triees par ordre decroissant :";
 
                 if (!IsPostBack)
                 {
@@ -188,28 +188,28 @@ namespace CompteResultat
             }
         }
 
-        protected void rptSynthese_ItemDataBound(object sender, RepeaterItemEventArgs e)
-        {
-            Repeater rpt = sender as Repeater; 
+        //protected void rptSynthese_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        //{
+        //    Repeater rpt = sender as Repeater; 
             
-            // If the Repeater contains no data.
-            if (rpt != null)
-            {
-                if (e.Item.ItemType == ListItemType.Footer)
-                {                    
-                    if (rpt.Items.Count < 1)
-                    {
-                        rptSynthese.Visible = false;
-                        phHeader.Visible = true;
-                    }
-                    else
-                    {
-                        rptSynthese.Visible = true;
-                        phHeader.Visible = false;
-                    }
-                }
-            }
-        }
+        //    // If the Repeater contains no data.
+        //    if (rpt != null)
+        //    {
+        //        if (e.Item.ItemType == ListItemType.Footer)
+        //        {                    
+        //            if (rpt.Items.Count < 1)
+        //            {
+        //                rptSynthese.Visible = false;
+        //                phHeader.Visible = true;
+        //            }
+        //            else
+        //            {
+        //                rptSynthese.Visible = true;
+        //                phHeader.Visible = false;
+        //            }
+        //        }
+        //    }
+        //}
 
         public List<Assureur> GetAssureurs()
         {
@@ -408,52 +408,61 @@ namespace CompteResultat
                     //create a CR for each Company
                     foreach (string compId in Company.GetParentCompanyIdsForAssureurId(myassurId))
                     {
-                        List<string> compIds = new List<string>();
-                        List<string> compNames = new List<string>();
-                        List<string> subsidIds = new List<string>();
-                        List<string> subsidNames = new List<string>();
-                        List<string> contractIds = new List<string>();
-                        List<string> contractNames = new List<string>();
+                        //### get importId & verify if archived
+                        //int impId = Company.GetimportIdForCompanyId(int.Parse(compId));
+                        //bool isArchived = Import.GetArchivedForId(impId).HasValue ? Import.GetArchivedForId(impId).Value : true ;
 
-                        compIds.Add(compId);
-                        string parentCompName = Company.GetCompanyNameForId(int.Parse(compId));
-                        compNames.Add(parentCompName);
-
-                        subsidIds.AddRange(Company.GetChildCompanies(int.Parse(compId)).Select(c => c.Id.ToString()).ToList());
-                        subsidNames.AddRange(Company.GetChildCompanies(int.Parse(compId)).Select(c => c.Name.ToString()).ToList());
-
-                        List<Contract> myContr = Company.GetContractsForCompany(int.Parse(compId), true);
-                        if (myContr != null && myContr.Any())
+                        if (true) //!isArchived)
                         {
-                            contractNames.AddRange(myContr.Select(c => c.ContractId).ToList());
-                            contractIds.AddRange(myContr.Select(c => c.Id.ToString()).ToList());
-                        }
+                            List<string> compIds = new List<string>();
+                            List<string> compNames = new List<string>();
+                            List<string> subsidIds = new List<string>();
+                            List<string> subsidNames = new List<string>();
+                            List<string> contractIds = new List<string>();
+                            List<string> contractNames = new List<string>();
 
-                        //get all contracts for subsids
-                        foreach (string subsidId in subsidIds)
-                        {
-                            myContr = Company.GetContractsForCompany(int.Parse(subsidId), false);
+                            compIds.Add(compId);
+                            //### before creating a CR, check i the corresp ImportId is SANTE
+                            string parentCompName = Company.GetCompanyNameForId(int.Parse(compId));
+                            compNames.Add(parentCompName);
+
+                            subsidIds.AddRange(Company.GetChildCompanies(int.Parse(compId)).Select(c => c.Id.ToString()).ToList());
+                            subsidNames.AddRange(Company.GetChildCompanies(int.Parse(compId)).Select(c => c.Name.ToString()).ToList());
+
+                            List<Contract> myContr = Company.GetContractsForCompany(int.Parse(compId), true);
                             if (myContr != null && myContr.Any())
                             {
                                 contractNames.AddRange(myContr.Select(c => c.ContractId).ToList());
                                 contractIds.AddRange(myContr.Select(c => c.Id.ToString()).ToList());
                             }
+
+                            //get all contracts for subsids
+                            foreach (string subsidId in subsidIds)
+                            {
+                                myContr = Company.GetContractsForCompany(int.Parse(subsidId), false);
+                                if (myContr != null && myContr.Any())
+                                {
+                                    contractNames.AddRange(myContr.Select(c => c.ContractId).ToList());
+                                    contractIds.AddRange(myContr.Select(c => c.Id.ToString()).ToList());
+                                }
+                            }
+
+                            //### before creating a CR, check i the corresp ImportId is SANTE
+                            reportName = "_STANDARD_CHAQUE_PRODUITS_" + parentCompName + dateTimeToday;
+
+                            myCR = SetCRDetails(repType, repTemplate, reportName, typeComptes);
+
+                            myCR.AssurIds = string.Join(C.cVALSEP, assurIds);
+                            myCR.AssurNames = string.Join(C.cVALSEP, assurNames);
+                            myCR.ParentCompanyNames = string.Join(C.cVALSEP, compNames);
+                            myCR.ParentCompanyIds = string.Join(C.cVALSEP, compIds);
+                            myCR.SubsidIds = string.Join(C.cVALSEP, subsidIds);
+                            myCR.SubsidNames = string.Join(C.cVALSEP, subsidNames);
+                            myCR.ContractIds = string.Join(C.cVALSEP, contractIds);
+                            myCR.ContractNames = string.Join(C.cVALSEP, contractNames);
+
+                            myCR.CreateNewCompteResultat(true);
                         }
-
-                        reportName = "_STANDARD_CHAQUE_PRODUITS_" + parentCompName + dateTimeToday;
-
-                        myCR = SetCRDetails(repType, repTemplate, reportName, typeComptes);
-                        
-                        myCR.AssurIds = string.Join(C.cVALSEP, assurIds);
-                        myCR.AssurNames = string.Join(C.cVALSEP, assurNames);
-                        myCR.ParentCompanyNames = string.Join(C.cVALSEP, compNames);
-                        myCR.ParentCompanyIds = string.Join(C.cVALSEP, compIds);
-                        myCR.SubsidIds = string.Join(C.cVALSEP, subsidIds);
-                        myCR.SubsidNames = string.Join(C.cVALSEP, subsidNames);
-                        myCR.ContractIds = string.Join(C.cVALSEP, contractIds);
-                        myCR.ContractNames = string.Join(C.cVALSEP, contractNames);
-
-                        myCR.CreateNewCompteResultat(true);
                     }                    
                 }
             }

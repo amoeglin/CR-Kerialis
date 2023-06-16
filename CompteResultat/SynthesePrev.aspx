@@ -136,7 +136,7 @@
         <asp:ValidationSummary style="margin-top:15px; float:left;" ForeColor="Red" ID="ValSummary" runat="server" />  
     </div>
 
-    <div class="itemSynthese" style="display: none">
+   <%-- <div class="itemSynthese" style="display: none">
         <h1><asp:Label ID="lblHeaderSynthese" runat="server"></asp:Label> </h1> 
 
         <div class="RepeaterSynthese">             
@@ -199,7 +199,7 @@
             
         </div>    
 
-    </div>
+    </div>--%>
 
     </div>   
 

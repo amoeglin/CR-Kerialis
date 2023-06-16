@@ -59,6 +59,31 @@ namespace CompteResultat.DAL
             }
         }
 
+        public static int GetimportIdForCompanyId(int companyId)
+        {
+            try
+            {
+                int  importId = 0;
+
+                using (var context = new CompteResultatEntities())
+                {
+                    var elements = context.Companies.Where(c => c.Id == companyId);
+
+                    if (elements.Any())
+                    {
+                        //there should only be 1 company with that name
+                        importId = elements.First().ImportId.HasValue ? elements.First().ImportId.Value : 0;
+                    }
+                }
+                return importId;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
         public static bool SubsidCompIdPairExists(string subsid, int compId)
         {
             try

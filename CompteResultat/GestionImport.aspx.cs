@@ -522,6 +522,12 @@ namespace CompteResultat
         {
             try
             {
+                //var nfi = new System.Globalization.NumberFormatInfo { NumberGroupSeparator = " " };
+                System.Globalization.NumberFormatInfo nfi = new System.Globalization.CultureInfo("fr-FR", false).NumberFormat;
+                nfi.NumberDecimalDigits = 2;
+                System.Globalization.NumberFormatInfo nfi2 = new System.Globalization.CultureInfo("fr-FR", false).NumberFormat;
+                nfi2.NumberDecimalDigits = 0;
+
                 if (e.Row.RowType == DataControlRowType.DataRow)
                 {
                     //var myRow = ((e.Row.NamingContainer.Parent.Parent.Parent) as GridViewRow);
@@ -530,6 +536,19 @@ namespace CompteResultat
                     string importName = mainGridViewRow.Cells[3].Text;
                     string analyseDirectory = mainGridViewRow.Cells[6].Text;
                     analyseDirectory = Path.GetFileName(analyseDirectory);
+
+                    TableCell nbRowsCSV = e.Row.Cells[6];
+                    TableCell amountCSV = e.Row.Cells[7];
+                    TableCell nbRowsDB = e.Row.Cells[8];
+                    TableCell amountDB = e.Row.Cells[9];
+                    TableCell nbRowsDiff = e.Row.Cells[10];
+                    TableCell amountDiff = e.Row.Cells[11];
+                    nbRowsCSV.Text = int.Parse(nbRowsCSV.Text.ToString()).ToString("N", nfi2); //#,0
+                    amountCSV.Text = double.Parse(amountCSV.Text.ToString()).ToString("N", nfi) + " €";
+                    nbRowsDB.Text = int.Parse(nbRowsDB.Text.ToString()).ToString("N", nfi2); //#,0
+                    amountDB.Text = double.Parse(amountDB.Text.ToString()).ToString("N", nfi) + " €";
+                    nbRowsDiff.Text = int.Parse(nbRowsDiff.Text.ToString()).ToString("N", nfi2); //#,0
+                    amountDiff.Text = double.Parse(amountDiff.Text.ToString()).ToString("N", nfi) + " €";
 
                     TableCell groupCell = e.Row.Cells[3];
                     TableCell provOuvertureCell = e.Row.Cells[5];
@@ -631,16 +650,19 @@ namespace CompteResultat
 
             if (e.CommandName == "RedirectFMAnalyse")
             {
-                string importPath = e.CommandArgument.ToString();
-                string importDirectory = Path.Combine(Request.PhysicalApplicationPath, "Analyse");
+                string analysePath = e.CommandArgument.ToString();
+                analysePath = analysePath.Replace(@"App_Data\Imports\", @"Analyse\");
+                string analyseDirectory = Path.Combine(Request.PhysicalApplicationPath, "Analyse");
 
-                if (importPath != "")
+                if (analysePath != "")
                 {
-                    if (Directory.Exists(importPath))
-                        Response.Redirect("~/FMImport.aspx?path=" + importPath);
+                    if (Directory.Exists(analysePath))
+                        Response.Redirect("~/FMAnalyse.aspx?path=" + analysePath);
                     else
-                        Response.Redirect("~/FMImport.aspx?path=" + importDirectory);
+                        Response.Redirect("~/FMAnalyse.aspx?path=" + analyseDirectory);
                 }
+                else
+                    Response.Redirect("~/FMAnalyse.aspx?path=" + analyseDirectory);
             }
         }
 
@@ -747,22 +769,25 @@ namespace CompteResultat
                     bool archived = row.Cells[7].Text == "OUI" ? false : true;
                     bool analyseDone = BLAnalyse.VerifyIfAnalyseDone(importId);
 
-                    if (!chkOnlyNonAnalyzed.Checked || (chkOnlyNonAnalyzed.Checked && !analyseDone))
+                    if (!archived)
                     {
-                        GridView gvImpFiles = (GridView)row.FindControl("gvImpFiles");
-
-                        foreach (GridViewRow row2 in gvImpFiles.Rows)
+                        if (!chkOnlyNonAnalyzed.Checked || (chkOnlyNonAnalyzed.Checked && !analyseDone))
                         {
-                            int idFile = Convert.ToInt32(gvImpFiles.DataKeys[row2.RowIndex].Value);
-                            string fileGroup = row2.Cells[2].Text;
-                            string fileType = row2.Cells[3].Text;
-                            string fileName = row2.Cells[4].Text;
-                            string dateProvOuv = row2.Cells[5].Text;
-                            fileType = fileType.Replace("D&#233;comptes", "Décomptes");
-                            fileType = fileType.Replace("Provisions Cl&#244;ture", "Provisions Clôture");
-                            string importFile = Path.Combine(importPath, "TF_" + fileName);
+                            GridView gvImpFiles = (GridView)row.FindControl("gvImpFiles");
 
-                            BLAnalyse.AnalyseData(importFile, fileGroup, fileType, importId);
+                            foreach (GridViewRow row2 in gvImpFiles.Rows)
+                            {
+                                int idFile = Convert.ToInt32(gvImpFiles.DataKeys[row2.RowIndex].Value);
+                                string fileGroup = row2.Cells[2].Text;
+                                string fileType = row2.Cells[3].Text;
+                                string fileName = row2.Cells[4].Text;
+                                string dateProvOuv = row2.Cells[5].Text;
+                                fileType = fileType.Replace("D&#233;comptes", "Décomptes");
+                                fileType = fileType.Replace("Provisions Cl&#244;ture", "Provisions Clôture");
+                                string importFile = Path.Combine(importPath, "TF_" + fileName);
+
+                                BLAnalyse.AnalyseData(importFile, fileGroup, fileType, importId, idFile);
+                            }
                         }
                     }
                 }

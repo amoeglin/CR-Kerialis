@@ -23,7 +23,7 @@ namespace CompteResultat
         {
             try
             {  
-                lblHeaderSynthese.Text = txtNumberEnt.Text + " Comptes de resultats sante avec les prestations triees par ordre decroissant :";
+                //lblHeaderSynthese.Text = txtNumberEnt.Text + " Comptes de resultats sante avec les prestations triees par ordre decroissant :";
 
                 if (!IsPostBack)
                 {
@@ -215,16 +215,16 @@ namespace CompteResultat
             {
                 if (e.Item.ItemType == ListItemType.Footer)
                 {                    
-                    if (rpt.Items.Count < 1)
-                    {
-                        rptSynthese.Visible = false;
-                        phHeader.Visible = true;
-                    }
-                    else
-                    {
-                        rptSynthese.Visible = true;
-                        phHeader.Visible = false;
-                    }
+                    //if (rpt.Items.Count < 1)
+                    //{
+                    //    rptSynthese.Visible = false;
+                    //    phHeader.Visible = true;
+                    //}
+                    //else
+                    //{
+                    //    rptSynthese.Visible = true;
+                    //    phHeader.Visible = false;
+                    //}
                 }
             }
         }

@@ -26,15 +26,20 @@ namespace CompteResultat.BL
             if (x == null || y == null)
                 return x == y;
 
-            return x.ContractId.ToUpper().Trim() == y.ContractId.ToUpper().Trim() && x.Company.ToUpper().Trim() == y.Company.ToUpper().Trim()
-                && x.CodeCol.ToUpper().Trim() == y.CodeCol.ToUpper().Trim() && x.Year.ToString().ToUpper().Trim() == y.Year.ToString().ToUpper().Trim()
+            return (x.ContractId == null ? "" : x.ContractId.ToString().ToUpper().Trim()) == (y.ContractId == null ? "" : y.ContractId.ToString().ToUpper().Trim())
+                && (x.Company == null ? "" : x.Company.ToString().ToUpper().Trim()) == (y.Company == null ? "" : y.Company.ToString().ToUpper().Trim())
+                && (x.CodeCol == null ? "" : x.CodeCol.ToString().ToUpper().Trim()) == (y.CodeCol == null ? "" : y.CodeCol.ToString().ToUpper().Trim())
+                && x.Year.ToString().ToUpper().Trim() == y.Year.ToString().ToUpper().Trim()
                 && x.CotisationBrute.ToString().ToUpper().Trim() == y.CotisationBrute.ToString().ToUpper().Trim();
         }
 
         public override int GetHashCode(UK_CotSante obj)
         {
-            return obj == null ? 0 : (obj.ContractId.GetHashCode() ^ obj.Company.GetHashCode() ^ obj.CodeCol.GetHashCode() 
-                ^ obj.Year.GetHashCode() ^ obj.CotisationBrute.GetHashCode() ); 
+            return obj == null ? 0 : ((obj.ContractId == null ? 0 : obj.ContractId.GetHashCode())
+                ^ (obj.Company == null ? 0 : obj.Company.GetHashCode())
+                ^ (obj.CodeCol == null ? 0 : obj.CodeCol.GetHashCode())
+                ^ obj.Year.GetHashCode()
+                ^ obj.CotisationBrute.GetHashCode() ); 
         }
     }
 
@@ -63,23 +68,30 @@ namespace CompteResultat.BL
                 return x == y;
             //PrestSant: ContractId,Company,CodeCol,DateSoins,CodeActe,FraisReel,RembSS,RembNous,DatePayment,Beneficiaire
 
-            return x.ContractId.ToString().ToUpper().Trim() == y.ContractId.ToString().ToUpper().Trim() 
-                && x.Company.ToString().ToUpper().Trim() == y.Company.ToString().ToUpper().Trim()
-                && x.CodeCol.ToString().ToUpper().Trim() == y.CodeCol.ToString().ToUpper().Trim() 
-                && x.DateSoins.ToString().ToUpper().Trim() == y.DateSoins.ToString().ToUpper().Trim()
-                && x.CodeActe.ToString().ToUpper().Trim() == y.CodeActe.ToString().ToUpper().Trim()
+            return (x.ContractId == null ? "" : x.ContractId.ToString().ToUpper().Trim()) == (y.ContractId == null ? "" : y.ContractId.ToString().ToUpper().Trim())
+                && (x.Company == null ? "" : x.Company.ToString().ToUpper().Trim()) == (y.Company == null ? "" : y.Company.ToString().ToUpper().Trim())
+                && (x.CodeCol == null ? "" : x.CodeCol.ToString().ToUpper().Trim()) == (y.CodeCol == null ? "" : y.CodeCol.ToString().ToUpper().Trim())
+                && (x.DateSoins == null ? "" : x.DateSoins.ToString().ToUpper().Trim()) == (y.DateSoins == null ? "" : y.DateSoins.ToString().ToUpper().Trim())
+                && (x.CodeActe == null ? "" : x.CodeActe.ToString().ToUpper().Trim()) == (y.CodeActe == null ? "" : y.CodeActe.ToString().ToUpper().Trim())
+                && (x.DatePayment == null ? "" : x.DatePayment.ToString().ToUpper().Trim()) == (y.DatePayment == null ? "" : y.DatePayment.ToString().ToUpper().Trim())
+                && (x.Beneficiaire == null ? "" : x.Beneficiaire.ToString().ToUpper().Trim()) == (y.Beneficiaire == null ? "" : y.Beneficiaire.ToString().ToUpper().Trim())
                 && x.FraisReel.ToString().ToUpper().Trim() == y.FraisReel.ToString().ToUpper().Trim()
                 && x.RembSS.ToString().ToUpper().Trim() == y.RembSS.ToString().ToUpper().Trim()
-                && x.RembNous.ToString().ToUpper().Trim() == y.RembNous.ToString().ToUpper().Trim()
-                && x.DatePayment.ToString().ToUpper().Trim() == y.DatePayment.ToString().ToUpper().Trim()
-                && x.Beneficiaire.ToString().ToUpper().Trim() == y.Beneficiaire.ToString().ToUpper().Trim();
+                && x.RembNous.ToString().ToUpper().Trim() == y.RembNous.ToString().ToUpper().Trim();               
         }
 
         public override int GetHashCode(UK_PrestSante obj)
         {
-            return obj == null ? 0 : (obj.ContractId.GetHashCode() ^ obj.Company.GetHashCode() ^ obj.CodeCol.GetHashCode()
-                ^ obj.DateSoins.GetHashCode() ^ obj.CodeActe.GetHashCode() ^ obj.FraisReel.GetHashCode() ^ obj.RembSS.GetHashCode()
-                ^ obj.RembNous.GetHashCode() ^ obj.DatePayment.GetHashCode() ^ obj.Beneficiaire.GetHashCode() );
+            return obj == null ? 0 : ((obj.ContractId == null ? 0 : obj.ContractId.GetHashCode())
+                ^ (obj.Company == null ? 0 : obj.Company.GetHashCode())
+                ^ (obj.CodeCol == null ? 0 : obj.CodeCol.GetHashCode())
+                ^ (obj.DateSoins == null ? 0 : obj.DateSoins.GetHashCode())
+                ^ (obj.CodeActe == null ? 0 : obj.CodeActe.GetHashCode())
+                ^ obj.FraisReel.GetHashCode() 
+                ^ obj.RembSS.GetHashCode()
+                ^ obj.RembNous.GetHashCode() 
+                ^ (obj.DatePayment == null ? 0 : obj.DatePayment.GetHashCode())
+                ^ (obj.Beneficiaire == null ? 0 : obj.Beneficiaire.GetHashCode()) );
         }
     }
 
@@ -104,19 +116,24 @@ namespace CompteResultat.BL
             if (x == null || y == null)
                 return x == y;
             //DemoSant: ContractId,Company,DateDemo,Age,Sexe,CodeCol,Lien
-            return x.ContractId.ToUpper().Trim() == y.ContractId.ToUpper().Trim() && x.Company.ToUpper().Trim() == y.Company.ToUpper().Trim()
-                && x.DateDemo.ToString().ToUpper().Trim() == y.DateDemo.ToString().ToUpper().Trim() 
-                && x.Age.ToString().ToUpper().Trim() == y.Age.ToString().ToUpper().Trim()
-                && x.Sexe.ToString().ToUpper().Trim() == y.Sexe.ToString().ToUpper().Trim()
-                && x.CodeCol.ToString().ToUpper().Trim() == y.CodeCol.ToString().ToUpper().Trim()
-                && x.Lien.ToString().ToUpper().Trim() == y.Lien.ToString().ToUpper().Trim();
+            return (x.ContractId == null ? "" : x.ContractId.ToString().ToUpper().Trim()) == (y.ContractId == null ? "" : y.ContractId.ToString().ToUpper().Trim())
+                && (x.Company == null ? "" : x.Company.ToString().ToUpper().Trim()) == (y.Company == null ? "" : y.Company.ToString().ToUpper().Trim())
+                && (x.DateDemo == null ? "" : x.DateDemo.ToString().ToUpper().Trim()) == (y.DateDemo == null ? "" : y.DateDemo.ToString().ToUpper().Trim())
+                && (x.CodeCol == null ? "" : x.CodeCol.ToString().ToUpper().Trim()) == (y.CodeCol == null ? "" : y.CodeCol.ToString().ToUpper().Trim())
+                && (x.Sexe == null ? "" : x.Sexe.ToString().ToUpper().Trim()) == (y.Sexe == null ? "" : y.Sexe.ToString().ToUpper().Trim())
+                && (x.Lien == null ? "" : x.Lien.ToString().ToUpper().Trim()) == (y.Lien == null ? "" : y.Lien.ToString().ToUpper().Trim())
+                && x.Age.ToString().ToUpper().Trim() == y.Age.ToString().ToUpper().Trim();
         }
 
         public override int GetHashCode(UK_DemoSante obj)
         {
-            return obj == null ? 0 : (obj.ContractId.GetHashCode() ^ obj.Company.GetHashCode() ^ obj.DateDemo.GetHashCode()
-                ^ obj.Age.GetHashCode() ^ obj.Sexe.GetHashCode() ^ obj.CodeCol.GetHashCode()
-                ^ obj.Lien.GetHashCode() );
+            return obj == null ? 0 : ( (obj.ContractId == null ? 0 : obj.ContractId.GetHashCode())
+                ^ (obj.Company == null ? 0 : obj.Company.GetHashCode())
+                ^ (obj.DateDemo == null ? 0 : obj.DateDemo.GetHashCode())
+                ^ (obj.Sexe == null ? 0 : obj.Sexe.GetHashCode())
+                ^ (obj.CodeCol == null ? 0 : obj.CodeCol.GetHashCode())
+                ^ (obj.Lien == null ? 0 : obj.Lien.GetHashCode())
+                ^ obj.Age.GetHashCode() );                
         }
     }
 
@@ -143,18 +160,22 @@ namespace CompteResultat.BL
                 return x == y;
             //CotPrev: ContractId,Company,CodeCol,Year,CotisationBrute,CodeGarantie
 
-            return x.ContractId.ToString().ToUpper().Trim() == y.ContractId.ToString().ToUpper().Trim()
-                && x.Company.ToString().ToUpper().Trim() == y.Company.ToString().ToUpper().Trim()
-                && x.CodeCol.ToString().ToUpper().Trim() == y.CodeCol.ToString().ToUpper().Trim()
+            return (x.ContractId == null ? "" : x.ContractId.ToString().ToUpper().Trim()) == (y.ContractId == null ? "" : y.ContractId.ToString().ToUpper().Trim())
+                && (x.Company == null ? "" : x.Company.ToString().ToUpper().Trim()) == (y.Company == null ? "" : y.Company.ToString().ToUpper().Trim())
+                && (x.CodeCol == null ? "" : x.CodeCol.ToString().ToUpper().Trim()) == (y.CodeCol == null ? "" : y.CodeCol.ToString().ToUpper().Trim())
                 && x.Year.ToString().ToUpper().Trim() == y.Year.ToString().ToUpper().Trim()
                 && x.CotisationBrute.ToString().ToUpper().Trim() == y.CotisationBrute.ToString().ToUpper().Trim()
-                && x.CodeGarantie.ToString().ToUpper().Trim() == y.CodeGarantie.ToString().ToUpper().Trim();
+                && (x.CodeGarantie == null ? "" : x.CodeGarantie.ToString().ToUpper().Trim()) == (y.CodeGarantie == null ? "" : y.CodeGarantie.ToString().ToUpper().Trim());
         }
 
         public override int GetHashCode(UK_CotisatPrev obj)
         {
-            return obj == null ? 0 : (obj.ContractId.GetHashCode() ^ obj.Company.GetHashCode() ^ obj.CodeCol.GetHashCode()
-                ^ obj.Year.GetHashCode() ^ obj.CotisationBrute.GetHashCode() ^ obj.CodeGarantie.GetHashCode() );
+            return obj == null ? 0 : ((obj.ContractId == null ? 0 : obj.ContractId.GetHashCode())
+                ^ (obj.Company == null ? 0 : obj.Company.GetHashCode())
+                ^ (obj.CodeCol == null ? 0 : obj.CodeCol.GetHashCode())
+                ^ (obj.CodeGarantie == null ? 0 : obj.CodeGarantie.GetHashCode())
+                ^ obj.Year.GetHashCode() 
+                ^ obj.CotisationBrute.GetHashCode() );
         }
     }
 
@@ -183,23 +204,30 @@ namespace CompteResultat.BL
                 return x == y;
             //DecompPrev: ContractId,Company,Dossier,CodeCol,DateVirement,DateSin,DebSin,FinSin,Total,CauseSinistre  
 
-            return x.ContractId.ToString().ToUpper().Trim() == y.ContractId.ToString().ToUpper().Trim()
-                && x.Company.ToString().ToUpper().Trim() == y.Company.ToString().ToUpper().Trim()
-                && x.Dossier.ToString().ToUpper().Trim() == y.Dossier.ToString().ToUpper().Trim()
-                && x.CodeCol.ToString().ToUpper().Trim() == y.CodeCol.ToString().ToUpper().Trim()
-                && x.DateVirement.ToString().ToUpper().Trim() == y.DateVirement.ToString().ToUpper().Trim()
-                && x.DateSin.ToString().ToUpper().Trim() == y.DateSin.ToString().ToUpper().Trim()
-                && x.DebSin.ToString().ToUpper().Trim() == y.DebSin.ToString().ToUpper().Trim()
-                && x.FinSin.ToString().ToUpper().Trim() == y.FinSin.ToString().ToUpper().Trim()
-                && x.Total.ToString().ToUpper().Trim() == y.Total.ToString().ToUpper().Trim()
-                && x.CauseSinistre.ToString().ToUpper().Trim() == y.CauseSinistre.ToString().ToUpper().Trim();
+            return (x.ContractId == null ? "" : x.ContractId.ToString().ToUpper().Trim()) == (y.ContractId == null ? "" : y.ContractId.ToString().ToUpper().Trim())
+                && (x.Company == null ? "" : x.Company.ToString().ToUpper().Trim()) == (y.Company == null ? "" : y.Company.ToString().ToUpper().Trim())
+                && (x.CodeCol == null ? "" : x.CodeCol.ToString().ToUpper().Trim()) == (y.CodeCol == null ? "" : y.CodeCol.ToString().ToUpper().Trim())
+                && (x.Dossier == null ? "" : x.Dossier.ToString().ToUpper().Trim()) == (y.Dossier == null ? "" : y.Dossier.ToString().ToUpper().Trim())
+                && (x.DateVirement == null ? "" : x.DateVirement.ToString().ToUpper().Trim()) == (y.DateVirement == null ? "" : y.DateVirement.ToString().ToUpper().Trim())
+                && (x.DateSin == null ? "" : x.DateSin.ToString().ToUpper().Trim()) == (y.DateSin == null ? "" : y.DateSin.ToString().ToUpper().Trim())
+                && (x.DebSin == null ? "" : x.DebSin.ToString().ToUpper().Trim()) == (y.DebSin == null ? "" : y.DebSin.ToString().ToUpper().Trim())
+                && (x.FinSin == null ? "" : x.FinSin.ToString().ToUpper().Trim()) == (y.FinSin == null ? "" : y.FinSin.ToString().ToUpper().Trim())
+                && (x.CauseSinistre == null ? "" : x.CauseSinistre.ToString().ToUpper().Trim()) == (y.CauseSinistre == null ? "" : y.CauseSinistre.ToString().ToUpper().Trim())
+                && x.Total.ToString().ToUpper().Trim() == y.Total.ToString().ToUpper().Trim();
         }
 
         public override int GetHashCode(UK_DecompPrev obj)
         {
-            return obj == null ? 0 : (obj.ContractId.GetHashCode() ^ obj.Company.GetHashCode() ^ obj.Dossier.GetHashCode()
-                ^ obj.CodeCol.GetHashCode() ^ obj.DateVirement.GetHashCode() ^ obj.DateSin.GetHashCode() ^ obj.DebSin.GetHashCode()
-                ^ obj.FinSin.GetHashCode() ^ obj.Total.GetHashCode() ^ obj.CauseSinistre.GetHashCode());
+            return obj == null ? 0 : ((obj.ContractId == null ? 0 : obj.ContractId.GetHashCode())
+                ^ (obj.Company == null ? 0 : obj.Company.GetHashCode())
+                ^ (obj.Dossier == null ? 0 : obj.Dossier.GetHashCode())
+                ^ (obj.CodeCol == null ? 0 : obj.CodeCol.GetHashCode())
+                ^ (obj.DateVirement == null ? 0 : obj.DateVirement.GetHashCode())
+                ^ (obj.DateSin == null ? 0 : obj.DateSin.GetHashCode())
+                ^ (obj.DebSin == null ? 0 : obj.DebSin.GetHashCode())
+                ^ (obj.FinSin == null ? 0 : obj.FinSin.GetHashCode())
+                ^ (obj.CauseSinistre == null ? 0 : obj.CauseSinistre.GetHashCode())
+                ^ obj.Total.GetHashCode());
         }
     }
 
@@ -226,29 +254,52 @@ namespace CompteResultat.BL
     {
         public override bool Equals(UK_ProvPrev x, UK_ProvPrev y)
         {
-            if (x == null || y == null)
-                return x == y;
-            //ProvPrev: ContractId,Company,Dossier,CodeCol,DateSinistre,NatureSinistre,Pm,PmPassage,Psap,PmMgdc,Psi,PmPortabilite  
+            try
+            {
+                if (x == null || y == null)
+                    return x == y;
+                //ProvPrev: ContractId,Company,Dossier,CodeCol,DateSinistre,NatureSinistre,Pm,PmPassage,Psap,PmMgdc,Psi,PmPortabilite  
 
-            return x.ContractId.ToString().ToUpper().Trim() == y.ContractId.ToString().ToUpper().Trim()
-                && x.Company.ToString().ToUpper().Trim() == y.Company.ToString().ToUpper().Trim()
-                && x.Dossier.ToString().ToUpper().Trim() == y.Dossier.ToString().ToUpper().Trim()
-                && x.CodeCol.ToString().ToUpper().Trim() == y.CodeCol.ToString().ToUpper().Trim()
-                && x.DateSinistre.ToString().ToUpper().Trim() == y.DateSinistre.ToString().ToUpper().Trim()
-                && x.NatureSinistre.ToString().ToUpper().Trim() == y.NatureSinistre.ToString().ToUpper().Trim()
-                && x.Pm.ToString().ToUpper().Trim() == y.Pm.ToString().ToUpper().Trim()
-                && x.PmPassage.ToString().ToUpper().Trim() == y.PmPassage.ToString().ToUpper().Trim()
-                && x.Psap.ToString().ToUpper().Trim() == y.Psap.ToString().ToUpper().Trim()
-                && x.PmMgdc.ToString().ToUpper().Trim() == y.PmMgdc.ToString().ToUpper().Trim()
-                && x.Psi.ToString().ToUpper().Trim() == y.Psi.ToString().ToUpper().Trim()
-                && x.PmPortabilite.ToString().ToUpper().Trim() == y.PmPortabilite.ToString().ToUpper().Trim();
+                return (x.ContractId == null ? "" : x.ContractId.ToString().ToUpper().Trim()) == (y.ContractId == null ? "" : y.ContractId.ToString().ToUpper().Trim())
+                    && (x.Company == null ? "" : x.Company.ToString().ToUpper().Trim()) == (y.Company == null ? "" : y.Company.ToString().ToUpper().Trim())
+                    && (x.CodeCol == null ? "" : x.CodeCol.ToString().ToUpper().Trim()) == (y.CodeCol == null ? "" : y.CodeCol.ToString().ToUpper().Trim())
+                    && (x.Dossier == null ? "" : x.Dossier.ToString().ToUpper().Trim()) == (y.Dossier == null ? "" : y.Dossier.ToString().ToUpper().Trim())
+                    && (x.DateSinistre == null ? "" : x.DateSinistre.ToString().ToUpper().Trim()) == (y.DateSinistre == null ? "" : y.DateSinistre.ToString().ToUpper().Trim())
+                    && (x.NatureSinistre == null ? "" : x.NatureSinistre.ToString().ToUpper().Trim()) == (y.NatureSinistre == null ? "" : y.NatureSinistre.ToString().ToUpper().Trim())
+                    && x.Pm.ToString().ToUpper().Trim() == y.Pm.ToString().ToUpper().Trim()
+                    && x.PmPassage.ToString().ToUpper().Trim() == y.PmPassage.ToString().ToUpper().Trim()
+                    && x.Psap.ToString().ToUpper().Trim() == y.Psap.ToString().ToUpper().Trim()
+                    && x.PmMgdc.ToString().ToUpper().Trim() == y.PmMgdc.ToString().ToUpper().Trim()
+                    && x.Psi.ToString().ToUpper().Trim() == y.Psi.ToString().ToUpper().Trim()
+                    && x.PmPortabilite.ToString().ToUpper().Trim() == y.PmPortabilite.ToString().ToUpper().Trim();
+            }catch(Exception ex)
+            {
+                var err = ex.Message;
+                return false;
+            }
         }
 
         public override int GetHashCode(UK_ProvPrev obj)
         {
-            return obj == null ? 0 : (obj.ContractId.GetHashCode() ^ obj.Company.GetHashCode() ^ obj.Dossier.GetHashCode() ^ obj.CodeCol.GetHashCode()
-                ^ obj.DateSinistre.GetHashCode() ^ obj.NatureSinistre.GetHashCode() ^ obj.Pm.GetHashCode() ^ obj.PmPassage.GetHashCode()
-                ^ obj.Psap.GetHashCode() ^ obj.PmMgdc.GetHashCode() ^ obj.Psi.GetHashCode() ^ obj.PmPortabilite.GetHashCode() );
+            try { 
+            return obj == null ? 0 : ((obj.ContractId == null ? 0 : obj.ContractId.GetHashCode())
+                ^ (obj.Company == null ? 0 : obj.Company.GetHashCode())
+                ^ (obj.Dossier == null ? 0 : obj.Dossier.GetHashCode())
+                ^ (obj.CodeCol == null ? 0 : obj.CodeCol.GetHashCode())
+                ^ (obj.DateSinistre == null ? 0 : obj.DateSinistre.GetHashCode())
+                ^ (obj.NatureSinistre == null ? 0 : obj.NatureSinistre.GetHashCode())
+                ^ obj.Pm.GetHashCode() 
+                ^ obj.PmPassage.GetHashCode()
+                ^ obj.Psap.GetHashCode() 
+                ^ obj.PmMgdc.GetHashCode() 
+                ^ obj.Psi.GetHashCode() 
+                ^ obj.PmPortabilite.GetHashCode() );
+            }
+            catch (Exception ex)
+            {
+                var err = ex.Message;
+                return 0;
+            }
         }
     }
 
@@ -274,19 +325,24 @@ namespace CompteResultat.BL
                 return x == y;
             //SinistrPrev: ContractId,Company,Dossier,CodeCol,Birthdate,DateSinistre,NatureSinistre
 
-            return x.ContractId.ToString().ToUpper().Trim() == y.ContractId.ToString().ToUpper().Trim()
-                && x.Company.ToString().ToUpper().Trim() == y.Company.ToString().ToUpper().Trim()
-                && x.Dossier.ToString().ToUpper().Trim() == y.Dossier.ToString().ToUpper().Trim()
-                && x.CodeCol.ToString().ToUpper().Trim() == y.CodeCol.ToString().ToUpper().Trim()
-                && x.Birthdate.ToString().ToUpper().Trim() == y.Birthdate.ToString().ToUpper().Trim()
-                && x.DateSinistre.ToString().ToUpper().Trim() == y.DateSinistre.ToString().ToUpper().Trim()
-                && x.NatureSinistre.ToString().ToUpper().Trim() == y.NatureSinistre.ToString().ToUpper().Trim();
+            return (x.ContractId == null ? "" : x.ContractId.ToString().ToUpper().Trim()) == (y.ContractId == null ? "" : y.ContractId.ToString().ToUpper().Trim())
+                && (x.Company == null ? "" : x.Company.ToString().ToUpper().Trim()) == (y.Company == null ? "" : y.Company.ToString().ToUpper().Trim())
+                && (x.CodeCol == null ? "" : x.CodeCol.ToString().ToUpper().Trim()) == (y.CodeCol == null ? "" : y.CodeCol.ToString().ToUpper().Trim())
+                && (x.Dossier == null ? "" : x.Dossier.ToString().ToUpper().Trim()) == (y.Dossier == null ? "" : y.Dossier.ToString().ToUpper().Trim())
+                && (x.Birthdate == null ? "" : x.Birthdate.ToString().ToUpper().Trim()) == (y.Birthdate == null ? "" : y.Birthdate.ToString().ToUpper().Trim())
+                && (x.DateSinistre == null ? "" : x.DateSinistre.ToString().ToUpper().Trim()) == (y.DateSinistre == null ? "" : y.DateSinistre.ToString().ToUpper().Trim())
+                && (x.NatureSinistre == null ? "" : x.NatureSinistre.ToString().ToUpper().Trim()) == (y.NatureSinistre == null ? "" : y.NatureSinistre.ToString().ToUpper().Trim());
         }
 
         public override int GetHashCode(UK_SinistrePrev obj)
         {
-            return obj == null ? 0 : (obj.ContractId.GetHashCode() ^ obj.Company.GetHashCode() ^ obj.Dossier.GetHashCode()
-                ^ obj.CodeCol.GetHashCode() ^ obj.Birthdate.GetHashCode() ^ obj.DateSinistre.GetHashCode() ^ obj.NatureSinistre.GetHashCode() );
+            return obj == null ? 0 : ((obj.ContractId == null ? 0 : obj.ContractId.GetHashCode())
+                ^ (obj.Company == null ? 0 : obj.Company.GetHashCode())
+                ^ (obj.Dossier == null ? 0 : obj.Dossier.GetHashCode())
+                ^ (obj.CodeCol == null ? 0 : obj.CodeCol.GetHashCode())
+                ^ (obj.Birthdate == null ? 0 : obj.Birthdate.GetHashCode())
+                ^ (obj.DateSinistre == null ? 0 : obj.DateSinistre.GetHashCode())
+                ^ (obj.NatureSinistre == null ? 0 : obj.NatureSinistre.GetHashCode()) );
         }
     }
 }

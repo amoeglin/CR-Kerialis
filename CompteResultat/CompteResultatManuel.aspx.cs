@@ -148,7 +148,9 @@ namespace CompteResultat
                     assurNode.Expand();
                 }
             }
-            catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::PopulateTreeViewControl"); }
+            catch (Exception ex) { 
+                UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::PopulateTreeViewControl"); 
+            }
         }
 
         protected void tvContracts_SelectedNodeChanged(object sender, EventArgs e)

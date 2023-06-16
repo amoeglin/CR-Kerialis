@@ -22,6 +22,32 @@ namespace CompteResultat.DAL
             return GetImports("Date", "ASC", "All");
         }
 
+        public static bool? GetArchivedForId(int importId)
+        {
+            try
+            {
+                bool? archived;
+
+                using (var context = new CompteResultatEntities())
+                {
+                    var elements = context.Imports.Where(c => c.Id == importId).Select(c => c.Archived);
+
+                    if (elements.Any())
+                        archived = elements.First();
+                    else
+                        archived = true;
+                }
+
+                return archived;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
+
         public static List<Import> GetImports(string sortExpression, string sortDirection, string sortExpressionArchived)
         {
             try

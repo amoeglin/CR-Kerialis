@@ -13,10 +13,10 @@
     
     <script type="text/javascript">
         
-        var collapseImage = 'images/minus.png'; 
+        var collapseImage = 'images/minus.png';  
         var expandImage = 'images/plus.png';
         
-        $(document).ready(function () {
+        $(document).ready(function () {  
             $("#cmdImport").click(function (evt) {
                 $("#divLoading").css("display", "block");
             });            
@@ -215,7 +215,7 @@
                         
                         <asp:GridView CellPadding="5" ID="gvImport" runat="server" DataKeyNames="Id" AutoGenerateColumns="False" OnSorting="OnSorting"
                         OnRowDataBound="gvImport_RowDataBound" OnRowCommand="gvImport_RowCommand" AllowSorting="true" AllowPaging="false" OnRowCreated="gvImport_RowCreated"   >
-                        <%--<AlternatingRowStyle BackColor="White" />--%>
+                        <%--<AlternatingRowStyle BackColor="#dcecf4"   />--%>
 
                         <Columns>                             
                             <asp:TemplateField>
@@ -321,7 +321,7 @@
                             <asp:TemplateField Visible="true">
                                 <ItemTemplate>
                                     <asp:ImageButton Width="24" Height="24" style="margin-right:0px;" ImageUrl="~/Images/analyse-y.png" ID="cmdAnalyseFolder" runat="server"  
-                                          CommandName="RedirectFMAnalyse" CommandArgument='<%# Bind("Name") %>'   />                                   
+                                          CommandName="RedirectFMAnalyse" CommandArgument='<%# Bind("ImportPath") %>'   />                                   
                                 </ItemTemplate>
                             </asp:TemplateField>
 

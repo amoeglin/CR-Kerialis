@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CompteResultat {
-    
-    
-    public partial class SyntheseSante {
-        
+namespace CompteResultat
+{
+
+
+    public partial class SyntheseSante
+    {
+
         /// <summary>
         /// Literal9 control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal Literal9;
-        
+
         /// <summary>
         /// cmbAssureur control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList cmbAssureur;
-        
+
         /// <summary>
         /// lblDateDebut control.
         /// </summary>
@@ -38,7 +40,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl lblDateDebut;
-        
+
         /// <summary>
         /// txtStartPeriode control.
         /// </summary>
@@ -47,7 +49,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtStartPeriode;
-        
+
         /// <summary>
         /// lblDateFin control.
         /// </summary>
@@ -56,7 +58,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl lblDateFin;
-        
+
         /// <summary>
         /// txtEndPeriode control.
         /// </summary>
@@ -65,7 +67,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtEndPeriode;
-        
+
         /// <summary>
         /// dateArreteCompte control.
         /// </summary>
@@ -74,7 +76,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl dateArreteCompte;
-        
+
         /// <summary>
         /// txtArretCompte control.
         /// </summary>
@@ -83,7 +85,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtArretCompte;
-        
+
         /// <summary>
         /// chkCalcProv control.
         /// </summary>
@@ -92,7 +94,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chkCalcProv;
-        
+
         /// <summary>
         /// Literal1 control.
         /// </summary>
@@ -101,7 +103,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal Literal1;
-        
+
         /// <summary>
         /// chkSynthese control.
         /// </summary>
@@ -110,7 +112,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chkSynthese;
-        
+
         /// <summary>
         /// txtNumberEnt control.
         /// </summary>
@@ -119,7 +121,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtNumberEnt;
-        
+
         /// <summary>
         /// lblNumbEntWarning control.
         /// </summary>
@@ -128,7 +130,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblNumbEntWarning;
-        
+
         /// <summary>
         /// chkGlobalProd control.
         /// </summary>
@@ -137,7 +139,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chkGlobalProd;
-        
+
         /// <summary>
         /// chkGlobalEnt control.
         /// </summary>
@@ -146,7 +148,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chkGlobalEnt;
-        
+
         /// <summary>
         /// chk2AnsAllProd control.
         /// </summary>
@@ -155,7 +157,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chk2AnsAllProd;
-        
+
         /// <summary>
         /// chk2AnsEachProd control.
         /// </summary>
@@ -164,7 +166,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chk2AnsEachProd;
-        
+
         /// <summary>
         /// lblReportType control.
         /// </summary>
@@ -173,7 +175,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl lblReportType;
-        
+
         /// <summary>
         /// radioTypeComptes control.
         /// </summary>
@@ -182,7 +184,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButtonList radioTypeComptes;
-        
+
         /// <summary>
         /// cmdCreate control.
         /// </summary>
@@ -191,7 +193,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button cmdCreate;
-        
+
         /// <summary>
         /// lblCadencierWarning control.
         /// </summary>
@@ -200,7 +202,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblCadencierWarning;
-        
+
         /// <summary>
         /// divLoading control.
         /// </summary>
@@ -209,7 +211,7 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl divLoading;
-        
+
         /// <summary>
         /// ValSummary control.
         /// </summary>
@@ -218,41 +220,5 @@ namespace CompteResultat {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ValidationSummary ValSummary;
-        
-        /// <summary>
-        /// lblHeaderSynthese control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblHeaderSynthese;
-        
-        /// <summary>
-        /// phHeader control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phHeader;
-        
-        /// <summary>
-        /// lblEmpty control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblEmpty;
-        
-        /// <summary>
-        /// rptSynthese control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptSynthese;
     }
 }
