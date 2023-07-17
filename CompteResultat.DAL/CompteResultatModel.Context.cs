@@ -61,6 +61,9 @@ namespace CompteResultat.DAL
         public virtual DbSet<ImportFile> ImportFiles { get; set; }
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<UserRole> UserRoles { get; set; }
+        public virtual DbSet<CRGenList> CRGenLists { get; set; }
+        public virtual DbSet<CRGenListComp> CRGenListComps { get; set; }
+        public virtual DbSet<CRAutoMain> CRAutoMains { get; set; }
     
         public virtual ObjectResult<Nullable<double>> SPGetSumPrestaForDossier(string dossier, Nullable<System.DateTime> dateArret)
         {

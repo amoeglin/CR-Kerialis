@@ -241,6 +241,7 @@ namespace CompteResultat.Common
         public static string reportTemplateRelFolder = "~/ReportTemplates/";
         public static string excelCRFolder = "ExcelCR";
         public static string excelCRRelFolder = "~/ExcelCR/";
+        public static string excelCRAutoFolder = "App_Data//AutoCR";
 
         public static string ExcelTemplateGlobalCompanySante = "ReportTemplateGlobalSante.xlsm";
         public static string ExcelTemplateGlobalCompanyPrevoyance = "ReportTemplateGlobalPrevoyance.xlsm";

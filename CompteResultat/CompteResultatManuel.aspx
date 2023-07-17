@@ -5,7 +5,7 @@
     <style>
 
         .buttonYellow { display: block; margin-bottom: 20px;  width:290px; background-color:yellow;  } 
-
+          
         .lblHeader { margin-bottom: 15px; display: block; } 
         label.element { display: inline-block; margin-bottom: 20px; font-size: 16px; width:185px; } 
         input.element { display: inline-block;   width:250px; } 
@@ -27,20 +27,24 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
-            
-            $('.NodeStyle a').unbind('click')
 
-            $("#cmdCreateCR").click(function (evt) {
-                if (Page_ClientValidate()) { 
-                    $("#divValSummary").css("display", "block");
-                    $("#divLoading").css("display", "block");
-                }
-                else
-                {
-                    $("#divValSummary").css("display", "none");
-                    $("#divLoading").css("display", "none");
-                }
+            $("#cmdCreateCR.manual").click(function (evt) {
+                $("#divLoading").css("display", "block");
             });
+
+            $('.NodeStyle a').unbind('click')                        
+
+            //$("#cmdCreateCR").click(function (evt) {
+            //    if (Page_ClientValidate()) { 
+            //        $("#divValSummary").css("display", "block");
+            //        $("#divLoading").css("display", "block");
+            //    }
+            //    else
+            //    {
+            //        $("#divValSummary").css("display", "none");
+            //        $("#divLoading").css("display", "none");
+            //    }
+            //});
 
             $("#cmdSelectAll").click(function (evt) {
                 $("#divLoading").css("display", "block");
@@ -111,39 +115,75 @@
              $("#HiddenScrollTop").val($(this).scrollTop());             
          });
      })
-   </script>
+    </script>
 
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
-
     
     <div class="mainBlock" >
+    <asp:ScriptManager ID="ScriptManger1" runat="Server"></asp:ScriptManager>
+    <%--<asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>--%>
+    <asp:Timer runat="server" ID="Timer1" Interval="2000" Enabled="false" ontick="Timer1_Tick" />
+        
     <h1><label class="lblHeader" >Liste des entreprises et contrats :</label> </h1>
 
-       
     <div>
-        <label class="element" style="margin-right:5px; width: 81px;">Entreprise :</label>
-        <asp:TextBox ID="txtCompanyFilter" CssClass="element" style="width: 140px; margin-right:10px;" runat="server" ClientIDMode="Static" AutoPostBack="true" OnTextChanged="txtFilterCompany_Change" ></asp:TextBox> 
-        <asp:Button CssClass="ButtonBigBlue" style="width:100px; display:inline;" id="cmdSearch" Text="Rechercher" runat="server" OnClick="cmdSearch_Click" ClientIDMode="Static" /> &nbsp; 
-                 
+        <asp:RadioButtonList ID="radioMode" runat="server" AutoPostBack="True" RepeatDirection="Horizontal" 
+            style="background-color: #fff; margin-bottom: 5px;"   
+            onselectedindexchanged="radioMode_SelectedIndexChanged">  
+            <asp:ListItem style="margin-right:10px;" Selected>&nbsp;Mode automatique</asp:ListItem>  
+            <asp:ListItem>&nbsp;Mode manuel</asp:ListItem> 
+        </asp:RadioButtonList>  
     </div>
 
     <div>
-        <asp:Button CssClass="ButtonBigBlue" style="width:350px; display:inline;" id="cmdSelectAll" Text="Sélectionner tous les nœuds (très lent)" runat="server" OnClick="cmdSelectAll_Click" ClientIDMode="Static" /> 
+        <asp:Panel ID="panelAuto" runat="server"  Width="350px" style="background-color: #fff; margin-bottom: 20px;">
+            <%--<label class="element">Listes :</label>    --%>    
+            <asp:DropDownList Visible="false" ID="cmbListes" Width="250" DataTextField="Name"  DataValueField="Id" runat="server" AutoPostBack="True" 
+                OnSelectedIndexChanged="cmbDetailReport_SelectedIndexChanged">            
+            </asp:DropDownList>
+
+            <div style="margin-top:10px; margin-bottom:10px;">
+                Générer des CR pour :&nbsp;
+                <asp:CheckBox Checked="true" Visible="true" class="element" ID="chkGroups" runat="server" Text="&nbsp;Groupes" Font-Size="Medium" />&nbsp;&nbsp;
+                <asp:CheckBox Checked="true" Visible="true" class="element" ID="chkEnterprises" runat="server" Text="&nbsp;Entreprises" Font-Size="Medium" />   
+            </div>
+            
+            <%--DataTextField="Name" DataValueField="Id" OnSelectedIndexChanged="lbListes_SelectedIndexChanged" 
+                OnDataBound="lbListes_DataBound"   SelectMethod="GetLists"   EnableViewState="false"   --%>
+            <asp:ListBox BackColor="#D0EFEE" ID="lbListes"  runat="server" DataTextField="Name" DataValueField="Id" Height="463px" Width="100%" 
+                AutoPostBack="true" OnSelectedIndexChanged="lbListes_SelectedIndexChanged"  CssClass="groupListbox" >            
+            </asp:ListBox>
+
+
+         </asp:Panel>
     </div>
-           
-    
-    <%--  <asp:TreeView CssClass="TreeView" ID="tvContracts" Width="350" Height="500" runat="server" ClientIDMode="Static" Enabled="true"
-        OnTreeNodeCheckChanged="tvContracts_TreeNodeCheckChanged" OnSelectedNodeChanged="tvContracts_SelectedNodeChanged" OnLoad="tvContracts_Load" > 
-        <asp:HiddenField ID="HiddenScrollLeft" runat="server" Value="0" />
-          --%>
 
-    
-    <asp:HiddenField ID="HiddenScrollTop" runat="server" Value="0" ClientIDMode="Static" />
+    <div>
+        <asp:Panel ID="panelManuel" runat="server"  Width="350px" style="background-color: #fff;">
 
-    <%-- wrap the treeview in a div that defines a scrollbar --%>
-    <div id="tvDiv" style="height: 500px; width: 350px; overflow-y: scroll;overflow-x: hidden; border: 1px solid #A9A9A9; color:#3A4F63; text-decoration:none; ">
+        <div>
+            <label class="element" style="margin-right:5px; width: 81px;">Entreprise :</label>
+            <asp:TextBox ID="txtCompanyFilter" CssClass="element" style="width: 140px; margin-right:10px;" runat="server" ClientIDMode="Static" AutoPostBack="true" OnTextChanged="txtFilterCompany_Change" ></asp:TextBox> 
+            
+            <asp:Button CssClass="ButtonBigBlue" style="width:100px; display:inline;" id="cmdSearch" Text="Rechercher" runat="server" OnClick="cmdSearch_Click" ClientIDMode="Static" /> &nbsp;                  
+        </div>
+
+        <div>
+            <%--display:inline;--%>
+            <asp:Button CssClass="ButtonBigBlue" style="width:350px; display:inline;" id="cmdSelectAll" Text="Sélectionner tous les nœuds (très lent)" runat="server" OnClick="cmdSelectAll_Click" ClientIDMode="Static" /> 
+        </div>           
+    
+        <%--  <asp:TreeView CssClass="TreeView" ID="tvContracts" Width="350" Height="500" runat="server" ClientIDMode="Static" Enabled="true"
+            OnTreeNodeCheckChanged="tvContracts_TreeNodeCheckChanged" OnSelectedNodeChanged="tvContracts_SelectedNodeChanged" OnLoad="tvContracts_Load" > 
+            <asp:HiddenField ID="HiddenScrollLeft" runat="server" Value="0" />
+              --%>
+    
+        <asp:HiddenField ID="HiddenScrollTop" runat="server" Value="0" ClientIDMode="Static" />
+
+        <%-- wrap the treeview in a div that defines a scrollbar height:500px --%>
+        <div id="tvDiv" style="height: 350px; width: 350px; overflow-y: scroll;overflow-x: hidden; border: 1px solid #A9A9A9; color:#3A4F63; text-decoration:none; ">
     <asp:TreeView NodeStyle-NodeSpacing="2px" NodeStyle-HorizontalPadding="5px" ID="tvContracts"  runat="server" ClientIDMode="Static" Enabled="true"
         OnTreeNodeCheckChanged="tvContracts_TreeNodeCheckChanged" OnSelectedNodeChanged="tvContracts_SelectedNodeChanged" OnLoad="tvContracts_Load" >
 
@@ -152,13 +192,64 @@
         <SelectedNodeStyle Font-Bold="true" ForeColor="BlueViolet" BackColor="GradientActiveCaption" />        
     </asp:TreeView>
     </div>
+
+    </asp:Panel>
+    </div>
 </div>
 
 <div class="mainBlock" >
     <%-- ToolTip="Les comptes de résultats existants pour les contrats sélectionnées"        Comptes de résultats existants  --%>
     <h1><asp:Label ToolTip="" class="lblHeader" runat="server" >Détails :</asp:Label> </h1>       
     <%-- <asp:ListBox   ID="lbCRs" Width="350" Height="500" runat="server"></asp:ListBox> --%>
-    <asp:TextBox TextMode="MultiLine" Enabled="false"  ID="txtDetails" Width="350" Height="600" runat="server"></asp:TextBox>
+    
+    <asp:Panel ID="panelAuto2" runat="server"  Width="100%" style="background-color: #fff; margin-bottom: 20px;">
+        <asp:Button runat="server" Visible="false"  Text="Test" OnClick="TEST_Click" />
+        <div style="float: left; margin-left:0px; "> 
+            <h1><asp:Literal  ID="Literal1" runat="server">Contenu de la liste sélectionnée :</asp:Literal> </h1> 
+        
+            <div class="RepeaterCad" style="background-color:#D0EFEE;"> 
+                <asp:PlaceHolder ID="phHeader" Visible='false' runat="server">
+                    <asp:Label ID="lblEmpty" runat="server" Text="Cette liste est vide!"> </asp:Label>   
+                </asp:PlaceHolder>
+
+                <asp:Repeater ItemType="CompteResultat.DAL.CRGenListComp" SelectMethod="GetGroupEntreprise" ID="rptListe" runat="server" 
+                    OnItemDataBound="rptListe_ItemDataBound"  >
+                    <HeaderTemplate>      
+                          <table >
+                              <tr style="width:500px; height:30px;margin:15px;padding:15px;background-color:#FFFF74; border-bottom: 2px solid #00A8BC;"><th></th><th>Groupe</th><th>Entreprise</th></tr>                    
+                    </HeaderTemplate>
+                    <FooterTemplate>
+                        </table>                
+                    </FooterTemplate>
+
+                    <ItemTemplate>
+                        <tr style="height:30px;">                            
+                            <td style="width:30px;"><asp:CheckBox Checked="true" runat="server" ID="chk1" ClientIDMode="Static" /></td>
+                            <td><asp:Label Width="140px" runat="server" ID="lblGroupe" ClientIDMode="Static" Text="<%#: Item.GroupName %>" /></td>
+                            <td><asp:Label Width="210px" runat="server" ID="lblEnterprise" ClientIDMode="Static" Text="<%#: Item.Enterprise %>" /></td>
+                            <%--<td><%#: Item.GroupName %></td>
+                            <td><%#: Item.Enterprise %></td>  --%>                  
+                        </tr>
+                    </ItemTemplate>
+                    <%--style="background-color:#FFFF74;"--%>
+                    <AlternatingItemTemplate>                        
+                        <tr style="background-color:#0ABFCC;" >
+                            <td style="width:30px;"><asp:CheckBox Checked="true" runat="server" ID="chk1" ClientIDMode="Static" /></td>
+                            <td><asp:Label Width="140px" runat="server" ID="lblGroupe" ClientIDMode="Static" Text="<%#: Item.GroupName %>" /></td>
+                            <td><asp:Label Width="100%" runat="server" ID="lblEnterprise" ClientIDMode="Static" Text="<%#: Item.Enterprise %>" /></td>
+                            
+                        </tr>
+                    </AlternatingItemTemplate>            
+        </asp:Repeater>            
+            </div>     
+
+        </div>
+    </asp:Panel>
+
+    <asp:Panel ID="panelManuel2" runat="server"  Width="100%" style="background-color: #fff; margin-bottom: 20px;">
+        <asp:TextBox TextMode="MultiLine" Enabled="false"  ID="txtDetails" Width="350" Height="600" runat="server"></asp:TextBox>
+    </asp:Panel>
+    
 </div>
 
 <div class="lastBlock">
@@ -193,11 +284,12 @@
             ControlToValidate="txtNameReport" ForeColor="Red"></asp:RequiredFieldValidator> --%>
     </div>
     <div>
-         <asp:CheckBox Checked="true" Visible="false" class="element" ID="chkCalcProv" runat="server" Text="Calculer les provisions" Font-Size="Medium" />   
+         <asp:CheckBox Checked="true" Visible="false" class="element" ID="chkCalcProv" runat="server" Text="&nbsp;Calculer les provisions" Font-Size="Medium" />   
     </div>
+
     <div>
          <asp:CheckBox Visible="false" class="element" ID="chkComptesConsol" runat="server" Text="Comptes de résultats consolidées" Font-Size="Medium" />   
-    </div>
+    </div>    
 
 
     <%-- Taxes & Taux --%>
@@ -218,11 +310,9 @@
         </asp:PlaceHolder>
     </div> 
 
-    <br />  
     
     <%-- Report Type --%>
-    <asp:PlaceHolder ID="PlaceHolderReportType" runat="server">  
-    </asp:PlaceHolder>
+    <asp:PlaceHolder ID="PlaceHolderReportType" runat="server">      
         <div >
             <label id="lblReportType" class="element" style="display:inline; margin-right:5px; vertical-align:top; " runat="server" >Type du rapport : 
                 <asp:Image visible="false" style="display:inline; margin-left: 10px" ID="imgReport" runat="server" />
@@ -234,20 +324,21 @@
             </asp:RadioButtonList>
         </div>
         <div style="margin-top: 15px;">
-             <asp:CheckBox style="margin-right: 20px" Visible="true" class="element" ID="chkSelectAll" runat="server" Text="Sélectionner tous les entreprises et filiales" Font-Size="Medium"   />  
+            <asp:CheckBox style="margin-right: 20px" Visible="true" class="element" ID="chkSelectAll" runat="server" Text="Sélectionner tous les entreprises et filiales" Font-Size="Medium"   />  
             <asp:CheckBox Enabled="false" Visible="true" class="element" ID="chkPrev" runat="server" Text="Prevoyance" Font-Size="Medium" /> 
         </div>
+     </asp:PlaceHolder>    
 
-        <div style="margin-top: 20px; font-weight: 500; font-size: 20px;" >
-            <label id="Label1" class="element" style="display:inline; margin-right:5px; vertical-align:top; font-size: 20px;" runat="server" >TYPE DE COMPTES : 
-                <%--<asp:Image visible="false" style="display:inline; margin-left: 10px" ID="imgReport" runat="server" />--%>
-            </label>
-            <asp:RadioButtonList ValidateRequestMode="Disabled" AutoPostBack="true" style="display:inline; margin-top:10px" RepeatDirection="Horizontal" 
-                ID="radioTypeComptes" runat="server" OnSelectedIndexChanged="radioTypeComptes_SelectedIndexChanged">
-                <asp:ListItem style="margin-right:10px" Selected>&nbsp;Survenance</asp:ListItem>
-                <asp:ListItem style="margin-right:10px">&nbsp;Comptable</asp:ListItem>                                 
-            </asp:RadioButtonList>
-        </div>
+    <div style="margin-top: 20px; font-weight: 500; font-size: 20px;" >
+        <label id="Label1" class="element" style="display:inline; margin-right:5px; vertical-align:top; font-size: 20px;" runat="server" >TYPE DE COMPTES : 
+            <%--<asp:Image visible="false" style="display:inline; margin-left: 10px" ID="imgReport" runat="server" />--%>
+        </label>
+        <asp:RadioButtonList ValidateRequestMode="Disabled" AutoPostBack="true" style="display:inline; margin-top:10px" RepeatDirection="Horizontal" 
+            ID="radioTypeComptes" runat="server" OnSelectedIndexChanged="radioTypeComptes_SelectedIndexChanged">
+            <asp:ListItem style="margin-right:10px" Selected>&nbsp;Survenance</asp:ListItem>
+            <asp:ListItem style="margin-right:10px">&nbsp;Comptable</asp:ListItem>                                 
+        </asp:RadioButtonList>
+    </div>
 
     <br />
     
@@ -268,13 +359,29 @@
     <asp:Button CssClass="ButtonBigBlue" Visible="false" id="cmdStartPPT" Text="Télécharger le fichier Powerpoint" runat="server" OnClick="cmdStartPPT_Click"  />
 
     <asp:Button CssClass="ButtonBigRed" Visible="false" id="cmdDeleteCR" Text="Supprimer comptes de résultats" runat="server" 
-        OnClientClick="return confirm('Est-ce que vous êtes sur de vouloir supprimer ce comptes des résultats ?');" OnClick="cmdDeleteCR_Click" />
+        OnClientClick="return confirm('Est-ce que vous êtes sur de vouloir supprimer ce comptes des résultats ?');" OnClick="cmdDeleteCR_Click" />    
     
-    <div runat="server" id="divValSummary"  style="display:none" ClientIDMode="Static" >
-        <asp:ValidationSummary Width="300" ForeColor="Red" ID="ValSummary" runat="server" />  
+    <div runat="server" id="divValSummary"  style="display:block" ClientIDMode="Static" >
+        <asp:ValidationSummary Width="300" ForeColor="Red" ID="ValSummary" runat="server"  /> 
     </div>
+
+    <%--TEST--%>
+    <asp:UpdatePanel style="margin-top:20px;  " ID="UpdatePanel1" runat="server" UpdateMode="Always">
+        <Triggers>
+            <asp:AsyncPostBackTrigger ControlID="Timer1" EventName="Tick" />
+        </Triggers>
+        <ContentTemplate>
+            <%--style="border:2px solid #00A8BC"--%>
+
+            <asp:Label ForeColor="#0075FF" Font-Size="Large" Font-Bold="true" Height="50px" Width="500px" runat="server" ID="lblProgress" Text=""  />
+            <asp:Panel runat="server" ID="spinnerPanel" Visible="false" >                
+                <div class='loading'></div>             
+            </asp:Panel>
+
+        </ContentTemplate>
+    </asp:UpdatePanel>
     
-    <div runat="server" id="divLoading"  style="display:none" ClientIDMode="Static" >
+    <div runat="server" id="divLoading" class=""  style="display:none" ClientIDMode="Static" >
         <img width="100px" height="100px" style="margin: 20px 50px 10px 100px;" src="Images/ajax-loader.gif" />
     </div>
     
@@ -289,9 +396,7 @@
 
 </div>
 
-
-     <!-- Bootstrap Modal Dialog -->
-    <asp:ScriptManager ID="ScriptManger1" runat="Server"></asp:ScriptManager>
+     <!-- Bootstrap Modal Dialog -->    
     <div class="modal fade" id="modalFileOpen" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <asp:UpdatePanel ID="upModal" runat="server" ChildrenAsTriggers="false" UpdateMode="Conditional">
@@ -314,6 +419,5 @@
             </asp:UpdatePanel>
         </div>
     </div>
-
 
 </asp:Content>

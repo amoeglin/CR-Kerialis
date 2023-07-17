@@ -38,6 +38,8 @@ namespace CompteResultat.DAL
         public Nullable<double> TaxPerif { get; set; }
         public string ReportType { get; set; }
         public string CompanyIds { get; set; }
+        public Nullable<int> CRAutoId { get; set; }
+        public string LevelGrEnt { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CRPlanning> CRPlannings { get; set; }
@@ -45,5 +47,6 @@ namespace CompteResultat.DAL
         public virtual ICollection<ReportData> ReportDatas { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ReportFile> ReportFiles { get; set; }
+        public virtual CRAutoMain CRAutoMain { get; set; }
     }
 }

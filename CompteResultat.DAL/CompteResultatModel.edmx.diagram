@@ -48,6 +48,11 @@
         <EntityTypeShape EntityType="CompteResultatModel.ImportFile" Width="1.5" PointX="14.375" PointY="14.75" />
         <EntityTypeShape EntityType="CompteResultatModel.sysdiagram" Width="1.5" PointX="15.375" PointY="0.75" />
         <EntityTypeShape EntityType="CompteResultatModel.UserRole" Width="1.5" PointX="15.375" PointY="3.75" />
+        <EntityTypeShape EntityType="CompteResultatModel.CRGenList" Width="1.5" PointX="15.5" PointY="5.75" />
+        <EntityTypeShape EntityType="CompteResultatModel.CRGenListComp" Width="1.5" PointX="17.875" PointY="7.125" />
+        <AssociationConnector Association="CompteResultatModel.FK_CRGenListComp_CRGenList" />
+        <EntityTypeShape EntityType="CompteResultatModel.CRAutoMain" Width="1.5" PointX="5.25" PointY="21.125" />
+        <AssociationConnector Association="CompteResultatModel.FK_CompteResult_CRAutoMain" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

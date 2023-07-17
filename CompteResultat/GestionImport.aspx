@@ -167,8 +167,8 @@
 </asp:Content>
 
 
-<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
-    <div style="float:left; margin-top: 10px;">        
+<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server" >
+    <div style="float:left; margin-top: 10px; width:100%;">        
         <table border="0">
             
             <tr style="height:50px; text-align:left; vertical-align:text-top">
@@ -211,7 +211,8 @@
                 <td colspan="2"> 
                     <asp:HiddenField ID = "HiddenScrollTop" runat="server" Value="0" ClientIDMode="Static" />
 
-                    <div id="gvDiv" style="height: 450px; width: 1660px; overflow-y: scroll;overflow-x: hidden; border: 1px solid #A9A9A9; color:#3A4F63; text-decoration:none; "> 
+                    <%--width: 1660px; overflow-y: scroll;overflow-x: hidden; --%>
+                    <div id="gvDiv" style="height: 450px; width: 100%; overflow: scroll; border: 1px solid #A9A9A9; color:#3A4F63; text-decoration:none; "> 
                         
                         <asp:GridView CellPadding="5" ID="gvImport" runat="server" DataKeyNames="Id" AutoGenerateColumns="False" OnSorting="OnSorting"
                         OnRowDataBound="gvImport_RowDataBound" OnRowCommand="gvImport_RowCommand" AllowSorting="true" AllowPaging="false" OnRowCreated="gvImport_RowCreated"   >

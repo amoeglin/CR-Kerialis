@@ -668,6 +668,31 @@ namespace CompteResultat.DAL
             }
         }
 
+        public static int GetCompanyIdForName(string compName)
+        {
+            try
+            {
+                int id;
+
+                using (var context = new CompteResultatEntities())
+                {
+                    var elements = context.Companies.Where(c => c.Name.ToLower() == compName.ToLower()).Select(c => c.Id);
+
+                    if (elements.Any())
+                        id = elements.First();
+                    else
+                        id = -1;
+                }
+
+                return id;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
         public static int? GetParentIdForSubsid(int subsidId)
         {
             try

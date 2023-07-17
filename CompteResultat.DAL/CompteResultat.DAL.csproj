@@ -83,6 +83,18 @@
     <Compile Include="College.cs">
       <DependentUpon>CompteResultatModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="CRAutoMainExt.cs" />
+    <Compile Include="CRAutoMain.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CRGenListCompExt.cs" />
+    <Compile Include="CRGenerationListExt.cs" />
+    <Compile Include="CRGenList.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CRGenListComp.cs">
+      <DependentUpon>CompteResultatModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="ImportFilesExt.cs" />
     <Compile Include="CollegeExt.cs" />
     <Compile Include="Company.cs">

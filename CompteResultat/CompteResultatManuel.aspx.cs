@@ -26,10 +26,47 @@ namespace CompteResultat
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        #region Global Variables
+
+        int listId;
+        C.eExcelGroupTypes listType;
+        List<string> enterprises;
+        List<Group> groups;
+        string rootCRAutoPath = "";
+        string loggedUser = "";
+
+        protected static bool inProcess = false;
+        protected static bool processComplete = false;
+        protected static bool processError = false;
+        protected static string progressContent;
+
+        #endregion
+
         protected void Page_Load(object sender, EventArgs e)
         {              
             try
-            { 
+            {
+                rootCRAutoPath = Server.MapPath(C.excelCRAutoFolder);
+                loggedUser = User.Identity.Name;
+
+                if (radioMode.SelectedIndex == 0)
+                {                    
+                    PlaceHolderReportType.Visible = false;
+                    panelAuto.Visible = true;
+                    panelManuel.Visible = false;
+                    panelAuto2.Visible = true;
+                    panelManuel2.Visible = false;
+                }
+                else
+                {
+                    cmdCreateCR.CssClass = "ButtonBigBlue inline manual"; //to show the old spinner
+                    PlaceHolderReportType.Visible = true;
+                    panelAuto.Visible = false;
+                    panelManuel.Visible = true;
+                    panelAuto2.Visible = false;
+                    panelManuel2.Visible = true;
+                }
+
                 radioReportType.Items[0].Enabled = false;
 
                 tvContracts.Enabled = true;
@@ -39,26 +76,28 @@ namespace CompteResultat
 
                 if (!IsPostBack)
                 {
+                    RefreshLists("");
+
                     PopulateTreeViewControl(C.cINVALIDID);
 
                     //get date values
                     HttpCookie cookie = Request.Cookies["txtStartPeriode"];
-                    string startPeriodeCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
+                    string startPeriodeCookieVal = cookie != null ? cookie.Value : ""; 
                     if (txtStartPeriode.Text == "")
                         txtStartPeriode.Text = startPeriodeCookieVal != "" ? startPeriodeCookieVal : "01/01/2020";
 
                     cookie = Request.Cookies["txtEndPeriode"];
-                    string endPeriodeCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
+                    string endPeriodeCookieVal = cookie != null ? cookie.Value : "";
                     if (txtEndPeriode.Text == "")
                         txtEndPeriode.Text = endPeriodeCookieVal != "" ? endPeriodeCookieVal : "01/01/2020";
 
                     cookie = Request.Cookies["txtArretCompte"];
-                    string arretCompteCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
+                    string arretCompteCookieVal = cookie != null ? cookie.Value : "";
                     if (txtArretCompte.Text == "")
                         txtArretCompte.Text = arretCompteCookieVal != "" ? arretCompteCookieVal : "01/01/2020";
 
                     cookie = Request.Cookies["typeCompte"];
-                    string typeCompteCookieVal = cookie != null ? cookie.Value.Split('=')[1] : "";
+                    string typeCompteCookieVal = cookie != null ? cookie.Value : "";
                     int iTypeCompteVal = 0;
                     if (int.TryParse(typeCompteCookieVal, out iTypeCompteVal))
                         radioTypeComptes.SelectedIndex = iTypeCompteVal;
@@ -561,57 +600,61 @@ namespace CompteResultat
                 
                 foreach (CompteResult cr in CRs)
                 {
-                    //Validation
-                    //verify if the CR belongs to the current Assur
-                    if (string.IsNullOrWhiteSpace(cr.AssurIds))
-                        return;
-
-                    List<string> assurIds = Regex.Split(cr.AssurIds, C.cVALSEP).ToList();
-                    if (!assurIds.Contains(assurId.ToString()))
-                        continue;
-
-                    // *** Create CR Node for Parent Comp
-                    tv = new TreeViewTag();
-                    tv.NodeType = C.eTVNodeTypes.CompteResultat;
-                    tv.AssureurId = assurId;
-                    tv.ParentCompId = parentCompanyId;
-
-                    tv.Name = cr.Name;
-                    tv.Id = cr.Id;                        
-                    tv.CRCollegeId = cr.CollegeId;                       
-                    tv.CRCreationDate = cr.CreationDate;                        
-                    tv.CRReportLevelId = cr.ReportLevelId;
-                    tv.CRCompanyIds = cr.CompanyIds;
-                    tv.CRSubsids = cr.SubsidIds;
-                    tv.CRContractIds = cr.ContractIds;
-
-                    C.eReportTypes repType = C.eReportTypes.Standard;
-                    if (cr.ReportType != null)
-                        repType = (C.eReportTypes)Enum.Parse(typeof(C.eReportTypes), cr.ReportType);
-                    tv.CRReportType = repType;
-
-                    tv.TaxDef = cr.TaxDefault;
-                    tv.TaxAct = cr.TaxActif;
-                    tv.TaxPer = cr.TaxPerif;
-
-                    //data from CRPlanning
-                    foreach (CRPlanning crp in cr.CRPlannings)
+                    bool auto = cr.IsAutoGenerated.HasValue ? cr.IsAutoGenerated.Value : false;
+                    if (!auto)
                     {
-                        tv.CRPs.Add(new CRPlanning { CRId = cr.Id, DebutPeriode = crp.DebutPeriode, FinPeriode = crp.FinPeriode, DateArret = crp.DateArret });
+                        //Validation
+                        //verify if the CR belongs to the current Assur
+                        if (string.IsNullOrWhiteSpace(cr.AssurIds))
+                            return;
+
+                        List<string> assurIds = Regex.Split(cr.AssurIds, C.cVALSEP).ToList();
+                        if (!assurIds.Contains(assurId.ToString()))
+                            continue;
+
+                        // *** Create CR Node for Parent Comp
+                        tv = new TreeViewTag();
+                        tv.NodeType = C.eTVNodeTypes.CompteResultat;
+                        tv.AssureurId = assurId;
+                        tv.ParentCompId = parentCompanyId;
+
+                        tv.Name = cr.Name;
+                        tv.Id = cr.Id;
+                        tv.CRCollegeId = cr.CollegeId;
+                        tv.CRCreationDate = cr.CreationDate;
+                        tv.CRReportLevelId = cr.ReportLevelId;
+                        tv.CRCompanyIds = cr.CompanyIds;
+                        tv.CRSubsids = cr.SubsidIds;
+                        tv.CRContractIds = cr.ContractIds;
+
+                        C.eReportTypes repType = C.eReportTypes.Standard;
+                        if (cr.ReportType != null)
+                            repType = (C.eReportTypes)Enum.Parse(typeof(C.eReportTypes), cr.ReportType);
+                        tv.CRReportType = repType;
+
+                        tv.TaxDef = cr.TaxDefault;
+                        tv.TaxAct = cr.TaxActif;
+                        tv.TaxPer = cr.TaxPerif;
+
+                        //data from CRPlanning
+                        foreach (CRPlanning crp in cr.CRPlannings)
+                        {
+                            tv.CRPs.Add(new CRPlanning { CRId = cr.Id, DebutPeriode = crp.DebutPeriode, FinPeriode = crp.FinPeriode, DateArret = crp.DateArret });
+                        }
+
+                        //we create our TreeNode
+                        TreeNode crNode = new TreeNode(cr.Name, tv.GetStringFromObject());
+                        crNode.SelectAction = TreeNodeSelectAction.Select;
+
+                        crNode.ImageUrl = C.imageRelFolder + "report1.png";
+                        if (tv.CRReportType == C.eReportTypes.GlobalEnt)
+                            crNode.ImageUrl = C.imageRelFolder + "report2.png";
+                        if (tv.CRReportType == C.eReportTypes.GlobalSubsid)
+                            crNode.ImageUrl = C.imageRelFolder + "report3.png";
+
+                        if (!NodeWithTextExistsAlready(selectedNode, crNode.Text))
+                            selectedNode.ChildNodes.AddAt(0, crNode);
                     }
-
-                    //we create our TreeNode
-                    TreeNode crNode = new TreeNode(cr.Name, tv.GetStringFromObject());
-                    crNode.SelectAction = TreeNodeSelectAction.Select;
-
-                    crNode.ImageUrl = C.imageRelFolder + "report1.png";
-                    if (tv.CRReportType == C.eReportTypes.GlobalEnt)
-                        crNode.ImageUrl = C.imageRelFolder + "report2.png";
-                    if (tv.CRReportType == C.eReportTypes.GlobalSubsid)
-                        crNode.ImageUrl = C.imageRelFolder + "report3.png";
-
-                    if (!NodeWithTextExistsAlready(selectedNode, crNode.Text))
-                        selectedNode.ChildNodes.AddAt(0,crNode);                    
                 }
 
                 selectedNode.Expand();
@@ -640,7 +683,7 @@ namespace CompteResultat
             //CadencierIsUpToDate();
         }
 
-        private void CadencierIsUpToDate()
+        private void oldCadencierIsUpToDate()
         {
             List<string> assureurs = Assureur.GetAllAssureurs().Select(x => x.Name).Distinct().ToList();
             List<Cadencier> cadencierAll = new List<Cadencier>();
@@ -685,106 +728,138 @@ namespace CompteResultat
             }            
         }
 
+        private void CheckCadencierUpToDate()
+        {
+            //verify if Cadencier is up to date
+            //CadencierIsUpToDate();
+            List<int> missingYears = new List<int>();
+            bool cadUpToDate = BLCadencier.CadencierIsUpToDate(ref missingYears, txtStartPeriode.Text, txtEndPeriode.Text);
+
+            lblCadencierWarning.Visible = false;
+            if (!cadUpToDate && cmbDetailReport.SelectedItem.Text != "Prévoyance")
+            {
+                string strYears = string.Join(", ", missingYears);
+                lblCadencierWarning.Text = "Attention, le cadencier n’est pas à jour pour les année(s) : " + strYears + " !";
+                lblCadencierWarning.Visible = true;
+            }
+        }
+
+        private void SaveDatesAsCookies()
+        {
+            //save dates as cookie
+            if (txtStartPeriode.Text != "")
+            {
+                HttpCookie cookie = Request.Cookies.Get("txtStartPeriode");
+                if (cookie == null)
+                {
+                    cookie = new HttpCookie("txtStartPeriode");
+                    cookie.Expires = new DateTime(2050, 1, 1);
+                    cookie.Value = txtStartPeriode.Text;
+                    Response.Cookies.Add(cookie);
+                } else
+                {
+                    cookie.Value = txtStartPeriode.Text;
+                } 
+            }
+            if (txtEndPeriode.Text != "")
+            {
+                HttpCookie cookie = Request.Cookies.Get("txtEndPeriode");
+                if (cookie == null)
+                {
+                    cookie = new HttpCookie("txtEndPeriode");
+                    cookie.Expires = new DateTime(2050, 1, 1);
+                    cookie.Value = txtEndPeriode.Text;
+                    Response.Cookies.Add(cookie);
+                }
+                else
+                {
+                    cookie.Value = txtEndPeriode.Text;
+                }
+            }
+            if (txtArretCompte.Text != "")
+            {
+                HttpCookie cookie = Request.Cookies.Get("txtArretCompte");
+                if (cookie == null)
+                {
+                    cookie = new HttpCookie("txtArretCompte");
+                    cookie.Expires = new DateTime(2050, 1, 1);
+                    cookie.Value = txtArretCompte.Text;
+                    Response.Cookies.Add(cookie);
+                }
+                else
+                {
+                    cookie.Value = txtArretCompte.Text;
+                }
+            }
+
+            HttpCookie cookieTC = new HttpCookie("typeCompte");
+            cookieTC.Values["typeCompte"] = radioTypeComptes.SelectedIndex.ToString();
+            Response.Cookies.Add(cookieTC);
+        }
+
+        private bool CheckFileLocked(string filePath)
+        {
+            bool fileLocked = false;
+            FileInfo fil1 = new FileInfo(filePath);
+            if (IsFileLocked(fil1))
+            {
+                fileLocked = true;
+                try
+                {
+                    lblModalBody.Text = $"Merci de fermer le fichier suivant avant de procéder : <br /> {fil1.FullName}";
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modalFileOpen", "$('#modalFileOpen').modal();", true);
+                    upModal.Update();
+                }
+                catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::CheckFileLocked"); }
+            }
+            return fileLocked;
+        }
+
         protected void cmdCreateCR_Click(object sender, EventArgs e)
         {
-            try {
-                try {
-                    //RequiredFieldValidator1.ErrorMessage = "Le nom du rapport est obligatoire !";
-                    try { 
-                        if (txtNameReport.Value == "")
-                        {
-                            validateReportName.Visible = true;
-                        }
-                        else { validateReportName.Visible = false; }
-                    }
-                    catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::10"); }
+            if (radioMode.SelectedIndex == 0)
+            {
+                try
+                {
+                    SaveDatesAsCookies();
 
-                    string crFilePath = "";
-                    string crFilePathPPT = "";
-                    try { 
-                        //verify if the file to be created is open - xlsx && ppt
-                        crFilePath = Path.Combine(Server.MapPath(C.excelCRFolder), txtNameReport.Value + ".xlsm");
-                        crFilePathPPT = Path.Combine(Server.MapPath(C.excelCRFolder), txtNameReport.Value + ".pptm");
-                    }
-                    catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::11"); }
+                    inProcess = true;
+                    processComplete = false;
+                    progressContent = "Progrès...";
 
-                    FileInfo fil1 = new FileInfo(crFilePath);
-                    FileInfo fil2 = new FileInfo(crFilePathPPT);
+                    Timer1.Enabled = true;
+                    Thread workerThread = new Thread(new ThreadStart(CreateCRAuto));
+                    workerThread.Start();
 
-                    try {                                           
-                        if (IsFileLocked(fil1))
-                        {
-                            try
-                            {
-                                lblModalBody.Text = $"Merci de fermer le fichier suivant avant de procéder : <br /> {fil1.FullName}";                                
-                                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modalFileOpen", "$('#modalFileOpen').modal();", true);                       
-                                upModal.Update();
-                            }
-                            catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::15"); }
-                        }                        
-                    }
-                    catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::13"); }
-
-                    try {
-                        fil2 = new FileInfo(crFilePathPPT);
-                        if (IsFileLocked(fil2))
-                        {
-                            lblModalBody.Text = $"Merci de fermer le fichier suivant avant de procéder : <br /> {fil2.FullName}";
-                            //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modalFileOpen", "$('#modalFileOpen').modal();", true);
-                            upModal.Update();
-                        }
-                    }
-                    catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::14"); }
+                    //CreateCRAuto();
                 }
-                catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::2"); }
-
-                try { 
-                    //save dates
-                    if (txtStartPeriode.Text != "")
-                    {
-                        HttpCookie cookie = new HttpCookie("txtStartPeriode");
-                        cookie.Values["txtStartPeriode"] = txtStartPeriode.Text;
-                        Response.Cookies.Add(cookie);
-                    }
-                    if (txtEndPeriode.Text != "")
-                    {
-                        HttpCookie cookie = new HttpCookie("txtEndPeriode");
-                        cookie.Values["txtEndPeriode"] = txtEndPeriode.Text;
-                        Response.Cookies.Add(cookie);
-                    }
-                    if (txtArretCompte.Text != "")
-                    {
-                        HttpCookie cookie = new HttpCookie("txtArretCompte");
-                        cookie.Values["txtArretCompte"] = txtArretCompte.Text;
-                        Response.Cookies.Add(cookie);
-                    }
-
-                    HttpCookie cookieTC = new HttpCookie("typeCompte");
-                    cookieTC.Values["typeCompte"] = radioTypeComptes.SelectedIndex.ToString();
-                    Response.Cookies.Add(cookieTC);
+                catch (Exception ex)
+                {
+                    UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::cmdCreateCR_Click");
                 }
-                catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::3"); }
-
-                try { 
-                    //verify if Cadencier is up to date
-                    //CadencierIsUpToDate();
-                    List<int> missingYears = new List<int>();
-                    bool cadUpToDate = BLCadencier.CadencierIsUpToDate(ref missingYears, txtStartPeriode.Text, txtEndPeriode.Text);
-
-                    lblCadencierWarning.Visible = false;
-                    if (!cadUpToDate && cmbDetailReport.SelectedItem.Text != "Prévoyance")
+            }
+            else // CR Manual
+            {
+                try
+                {
+                    //Validate Report Name - RequiredFieldValidator1.ErrorMessage = "Le nom du rapport est obligatoire !";                
+                    if (txtNameReport.Value == "")
                     {
-                        string strYears = string.Join(", ", missingYears);
-                        lblCadencierWarning.Text = "Attention, le cadencier n’est pas à jour pour les année(s) : " + strYears + " !";
-                        lblCadencierWarning.Visible = true;
+                        validateReportName.Visible = true;
                     }
-                }
-                catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::4"); }
+                    else { validateReportName.Visible = false; }
 
-                try { 
-                    List < BLCompteResultat > crs = CollectData();
+                    //check if rport files are open
+                    string crFilePath = Path.Combine(Server.MapPath(C.excelCRFolder), txtNameReport.Value + ".xlsm");
+                    string crFilePathPPT = Path.Combine(Server.MapPath(C.excelCRFolder), txtNameReport.Value + ".pptm");
+                    CheckFileLocked(crFilePath);
+                    CheckFileLocked(crFilePathPPT);
 
-                    //Call method in BL & pass the List of CRs
+                    SaveDatesAsCookies();
+                    CheckCadencierUpToDate();
+
+                    //collect CR data & create CR's
+                    List<BLCompteResultat> crs = CollectData();
                     int crId = 0;
                     if (crs != null)
                     {
@@ -793,60 +868,56 @@ namespace CompteResultat
                             crId = cr.CreateNewCompteResultat();
                         }
                     }
-                }
-                catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::5"); }
 
-                //### fix the below code
-                //return;
-
-                try {  
                     //delete all CR nodes & re-create them to reflect name changes 
-                    //make sure the correct parent node of the CR nodes to be deleted is selected
-                    TreeNode selectedNode = tvContracts.SelectedNode;
-                    if (selectedNode != null)
+                    try
                     {
-                    TreeViewTag tv = TreeViewTag.GetObjectFromString(selectedNode.Value);
+                        //make sure the correct parent node of the CR nodes to be deleted is selected
+                        TreeNode selectedNode = tvContracts.SelectedNode;
+                        if (selectedNode != null)
+                        {
+                            TreeViewTag tv = TreeViewTag.GetObjectFromString(selectedNode.Value);
 
-                    if (tv.NodeType == C.eTVNodeTypes.CompteResultat)
-                    {
-                        //we need to move up one level
-                        selectedNode = selectedNode.Parent;
-                        tv = TreeViewTag.GetObjectFromString(selectedNode.Value);
+                            if (tv.NodeType == C.eTVNodeTypes.CompteResultat)
+                            {
+                                //we need to move up one level
+                                selectedNode = selectedNode.Parent;
+                                tv = TreeViewTag.GetObjectFromString(selectedNode.Value);
+                            }
+
+                            //delete all CR nodes
+                            List<TreeNode> crNodes = new List<TreeNode>();
+                            foreach (TreeNode crNode in selectedNode.ChildNodes)
+                            {
+                                TreeViewTag tvCR = TreeViewTag.GetObjectFromString(crNode.Value);
+                                if (tvCR.NodeType == C.eTVNodeTypes.CompteResultat)
+                                    crNodes.Add(crNode);
+
+                                //TreeViewTag tvCR = TreeViewTag.GetObjectFromString(nodeCR.Value);
+                                //if (tvCR.NodeType == C.eTVNodeTypes.CompteResultat)
+                                //    selectedNode.ChildNodes.Remove(nodeCR);             
+                            }
+
+                            if (crNodes.Count > 0)
+                            {
+                                foreach (TreeNode crNode in crNodes)
+                                    selectedNode.ChildNodes.Remove(crNode);
+
+                                //re-create all CR nodes
+                                int assurId = tv.AssureurId;
+                                string detail = "Nom : " + tv.Name + Environment.NewLine + Environment.NewLine;
+                                int parentCompanyId = -1;
+                                if (tv.NodeType == C.eTVNodeTypes.ParentCompany)
+                                    parentCompanyId = tv.Id;
+
+                                LoadAllCRNodes(selectedNode, tv, parentCompanyId, assurId, detail);
+                            }
+                        }
                     }
-
-                    //delete all CR nodes
-                    List<TreeNode> crNodes = new List<TreeNode>();
-                    foreach (TreeNode crNode in selectedNode.ChildNodes)
-                    {
-                        TreeViewTag tvCR = TreeViewTag.GetObjectFromString(crNode.Value);
-                        if (tvCR.NodeType == C.eTVNodeTypes.CompteResultat)
-                            crNodes.Add(crNode);
-
-                        //TreeViewTag tvCR = TreeViewTag.GetObjectFromString(nodeCR.Value);
-                        //if (tvCR.NodeType == C.eTVNodeTypes.CompteResultat)
-                        //    selectedNode.ChildNodes.Remove(nodeCR);             
-                    }
-
-                    if (crNodes.Count > 0)
-                    {
-                        foreach (TreeNode crNode in crNodes)
-                            selectedNode.ChildNodes.Remove(crNode);
-
-                        //re-create all CR nodes
-                        int assurId = tv.AssureurId;
-                        string detail = "Nom : " + tv.Name + Environment.NewLine + Environment.NewLine;
-                        int parentCompanyId = -1;
-                        if (tv.NodeType == C.eTVNodeTypes.ParentCompany)
-                            parentCompanyId = tv.Id;
-
-                        LoadAllCRNodes(selectedNode, tv, parentCompanyId, assurId, detail);
-                    }
-                    }
+                    catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::6"); }
                 }
-                catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::6"); }
-
-            }
-            catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::1"); }
+                catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::1"); }
+            }                
         }
         
         protected List<BLCompteResultat> CollectData()
@@ -975,7 +1046,7 @@ namespace CompteResultat
 
                     }
 
-                    myCR = SetCRDetails(repType);
+                    myCR = SetCRDetails(repType, C.excelCRFolder);
                     
                     myCR.AssurIds = string.Join(C.cVALSEP, assurIds);
                     myCR.AssurNames = string.Join(C.cVALSEP, assurNames);
@@ -1029,45 +1100,43 @@ namespace CompteResultat
             }
         }
 
-        public BLCompteResultat SetCRDetails(C.eReportTypes repType)
+        public BLCompteResultat SetCRDetails(C.eReportTypes repType, string excelCRPath)
         {
-            C.eTypeComptes typeComptes = C.eTypeComptes.Survenance;
-            if (radioTypeComptes.SelectedIndex == 1)
-                typeComptes = C.eTypeComptes.Comptable;
-
             BLCompteResultat myCR = new BLCompteResultat();
 
-            int reportLevelId = int.Parse(cmbDetailReport.SelectedItem.Value);
-            C.eReportTemplateTypes templateType = ReportTemplate.GetTemplateTypeForId(reportLevelId);            
+            C.eTypeComptes typeComptes = C.eTypeComptes.Survenance;
+            if (radioTypeComptes.SelectedIndex == 1)
+                typeComptes = C.eTypeComptes.Comptable;            
 
-            string reportName = txtNameReport.Value;
-            //if (chkPrev.Checked || reportLevelId == (int) C.eReportTemplateTypes.PREV)
-            //    reportName = "PREV_" + reportName;
-
-            myCR.Name = reportName;
+            int reportLevelId = int.Parse(cmbDetailReport.SelectedItem.Value);              
 
             DateTime dArret = DateTime.Parse(txtArretCompte.Text);
             if (radioTypeComptes.SelectedIndex == 1)
                 dArret = DateTime.Parse(txtEndPeriode.Text);
 
-            //add the CRPlanning data                            
+            //Set CR fields
+            myCR.Name = txtNameReport.Value; 
+            myCR.ReportType = repType;
+            myCR.ReportLevelId = reportLevelId;
+            myCR.TypeComptes = typeComptes;              
+            myCR.UserName = loggedUser;            
+            myCR.CreationDate = DateTime.Now.Date;
+
             myCR.CRPlannings.Add(new CRPlanning
             {
-                //DebutPeriode = DateTime.Parse(txtStartPeriode.Value),
                 DebutPeriode = DateTime.Parse(txtStartPeriode.Text),
                 FinPeriode = DateTime.Parse(txtEndPeriode.Text),
                 DateArret = dArret
             });
 
-            myCR.ReportType = repType;
-            myCR.TypeComptes = typeComptes;
-            myCR.ReportLevelId = reportLevelId;
-            myCR.CollegeId = int.Parse(cmbCollege.SelectedItem.Value);
-            myCR.UserName = User.Identity.Name;
-            myCR.IsActive = true;
-            myCR.IsAutoGenerated = false;
-            myCR.CreationDate = DateTime.Now.Date;
+            myCR.CalculateProvision = chkCalcProv.Checked;
+            myCR.IsPrev = chkPrev.Checked;
 
+            //we also add the server path
+            myCR.ExcelTemplatePath = Server.MapPath(C.reportTemplateFolder);
+            myCR.ExcelCRPath = Server.MapPath(excelCRPath);          
+
+            //minor fields - some of them may no longer be required
             double tax = 0.0;
             if (double.TryParse(taxDef.Value, out tax))
                 myCR.TaxDef = tax;
@@ -1076,11 +1145,9 @@ namespace CompteResultat
             if (double.TryParse(taxPer.Value, out tax))
                 myCR.TaxPer = tax;
 
-            //we also add the server path
-            myCR.ExcelTemplatePath = Server.MapPath(C.reportTemplateFolder);
-            myCR.ExcelCRPath = Server.MapPath(C.excelCRFolder);
-            myCR.CalculateProvision = chkCalcProv.Checked;
-            myCR.IsPrev = chkPrev.Checked;
+            myCR.IsActive = true;
+            myCR.IsAutoGenerated = false;
+            myCR.CollegeId = int.Parse(cmbCollege.SelectedItem.Value);            
 
             return myCR;
         }
@@ -1121,7 +1188,18 @@ namespace CompteResultat
         {
             try
             {
-                return ReportTemplate.GetReportTemplates();
+                var repTempl = ReportTemplate.GetReportTemplates();
+
+                if (radioMode.SelectedIndex == 0)
+                {
+                    List<ReportTemplate> repModeAuto = new List<ReportTemplate>();
+                    foreach (ReportTemplate r in repTempl)
+                    {
+                        if (r.Type == "SANTE" || r.Type == "PREV") repModeAuto.Add(r);
+                    }
+                    return repModeAuto;
+                }
+                else return repTempl;
             }
             catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::GetReportTemplates"); return null; }
         }       
@@ -1278,7 +1356,13 @@ namespace CompteResultat
             try
             {
                 //DropDownList ddl = (DropDownList)sender;  
+                string repType = cmbDetailReport.SelectedItem.Text;
+                if (repType.ToLower().Contains("sant")) listType = C.eExcelGroupTypes.Sante;
+                else listType = C.eExcelGroupTypes.Prev;
+
                 ShowHideCalcProv();
+
+                //cmbDetailReport_SelectedIndexChanged
             }
             catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "cmbDetailReport_SelectedIndexChanged", false); }
         }
@@ -1524,5 +1608,545 @@ namespace CompteResultat
             //file is not locked
             return false;
         }
+
+        // ****************************** NEW FEATURES ******************************
+
+        //Progress:
+        //https://stackoverflow.com/questions/27583227/updating-asp-net-updatepanel-during-processing-loop
+        //https://learn.microsoft.com/en-us/dotnet/api/system.web.ui.updateprogress?view=netframework-4.8.1
+       
+        private void CreateCRFolders(string listName, string listType)
+        {
+            //AutoCR => Sante || Prev => Group || Entreprise => USER[_NAME]_DATETIME
+            //string rootCRAutoPath = Server.MapPath(C.excelCRAutoFolder);
+            if (!Directory.Exists(rootCRAutoPath))
+                Directory.CreateDirectory(rootCRAutoPath);
+
+            if (!Directory.Exists(Path.Combine(rootCRAutoPath, listName)))
+                Directory.CreateDirectory(Path.Combine(rootCRAutoPath, listName));
+
+            if (!Directory.Exists(Path.Combine(rootCRAutoPath, listName, listType)))
+                Directory.CreateDirectory(Path.Combine(rootCRAutoPath, listName, listType));
+
+            //*****************************
+            //if (!Directory.Exists(Path.Combine(rootCRAutoPath, "Sante")))
+            //    Directory.CreateDirectory(Path.Combine(rootCRAutoPath, "Sante"));
+
+            //if (!Directory.Exists(Path.Combine(rootCRAutoPath, "Sante", "Group")))
+            //    Directory.CreateDirectory(Path.Combine(rootCRAutoPath, "Sante", "Group"));
+
+            //if (!Directory.Exists(Path.Combine(rootCRAutoPath, "Sante", "Entreprise")))
+            //    Directory.CreateDirectory(Path.Combine(rootCRAutoPath, "Sante", "Entreprise"));
+
+
+            //if (!Directory.Exists(Path.Combine(rootCRAutoPath, "Prev")))
+            //    Directory.CreateDirectory(Path.Combine(rootCRAutoPath, "Prev"));
+
+            //if (!Directory.Exists(Path.Combine(rootCRAutoPath, "Prev", "Group")))
+            //    Directory.CreateDirectory(Path.Combine(rootCRAutoPath, "Prev", "Group"));
+
+            //if (!Directory.Exists(Path.Combine(rootCRAutoPath, "Prev", "Entreprise")))
+            //    Directory.CreateDirectory(Path.Combine(rootCRAutoPath, "Prev", "Entreprise"));
+        }
+
+        private void CreateCRAuto()
+        {
+            try
+            {
+                spinnerPanel.Visible = true;
+                
+                string currListType = "Sante";
+                if (!cmbDetailReport.SelectedItem.Text.ToLower().Contains("sant")) currListType = "Prev";
+                string listName = lbListes.SelectedItem.Text;                
+
+                CreateCRFolders(listName, currListType);
+                GenerateGroupEntLists();                
+                CheckCadencierUpToDate();
+
+                //collect CR data & create CR's
+                List<BLCompteResultat> crs = CollectAutoData();
+                int crId = 0;
+                if (crs != null)
+                {
+                    //inProcess = true;
+                    //processComplete = false;
+
+                    int cnt = 0;
+                    foreach (BLCompteResultat cr in crs)
+                    {                        
+                        progressContent = "Progrès : " + cnt.ToString()  + " / " + crs.Count.ToString() + " comptes de résultats créés";
+                        cnt++;
+
+                        //Thread.Sleep(500);
+                        if (cnt == 1)
+                            cr.CRAutoId = -1;
+                        else
+                            cr.CRAutoId = crId;
+
+                        crId = cr.CreateNewCompteResultat();
+                    }
+
+                    processComplete = true;                    
+                }
+            }
+            catch (Exception ex) {
+                while (ex.InnerException != null) ex = ex.InnerException;
+                progressContent = ex.Message;
+                processComplete = true;
+                processError = true;
+            }
+        }
+
+        private List<BLCompteResultat> CollectAutoData()
+        {
+            BLCompteResultat myCR = new BLCompteResultat();
+            List<BLCompteResultat> crs = new List<BLCompteResultat>();
+
+            int listId = int.Parse(lbListes.SelectedItem.Value);
+            CRGenList list = CRGenList.GetListById(listId);
+            string currListName = list.Name;
+            string currListOwner = list.UserName;
+            string assurType = list.AssurType;
+
+            //TODO reset on each iteration            
+            List<string> assurIds = new List<string>();
+            List<string> assurNames = new List<string>();
+
+            C.eReportTypes repType = C.eReportTypes.Standard;
+            if (radioReportType.SelectedIndex == 1)
+                repType = C.eReportTypes.GlobalEnt;
+            if (radioReportType.SelectedIndex == 2)
+                repType = C.eReportTypes.GlobalSubsid;
+
+            string repSantePrev = cmbDetailReport.SelectedItem.Text;
+            if (repSantePrev.ToLower().Contains("sant")) listType = C.eExcelGroupTypes.Sante;
+            else listType = C.eExcelGroupTypes.Prev;
+
+            string currListType = "Sante";
+            if (!cmbDetailReport.SelectedItem.Text.ToLower().Contains("sant")) currListType = "Prev";
+
+            string repName = txtNameReport.Value != "" ? txtNameReport.Value + "_" : "";
+            string reportFolder = repName + DateTime.Now.ToString("s").Replace(":", "-"); //loggedUser
+            string reportPath = "";
+
+            //we assume it is always KERIALIS_ENTREPRISE => KERIALIS_PRODUIT does not containcompany names => only contact names
+            string idAssSanteEnt = Assureur.GetAssIdForAssName("KERIALIS_ENTREPRISE").ToString();
+            string idAssPrevEnt = Assureur.GetAssIdForAssName("KERIALIS_PREVOYANCE_ENTREPRISE").ToString();
+            string idAssSanteProd = Assureur.GetAssIdForAssName("KERIALIS_PRODUIT").ToString();
+            string idAssPrevProd = Assureur.GetAssIdForAssName("KERIALIS_PREVOYANCE_PRODUIT").ToString();
+
+            if (listType == C.eExcelGroupTypes.Sante)
+            {
+                if (assurType.ToLower().Contains("prod"))
+                {
+                    assurNames.Add("KERIALIS_PRODUIT");
+                    assurIds.Add(idAssSanteProd);
+                }
+                else
+                {
+                    assurNames.Add("KERIALIS_ENTREPRISE");
+                    assurIds.Add(idAssSanteEnt);
+                }
+            }
+            else //PREV
+            {
+                if (assurType.ToLower().Contains("prod"))
+                {
+                    assurNames.Add("KERIALIS_PREVOYANCE_PRODUIT");
+                    assurIds.Add(idAssPrevProd);
+                }
+                else
+                {
+                    assurNames.Add("KERIALIS_PREVOYANCE_ENTREPRISE");
+                    assurIds.Add(idAssPrevEnt);
+                }                
+            }
+
+            try
+            {
+                if (chkGroups.Checked)
+                {  
+                    if (!Directory.Exists(Path.Combine(rootCRAutoPath, currListName, currListType, "Group")))
+                        Directory.CreateDirectory(Path.Combine(rootCRAutoPath, currListName, currListType, "Group"));
+
+                    reportPath = Path.Combine(rootCRAutoPath, currListName, "Sante", "Group", reportFolder);
+                    if (listType != C.eExcelGroupTypes.Sante) reportPath = Path.Combine(rootCRAutoPath, currListName, "Prev", "Group", reportFolder);
+                    
+                    foreach (Group g in groups)
+                    {
+                        List<string> compIds = new List<string>();
+                        List<string> compNames = new List<string>();
+                        List<string> subsidIds = new List<string>();
+                        List<string> subsidNames = new List<string>();
+                        List<string> contractIds = new List<string>();
+                        List<string> contractNames = new List<string>();
+
+                        foreach(string e in g.Enterprises)
+                        {
+                            int id = Company.GetCompanyIdForName(e);
+                            if (!compNames.Contains(e) && !compIds.Contains(id.ToString()))
+                            {
+                                compNames.Add(e);
+                                compIds.Add(id.ToString());
+
+                                //get all subsids
+                                List<Company> subsids = Company.GetChildCompanies(id);
+                                foreach (Company sub in subsids)
+                                {
+                                    if (!subsidNames.Contains(sub.Name) && !subsidIds.Contains(sub.Id.ToString()))
+                                    {
+                                        subsidNames.Add(sub.Name);
+                                        subsidIds.Add(sub.Id.ToString());
+                                    }
+
+                                    //get all contracts
+                                    List<Contract> contracts = Company.GetContractsForCompany(sub.Id, false);
+                                    foreach (Contract contr in contracts)
+                                    {
+                                        if (!contractNames.Contains(contr.ContractId) && !contractIds.Contains(contr.Id.ToString()))
+                                        {
+                                            contractNames.Add(contr.ContractId);
+                                            contractIds.Add(contr.Id.ToString());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        myCR = SetCRDetails(repType, C.excelCRAutoFolder);
+
+                        myCR.AssurIds = string.Join(C.cVALSEP, assurIds);
+                        myCR.AssurNames = string.Join(C.cVALSEP, assurNames);
+                        myCR.ParentCompanyNames = string.Join(C.cVALSEP, compNames);
+                        myCR.ParentCompanyIds = string.Join(C.cVALSEP, compIds);
+                        myCR.SubsidIds = string.Join(C.cVALSEP, subsidIds);
+                        myCR.SubsidNames = string.Join(C.cVALSEP, subsidNames);
+                        myCR.ContractIds = string.Join(C.cVALSEP, contractIds);
+                        myCR.ContractNames = string.Join(C.cVALSEP, contractNames);
+
+                        myCR.Name = g.Name;
+                        myCR.ListName = currListName;
+                        myCR.LevelGrEnt = "Group";
+                        myCR.ExcelCRPath = reportPath;
+                        myCR.IsAutoGenerated = true;
+
+                        crs.Add(myCR);
+                    }
+                }
+                if (chkEnterprises.Checked)
+                {
+                    if (!Directory.Exists(Path.Combine(rootCRAutoPath, currListName, currListType, "Entreprise")))
+                        Directory.CreateDirectory(Path.Combine(rootCRAutoPath, currListName, currListType, "Entreprise"));
+
+                    reportPath = Path.Combine(rootCRAutoPath, currListName, "Sante", "Entreprise", reportFolder);
+                    if (listType != C.eExcelGroupTypes.Sante) reportPath = Path.Combine(rootCRAutoPath, currListName, "Prev", "Entreprise", reportFolder);
+                                        
+                    //create a report for each Entrepr => search for all subsids & all contracts
+                    foreach (string e in enterprises)
+                    {
+                        List<string> compIds = new List<string>();
+                        List<string> compNames = new List<string>();
+                        List<string> subsidIds = new List<string>();
+                        List<string> subsidNames = new List<string>();
+                        List<string> contractIds = new List<string>();
+                        List<string> contractNames = new List<string>();
+
+                        int id = Company.GetCompanyIdForName(e);
+                        if (!compNames.Contains(e) && !compIds.Contains(id.ToString()))
+                        {
+                            compNames.Add(e);                            
+                            compIds.Add(id.ToString());
+
+                            //get all subsids
+                            List<Company> subsids = Company.GetChildCompanies(id);
+                            foreach(Company sub in subsids)
+                            {
+                                if (!subsidNames.Contains(sub.Name) && !subsidIds.Contains(sub.Id.ToString()))
+                                {
+                                    subsidNames.Add(sub.Name);
+                                    subsidIds.Add(sub.Id.ToString());
+                                }
+
+                                //get all contracts
+                                List<Contract> contracts = Company.GetContractsForCompany(sub.Id, false);
+                                foreach (Contract contr in contracts)
+                                {
+                                    if (!contractNames.Contains(contr.ContractId) && !contractIds.Contains(contr.Id.ToString()))
+                                    {
+                                        contractNames.Add(contr.ContractId);
+                                        contractIds.Add(contr.Id.ToString());
+                                    }
+                                }
+                            }
+                        }
+
+                        myCR = SetCRDetails(repType, C.excelCRAutoFolder);
+
+                        myCR.AssurIds = string.Join(C.cVALSEP, assurIds);
+                        myCR.AssurNames = string.Join(C.cVALSEP, assurNames);
+                        myCR.ParentCompanyNames = string.Join(C.cVALSEP, compNames);
+                        myCR.ParentCompanyIds = string.Join(C.cVALSEP, compIds);
+                        myCR.SubsidIds = string.Join(C.cVALSEP, subsidIds);
+                        myCR.SubsidNames = string.Join(C.cVALSEP, subsidNames);
+                        myCR.ContractIds = string.Join(C.cVALSEP, contractIds);
+                        myCR.ContractNames = string.Join(C.cVALSEP, contractNames);
+
+                        myCR.Name = e;
+                        myCR.ListName = currListName;
+                        myCR.LevelGrEnt = "Entreprise";
+                        myCR.ExcelCRPath = reportPath;
+                        myCR.IsAutoGenerated = true;
+
+                        crs.Add(myCR);                                                
+                    }
+                }
+
+                return crs;
+            }
+            catch (Exception ex)
+            {
+                UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::CollectAutoData");
+                return null;
+            }
+        }
+
+        protected void GenerateGroupEntLists()
+        {
+            enterprises = new List<string>();
+            groups = new List<Group>();
+
+            //rptListe.DataBind();
+            bool res = chkGroups.Checked;
+
+            foreach (RepeaterItem ri in rptListe.Items)
+            {
+                CheckBox chk = ri.FindControl("chk1") as CheckBox;
+                Label lblGroup = ri.FindControl("lblGroupe") as Label;
+                Label lblEnt = ri.FindControl("lblEnterprise") as Label;
+                string currGroup = "";
+                string currEnt = "";
+                int currIndex;
+
+                if (chk != null)
+                {
+                    if (chk.Checked)
+                    {
+                        if (lblGroup != null)
+                        {
+                            if (lblGroup.Text != string.Empty)
+                            {
+                                currGroup = lblGroup.Text;
+                                currIndex = groups.FindIndex(item => item.Name == currGroup);
+                                if (currIndex < 0)
+                                {
+                                    groups.Add(new Group { Name = currGroup, Enterprises = new List<string>() });
+                                }
+                            }
+
+                            //handle enterprises
+                            if (lblEnt != null)
+                            {
+                                if (lblEnt.Text != string.Empty)
+                                {
+                                    currEnt = lblEnt.Text;
+                                    if (!enterprises.Contains(currEnt))
+                                    {
+                                        enterprises.Add(currEnt);
+                                    }
+
+                                    //add Enterprise to Group
+                                    currIndex = groups.FindIndex(item => item.Name == currGroup);
+                                    if (currIndex >= 0)
+                                    {
+                                        List<string> ents = groups[currIndex].Enterprises; //.Add(new Group { Name = currGroup });
+                                        int index = ents.FindIndex(item => item == currEnt);
+                                        if (index < 0)
+                                        {
+                                            groups[currIndex].Enterprises.Add(currEnt);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        #region AUTO MODE => UI
+
+        public IEnumerable<CRGenList> GetLists()
+        {
+            return CRGenList.GetLists();
+        }
+
+        public List<CRGenListComp> GetGroupEntreprise()
+        {
+            try
+            {
+                if (listId != -1) return CRGenListComp.GetByCRListId(listId);
+                else return null;
+            }
+            catch (Exception ex) { UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::GetGroupEntreprise"); return null; }
+        }
+
+        protected void radioMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (radioMode.SelectedIndex == 0)
+            {
+                panelAuto.Visible = true;
+                panelManuel.Visible = false;
+                panelAuto2.Visible = true;
+                panelManuel2.Visible = false;
+            }
+            if (radioMode.SelectedIndex == 1)
+            {
+                panelManuel.Visible = true;
+                panelAuto.Visible = false;
+                panelManuel2.Visible = true;
+                panelAuto2.Visible = false;
+            }
+            cmbDetailReport.DataBind();
+
+        }
+
+        private void RefreshLists(string myListName)
+        {
+            lbListes.DataSource = GetLists();
+            lbListes.DataBind();
+
+            if (lbListes.Items.Count > 0)
+            {
+                if (myListName != "")
+                {
+                    lbListes.SelectedIndex = lbListes.Items.IndexOf(lbListes.Items.FindByText(myListName));
+                }
+                else
+                {
+                    lbListes.SelectedIndex = 0;
+                }
+
+                listId = int.Parse(lbListes.SelectedItem.Value);
+                FillListRepeater();
+            }
+        }
+
+        private void FillListRepeater()
+        {
+            if (lbListes.SelectedItem != null)
+            {
+                rptListe.DataBind();
+
+                int id = int.Parse(lbListes.SelectedItem.Value);
+                CRGenList list = CRGenList.GetListById(id);
+
+                if (list.Type.ToLower().Contains("sant"))
+                {
+                    listType = C.eExcelGroupTypes.Sante;
+                    var reportItem = cmbDetailReport.Items.FindByText("Santé - 1 an de survenance");
+                    if(reportItem != null)
+                    {
+                        cmbDetailReport.SelectedValue = reportItem.Value;
+                    }
+                }
+                else
+                {
+                    listType = C.eExcelGroupTypes.Prev;
+                    var reportItem = cmbDetailReport.Items.FindByText("Prévoyance");
+                    if (reportItem != null)
+                    {
+                        cmbDetailReport.SelectedValue = reportItem.Value;
+                    }
+                }
+            } 
+        }
+
+        protected void lbListes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            listId = int.Parse(lbListes.SelectedItem.Value);
+            FillListRepeater();
+        }
+
+        protected void rptListe_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            Repeater rpt = sender as Repeater;
+
+            if (rpt != null)
+            {
+                //if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+                //{
+                //    // automatically select all checkboxes
+                //    var chk = (CheckBox)e.Item.FindControl("chk1");
+                //    if (chk != null)
+                //    {
+                //        chk.Checked = true;
+                //    }
+                //}
+
+                if (e.Item.ItemType == ListItemType.Footer)
+                {
+                    if (rpt.Items.Count < 1)
+                    {
+                        rptListe.Visible = false;
+                        phHeader.Visible = true;
+                    }
+                    else
+                    {
+                        rptListe.Visible = true;
+                        phHeader.Visible = false;
+                    }
+                }
+            }
+        }
+
+        protected void Timer1_Tick(object sender, EventArgs e)
+        {
+            if (inProcess)
+            {
+                if (lblProgress.Text != progressContent)
+                    lblProgress.Text = progressContent;
+            }
+
+            if (processComplete)
+            {
+                inProcess = false;
+                Timer1.Enabled = false;
+                spinnerPanel.Visible = false;
+
+                if (!processError)
+                {                    
+                    lblProgress.Text = "";
+                } else
+                {                    
+                    lblProgress.ForeColor = System.Drawing.Color.Red;
+                    lblProgress.Font.Size = FontUnit.Smaller; 
+                    lblProgress.Text = progressContent;
+                }
+            }
+        }
+
+        #endregion
+      
+        
+        //### TEST CODE => DELETE
+        protected void TEST_Click(object sender, EventArgs e)
+        {
+            //GenerateGroupEntLists();
+            try
+            {
+                //throw new Exception("ERROR!!!");
+            }
+            catch (Exception ex) {
+                UICommon.HandlePageError(ex, this.Page, "CompteResultatManuel::CreateCRAuto");
+            }
+        }
+
+       
+    }
+
+    public class Group
+    {
+        public string Name { get; set; }
+        public List<string> Enterprises { get; set; }
     }
 }

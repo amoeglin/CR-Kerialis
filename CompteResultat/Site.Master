@@ -77,14 +77,16 @@
                         <Items>                       
                             <asp:MenuItem NavigateUrl="~/ImportData.aspx" Text="Import" /> 
                             <asp:MenuItem NavigateUrl="~/GestionImport.aspx" Text="Gestion Import" /> 
+                            <asp:MenuItem NavigateUrl="~/CRHistory.aspx" Text="Comptes de Résultats Générés" />
                             
                             <asp:MenuItem Selectable="false"   Text="Synthese" >
                                 <asp:MenuItem NavigateUrl="~/SyntheseSante.aspx" Text="Synthese Santé" />                            
                                 <asp:MenuItem NavigateUrl="~/SynthesePrev.aspx" Text="Synthese Prevoyance" />                                
                             </asp:MenuItem>  
 
-                            <asp:MenuItem NavigateUrl="~/CompteResultatManuel.aspx" Text="Génération des Comptes de Résultats Santé et Prévoyance" />
-                            <asp:MenuItem NavigateUrl="~/FileManager.aspx" Text="Liste des Comptes résultats" /> 
+                            <%--Santé et Prévoyance--%>
+                            <asp:MenuItem NavigateUrl="~/CompteResultatManuel.aspx" Text="Génération Comptes de Résultats" />
+                            <asp:MenuItem NavigateUrl="~/FileManager.aspx" Text="Liste Comptes de Résultats" /> 
                         
                             <asp:MenuItem Selectable="false"   Text="Paramètrage" >
                                 <asp:MenuItem NavigateUrl="~/MonEntreprise.aspx" Text="Mon Entreprise" />                            
@@ -94,7 +96,8 @@
                                 <asp:MenuItem NavigateUrl="~/GestionTypePrev.aspx" Text="Type Prevoyance" />
                                 <asp:MenuItem NavigateUrl="~/GestionFraisPrev.aspx" Text="Frais Prevoyance" />
                                 <asp:MenuItem NavigateUrl="~/GestionFraisSante.aspx" Text="Frais Sante" />
-                                <asp:MenuItem NavigateUrl="~/GestionEntreprises.aspx" Text="Paramètres des Entreprises" /> 
+                                <asp:MenuItem NavigateUrl="~/GestionEntreprises.aspx" Text="Paramètres des Entreprises" />
+                                <asp:MenuItem NavigateUrl="~/GestionCRListes.aspx" Text="Gestion Listes des Groupes" />
                                 <asp:MenuItem NavigateUrl="~/FMImport.aspx" Text="Gestion des Imports" /> 
                                 <asp:MenuItem NavigateUrl="~/FMAnalyse.aspx" Text="Gestion des Controles" /> 
                             </asp:MenuItem>   
@@ -109,15 +112,16 @@
                         IncludeStyleBlock="false" Orientation="Horizontal">
                         <Items>                            
                             <asp:MenuItem NavigateUrl="~/ImportData.aspx" Text="Import" /> 
-                            <asp:MenuItem NavigateUrl="~/GestionImport.aspx" Text="Gestion Import" /> 
+                            <asp:MenuItem NavigateUrl="~/GestionImport.aspx" Text="Gestion Import" />
+                            <asp:MenuItem NavigateUrl="~/CRHistory.aspx" Text="Comptes de Résultats Générés" />
                             
                             <asp:MenuItem Selectable="false"   Text="Synthese" >
                                 <asp:MenuItem NavigateUrl="~/SyntheseSante.aspx" Text="Synthese Santé" />                            
                                 <asp:MenuItem NavigateUrl="~/SynthesePrev.aspx" Text="Synthese Prevoyance" />                                
                             </asp:MenuItem>  
 
-                            <asp:MenuItem NavigateUrl="~/CompteResultatManuel.aspx" Text="Génération des Comptes de Résultats Santé et Prévoyance" />
-                            <asp:MenuItem NavigateUrl="~/FileManager.aspx" Text="Liste des Comptes résultats" />                             
+                            <asp:MenuItem NavigateUrl="~/CompteResultatManuel.aspx" Text="Génération Comptes de Résultats" />
+                            <asp:MenuItem NavigateUrl="~/FileManager.aspx" Text="Liste Comptes de Résultats" />                             
                         
                             <asp:MenuItem Selectable="false"   Text="Paramètrage" >
                                 <asp:MenuItem NavigateUrl="~/MonEntreprise.aspx" Text="Mon Entreprise" />
@@ -129,6 +133,7 @@
                                 <asp:MenuItem NavigateUrl="~/GestionFraisPrev.aspx" Text="Frais Prevoyance" />
                                 <asp:MenuItem NavigateUrl="~/GestionFraisSante.aspx" Text="Frais Sante" />
                                 <asp:MenuItem NavigateUrl="~/GestionEntreprises.aspx" Text="Paramètres des Entreprises" />
+                                <asp:MenuItem NavigateUrl="~/GestionCRListes.aspx" Text="Gestion Listes des Groupes" />
                                 <asp:MenuItem NavigateUrl="~/FMImport.aspx" Text="Gestion des Imports" /> 
                                 <asp:MenuItem NavigateUrl="~/FMAnalyse.aspx" Text="Gestion des Controles" /> 
                             </asp:MenuItem> 

@@ -88,6 +88,26 @@ namespace CompteResultat.DAL
             }
         }
 
+        public static List<CompteResult> GetComptesResultatByCRAutoId(int crAutoId)
+        {
+            List<CompteResult> myCRs = null;
+
+            try
+            {
+                using (var context = new CompteResultatEntities())
+                {
+                    myCRs = context.CompteResults.Where(c => c.CRAutoId == crAutoId).ToList();
+                }
+
+                return myCRs;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                throw ex;
+            }
+        }
+
         public static int GetIdForCRNameAndParentComp(string crName, string parentCompId)
         {
             int crId = C.cINVALIDID;

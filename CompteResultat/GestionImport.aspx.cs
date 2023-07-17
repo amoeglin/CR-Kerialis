@@ -77,7 +77,7 @@ namespace CompteResultat
         }
 
         private void BindMainGrid()
-        {
+        {            
             if (this.SortExpression != null)
             {
                 //this.SortDirection = this.SortDirection == "ASC" ? "DESC" : "ASC";

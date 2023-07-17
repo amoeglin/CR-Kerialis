@@ -249,11 +249,13 @@
     <Content Include="FMAnalyse.aspx" />
     <Content Include="FMImport.aspx" />
     <Content Include="FileManager.aspx" />
+    <Content Include="GestionCRListes.aspx" />
     <Content Include="GestionExperience.aspx" />
     <Content Include="GestionCadencier.aspx" />
     <Content Include="GestionEntreprises.aspx" />
     <Content Include="GestionFraisSante.aspx" />
     <Content Include="GestionFraisPrev.aspx" />
+    <Content Include="CRHistory.aspx" />
     <Content Include="GestionImport.aspx" />
     <Content Include="GestionTypePrev.aspx" />
     <Content Include="GestionGaranties.aspx" />
@@ -276,6 +278,7 @@
     <Content Include="Images\deletePath16.jpg" />
     <Content Include="Images\drop1.png" />
     <Content Include="Images\drop2.png" />
+    <Content Include="Images\export.png" />
     <Content Include="Images\FM16.jpg" />
     <Content Include="Images\FM24.jpg" />
     <Content Include="Images\folder.png" />
@@ -431,6 +434,13 @@
     <Compile Include="FileManager.aspx.designer.cs">
       <DependentUpon>FileManager.aspx</DependentUpon>
     </Compile>
+    <Compile Include="GestionCRListes.aspx.cs">
+      <DependentUpon>GestionCRListes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="GestionCRListes.aspx.designer.cs">
+      <DependentUpon>GestionCRListes.aspx</DependentUpon>
+    </Compile>
     <Compile Include="GestionExperience.aspx.cs">
       <DependentUpon>GestionExperience.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -465,6 +475,13 @@
     </Compile>
     <Compile Include="GestionFraisPrev.aspx.designer.cs">
       <DependentUpon>GestionFraisPrev.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="CRHistory.aspx.cs">
+      <DependentUpon>CRHistory.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CRHistory.aspx.designer.cs">
+      <DependentUpon>CRHistory.aspx</DependentUpon>
     </Compile>
     <Compile Include="GestionImport.aspx.cs">
       <DependentUpon>GestionImport.aspx</DependentUpon>

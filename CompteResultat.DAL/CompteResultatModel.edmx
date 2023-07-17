@@ -114,6 +114,7 @@ warning 6002: The table/view 'CompteResultat.dbo._TempOtherFields' does not have
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CRAutoId" Type="int" />
           <Property Name="Name" Type="nvarchar" MaxLength="200" />
           <Property Name="AssurIds" Type="nvarchar(max)" />
           <Property Name="CompanyIds" Type="nvarchar(max)" />
@@ -129,6 +130,7 @@ warning 6002: The table/view 'CompteResultat.dbo._TempOtherFields' does not have
           <Property Name="TaxActif" Type="float" />
           <Property Name="TaxPerif" Type="float" />
           <Property Name="ReportType" Type="nvarchar" MaxLength="50" />
+          <Property Name="LevelGrEnt" Type="nvarchar" MaxLength="20" />
         </EntityType>
         <EntityType Name="Contract">
           <Key>
@@ -174,6 +176,36 @@ warning 6002: The table/view 'CompteResultat.dbo._TempOtherFields' does not have
           <Property Name="WithOption" Type="nvarchar" MaxLength="10" />
           <Property Name="CotisationBrute" Type="float" />
           <Property Name="CodeSinistre" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="CRAutoMain">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ListName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ReporType" Type="nvarchar" MaxLength="10" />
+          <Property Name="MainFolderName" Type="nvarchar" MaxLength="100" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreationDateTime" Type="date" />
+        </EntityType>
+        <EntityType Name="CRGenList">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="200" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Type" Type="nvarchar" MaxLength="10" />
+          <Property Name="AssurType" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="CRGenListComp">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CRListId" Type="int" />
+          <Property Name="GroupName" Type="nvarchar" MaxLength="200" />
+          <Property Name="Enterprise" Type="nvarchar" MaxLength="200" />
         </EntityType>
         <EntityType Name="CRPlanning">
           <Key>
@@ -519,6 +551,34 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_CompteResult_CRAutoMain">
+          <End Role="CRAutoMain" Type="Self.CRAutoMain" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CompteResult" Type="Self.CompteResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CRAutoMain">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompteResult">
+              <PropertyRef Name="CRAutoId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CRGenListComp_CRGenList">
+          <End Role="CRGenList" Type="Self.CRGenList" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CRGenListComp" Type="Self.CRGenListComp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CRGenList">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CRGenListComp">
+              <PropertyRef Name="CRListId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CRPlanning_CompteResultat">
           <End Role="CompteResult" Type="Self.CompteResult" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
@@ -714,6 +774,9 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySet Name="Contract" EntityType="Self.Contract" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CotisatPrev" EntityType="Self.CotisatPrev" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CotisatSante" EntityType="Self.CotisatSante" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CRAutoMain" EntityType="Self.CRAutoMain" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CRGenList" EntityType="Self.CRGenList" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CRGenListComp" EntityType="Self.CRGenListComp" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CRPlanning" EntityType="Self.CRPlanning" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DecomptePrev" EntityType="Self.DecomptePrev" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Demography" EntityType="Self.Demography" Schema="dbo" store:Type="Tables" />
@@ -763,6 +826,14 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <AssociationSet Name="FK_Company_Company" Association="Self.FK_Company_Company">
             <End Role="Company" EntitySet="Company" />
             <End Role="Company1" EntitySet="Company" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompteResult_CRAutoMain" Association="Self.FK_CompteResult_CRAutoMain">
+            <End Role="CRAutoMain" EntitySet="CRAutoMain" />
+            <End Role="CompteResult" EntitySet="CompteResult" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CRGenListComp_CRGenList" Association="Self.FK_CRGenListComp_CRGenList">
+            <End Role="CRGenList" EntitySet="CRGenList" />
+            <End Role="CRGenListComp" EntitySet="CRGenListComp" />
           </AssociationSet>
           <AssociationSet Name="FK_CRPlanning_CompteResultat" Association="Self.FK_CRPlanning_CompteResultat">
             <End Role="CompteResult" EntitySet="CompteResult" />
@@ -899,6 +970,9 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="TaxPerif" Type="Double" />
           <Property Name="ReportType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CompanyIds" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CRAutoId" Type="Int32" />
+          <NavigationProperty Name="CRAutoMain" Relationship="CompteResultatModel.FK_CompteResult_CRAutoMain" FromRole="CompteResult" ToRole="CRAutoMain" />
+          <Property Name="LevelGrEnt" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Contract">
           <Key>
@@ -1240,6 +1314,17 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySet Name="ImportFiles" EntityType="CompteResultatModel.ImportFile" />
           <EntitySet Name="sysdiagrams" EntityType="CompteResultatModel.sysdiagram" />
           <EntitySet Name="UserRoles" EntityType="CompteResultatModel.UserRole" />
+          <EntitySet Name="CRGenLists" EntityType="CompteResultatModel.CRGenList" />
+          <EntitySet Name="CRGenListComps" EntityType="CompteResultatModel.CRGenListComp" />
+          <AssociationSet Name="FK_CRGenListComp_CRGenList" Association="CompteResultatModel.FK_CRGenListComp_CRGenList">
+            <End Role="CRGenList" EntitySet="CRGenLists" />
+            <End Role="CRGenListComp" EntitySet="CRGenListComps" />
+          </AssociationSet>
+          <EntitySet Name="CRAutoMains" EntityType="CompteResultatModel.CRAutoMain" />
+          <AssociationSet Name="FK_CompteResult_CRAutoMain" Association="CompteResultatModel.FK_CompteResult_CRAutoMain">
+            <End Role="CRAutoMain" EntitySet="CRAutoMains" />
+            <End Role="CompteResult" EntitySet="CompteResults" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="ReportTemplate">
           <Key>
@@ -1502,6 +1587,67 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
+        <EntityType Name="CRGenList">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Type" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="CRGenListComps" Relationship="CompteResultatModel.FK_CRGenListComp_CRGenList" FromRole="CRGenList" ToRole="CRGenListComp" />
+          <Property Name="AssurType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="CRGenListComp">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CRListId" Type="Int32" />
+          <Property Name="GroupName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Enterprise" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="CRGenList" Relationship="CompteResultatModel.FK_CRGenListComp_CRGenList" FromRole="CRGenListComp" ToRole="CRGenList" />
+        </EntityType>
+        <Association Name="FK_CRGenListComp_CRGenList">
+          <End Type="CompteResultatModel.CRGenList" Role="CRGenList" Multiplicity="0..1" >
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="CompteResultatModel.CRGenListComp" Role="CRGenListComp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CRGenList">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CRGenListComp">
+              <PropertyRef Name="CRListId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CRAutoMain">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ListName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ReporType" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="MainFolderName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreationDateTime" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="CompteResults" Relationship="CompteResultatModel.FK_CompteResult_CRAutoMain" FromRole="CRAutoMain" ToRole="CompteResult" />
+        </EntityType>
+        <Association Name="FK_CompteResult_CRAutoMain">
+          <End Type="CompteResultatModel.CRAutoMain" Role="CRAutoMain" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="CompteResultatModel.CompteResult" Role="CompteResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CRAutoMain">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompteResult">
+              <PropertyRef Name="CRAutoId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1575,6 +1721,8 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySetMapping Name="CompteResults">
             <EntityTypeMapping TypeName="CompteResultatModel.CompteResult">
               <MappingFragment StoreEntitySet="CompteResult">
+                <ScalarProperty Name="LevelGrEnt" ColumnName="LevelGrEnt" />
+                <ScalarProperty Name="CRAutoId" ColumnName="CRAutoId" />
                 <ScalarProperty Name="CompanyIds" ColumnName="CompanyIds" />
                 <ScalarProperty Name="ReportType" ColumnName="ReportType" />
                 <ScalarProperty Name="TaxPerif" ColumnName="TaxPerif" />
@@ -2070,6 +2218,39 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySetMapping Name="UserRoles">
             <EntityTypeMapping TypeName="CompteResultatModel.UserRole">
               <MappingFragment StoreEntitySet="UserRoles">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CRGenLists">
+            <EntityTypeMapping TypeName="CompteResultatModel.CRGenList">
+              <MappingFragment StoreEntitySet="CRGenList">
+                <ScalarProperty Name="AssurType" ColumnName="AssurType" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CRGenListComps">
+            <EntityTypeMapping TypeName="CompteResultatModel.CRGenListComp">
+              <MappingFragment StoreEntitySet="CRGenListComp">
+                <ScalarProperty Name="Enterprise" ColumnName="Enterprise" />
+                <ScalarProperty Name="GroupName" ColumnName="GroupName" />
+                <ScalarProperty Name="CRListId" ColumnName="CRListId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CRAutoMains">
+            <EntityTypeMapping TypeName="CompteResultatModel.CRAutoMain">
+              <MappingFragment StoreEntitySet="CRAutoMain">
+                <ScalarProperty Name="CreationDateTime" ColumnName="CreationDateTime" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="MainFolderName" ColumnName="MainFolderName" />
+                <ScalarProperty Name="ReporType" ColumnName="ReporType" />
+                <ScalarProperty Name="ListName" ColumnName="ListName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

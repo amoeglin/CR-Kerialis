@@ -14,6 +14,7 @@ namespace CompteResultat
             string path = Request.QueryString["path"];
             if (path != null && path != "")
             {
+                if (path.ToLower().Contains("app_data\\autocr")) Literal9.Text = "Comptes de Résultats";
                 ASPxFileManager2.Settings.RootFolder = path;
             }
 

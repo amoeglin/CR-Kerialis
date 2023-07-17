@@ -47,7 +47,6 @@ namespace CompteResultat.DAL
             }
         }
 
-
         public static List<Import> GetImports(string sortExpression, string sortDirection, string sortExpressionArchived)
         {
             try

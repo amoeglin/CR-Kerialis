@@ -118,12 +118,11 @@ first child of the left and right table columns */
     font-size: 2em;
 }
 
-.main
-{
+.main {
+    
     padding: 0px 12px;
     margin: 12px 8px 8px 8px;
     min-height: 680px;
-    
 }
 
 .leftCol
@@ -330,7 +329,7 @@ div.accountInfo
 
 
 .TreeView { border: 1px solid #A9A9A9; color:#3A4F63; text-decoration:none; overflow: scroll;  }   
-.RepeaterCad { border: 1px solid #A9A9A9; color:#3A4F63; text-decoration:none; overflow-y: scroll; height:500px; width:450px; margin-top:15px; padding:10px;   }
+.RepeaterCad { border: 1px solid #A9A9A9; color:#3A4F63; text-decoration:none; overflow-y: scroll; height:495px; width:410px; margin-top:20px; padding:10px;   }
 
 .RepeaterTP {
     border: 1px solid #A9A9A9;
@@ -447,11 +446,142 @@ table th {padding-right:10px;}
 tr.alternate { background-color: lightgray; }
 
 
+.groupListbox option:checked {
+    background-color: #FFFF74;
+    font-weight: bold;
+    color: black;
+    /*border-bottom: 2px solid #00A8BC;*/
+    /*color: #FF0000;*/
+}
 
 
 
 
 
+
+
+.loading {
+    position: fixed;
+    z-index: 999;
+    overflow: show;
+    margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+}
+
+/* Transparent Overlay */
+.loading:before {
+    content: '';
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,255,255,0.5);
+}
+
+/* :not(:required) hides these rules from IE9 and below */
+.loading:not(:required) {
+    /* hide "loading..." text */
+    font: 0/0 a;
+    color: transparent;
+    text-shadow: none;
+    background-color: transparent;
+    border: 0;
+}
+
+.loading:not(:required):after {
+    content: '';
+    display: block;
+    font-size: 10px;
+    width: 120px;
+    height: 120px;
+    margin-top: -0.5em;
+    border: 8px solid #00A8BC;
+    border-radius: 100%;
+    border-bottom-color: transparent;
+    -webkit-animation: spinner 1s linear 0s infinite;
+    animation: spinner 1s linear 0s infinite;
+}
+
+/* Animation */
+
+@-webkit-keyframes spinner {
+    0% {
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@-moz-keyframes spinner {
+    0% {
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@-o-keyframes spinner {
+    0% {
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spinner {
+    0% {
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
 
 
 

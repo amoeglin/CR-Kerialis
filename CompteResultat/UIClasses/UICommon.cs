@@ -33,6 +33,7 @@ namespace CompteResultat
                 var myCustomValidator = new CustomValidator();
                 myCustomValidator.IsValid = false;
                 myCustomValidator.ErrorMessage = source + " :: " + except.Message;
+                myCustomValidator.Text = myCustomValidator.ErrorMessage;
                 myPage.Validators.Add(myCustomValidator);
             }
             catch (Exception ex)
