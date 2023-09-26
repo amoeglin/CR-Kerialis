@@ -19,8 +19,8 @@
 
         textarea { border: 1px solid #A9A9A9; font-family: "Times New Roman", Times, serif; background-color:#CECECE; }
 
-        div.mainBlock { float:left; padding:10px; margin-right:50px; }
-        div.lastBlock { float:left; padding:10px; margin-top:50px;  }        
+        div.mainBlock { float:left; padding:10px; margin-right:30px; }
+        div.lastBlock { float:left; padding:10px; margin-top:50px;  }           
 
     </style>
     
@@ -207,7 +207,7 @@
         <div style="float: left; margin-left:0px; "> 
             <h1><asp:Literal  ID="Literal1" runat="server">Contenu de la liste sélectionnée :</asp:Literal> </h1> 
         
-            <div class="RepeaterCad" style="background-color:#D0EFEE;"> 
+            <div class="RepeaterCR1" style="background-color:#D0EFEE;"> 
                 <asp:PlaceHolder ID="phHeader" Visible='false' runat="server">
                     <asp:Label ID="lblEmpty" runat="server" Text="Cette liste est vide!"> </asp:Label>   
                 </asp:PlaceHolder>
@@ -216,27 +216,32 @@
                     OnItemDataBound="rptListe_ItemDataBound"  >
                     <HeaderTemplate>      
                           <table >
-                              <tr style="width:500px; height:30px;margin:15px;padding:15px;background-color:#FFFF74; border-bottom: 2px solid #00A8BC;"><th></th><th>Groupe</th><th>Entreprise</th></tr>                    
+                              <tr style="font-size: 12px; height:25px;margin-bottom:45px;padding-bottom:50px;background-color:#FFFF74; border-bottom: 2px solid #00A8BC;">
+                                  <th></th><th>Groupe</th><th>Entreprise</th><th>Raison Sociale</th><th>Structure Cot.</th></tr>                    
                     </HeaderTemplate>
                     <FooterTemplate>
                         </table>                
                     </FooterTemplate>
 
                     <ItemTemplate>
-                        <tr style="height:30px;">                            
+                        <tr class="standardCR" style="height:20px;">                            
                             <td style="width:30px;"><asp:CheckBox Checked="true" runat="server" ID="chk1" ClientIDMode="Static" /></td>
-                            <td><asp:Label Width="140px" runat="server" ID="lblGroupe" ClientIDMode="Static" Text="<%#: Item.GroupName %>" /></td>
-                            <td><asp:Label Width="210px" runat="server" ID="lblEnterprise" ClientIDMode="Static" Text="<%#: Item.Enterprise %>" /></td>
+                            <td><asp:Label Width="90px" runat="server" ID="lblGroupe" ClientIDMode="Static" Text="<%#: Item.GroupName %>" /></td>
+                            <td><asp:Label Width="90px" runat="server" ID="lblEnterprise" ClientIDMode="Static" Text="<%#: Item.Enterprise %>" /></td>
+                            <td><asp:Label Width="90px" runat="server" ID="lblRaison" ClientIDMode="Static" Text="<%#: Item.RaisonSociale %>" /></td>
+                            <td><asp:Label Width="100px" runat="server" ID="lblStructure" ClientIDMode="Static" Text="<%#: Item.StructureCotisation %>" /></td>
                             <%--<td><%#: Item.GroupName %></td>
                             <td><%#: Item.Enterprise %></td>  --%>                  
                         </tr>
                     </ItemTemplate>
                     <%--style="background-color:#FFFF74;"--%>
                     <AlternatingItemTemplate>                        
-                        <tr style="background-color:#0ABFCC;" >
+                        <tr class="alternateCR" style="background-color:#0ABFCC;" >
                             <td style="width:30px;"><asp:CheckBox Checked="true" runat="server" ID="chk1" ClientIDMode="Static" /></td>
-                            <td><asp:Label Width="140px" runat="server" ID="lblGroupe" ClientIDMode="Static" Text="<%#: Item.GroupName %>" /></td>
-                            <td><asp:Label Width="100%" runat="server" ID="lblEnterprise" ClientIDMode="Static" Text="<%#: Item.Enterprise %>" /></td>
+                            <td><asp:Label runat="server" ID="lblGroupe" ClientIDMode="Static" Text="<%#: Item.GroupName %>" /></td>
+                            <td><asp:Label runat="server" ID="lblEnterprise" ClientIDMode="Static" Text="<%#: Item.Enterprise %>" /></td>
+                            <td><asp:Label runat="server" ID="lblRaison" ClientIDMode="Static" Text="<%#: Item.RaisonSociale %>" /></td>
+                            <td><asp:Label runat="server" ID="lblStructure" ClientIDMode="Static" Text="<%#: Item.StructureCotisation %>" /></td>
                             
                         </tr>
                     </AlternatingItemTemplate>            

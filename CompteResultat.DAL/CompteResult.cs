@@ -40,6 +40,8 @@ namespace CompteResultat.DAL
         public string CompanyIds { get; set; }
         public Nullable<int> CRAutoId { get; set; }
         public string LevelGrEnt { get; set; }
+        public string RaisonSociale { get; set; }
+        public string StructureCotisation { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CRPlanning> CRPlannings { get; set; }

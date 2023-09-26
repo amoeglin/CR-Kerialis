@@ -6,6 +6,20 @@ using System.Threading.Tasks;
 
 namespace CompteResultat.BL
 {
+    public class Groups
+    {
+        public string Name { get; set; }
+        public List<Entrepr> Enterprises { get; set; }
+    }
+
+    public class Entrepr
+    {
+        public string Name { get; set; }
+        public string GroupName { get; set; }
+        public string RaisonSociale { get; set; }
+        public string Structure { get; set; }
+    }
+
     //public class GenericClasses
     //{
     //    public GenericClasses() { }

@@ -18,6 +18,8 @@ namespace CompteResultat.DAL
         public Nullable<int> CRListId { get; set; }
         public string GroupName { get; set; }
         public string Enterprise { get; set; }
+        public string RaisonSociale { get; set; }
+        public string StructureCotisation { get; set; }
     
         public virtual CRGenList CRGenList { get; set; }
     }

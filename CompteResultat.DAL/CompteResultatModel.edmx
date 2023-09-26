@@ -131,6 +131,8 @@ warning 6002: The table/view 'CompteResultat.dbo._TempOtherFields' does not have
           <Property Name="TaxPerif" Type="float" />
           <Property Name="ReportType" Type="nvarchar" MaxLength="50" />
           <Property Name="LevelGrEnt" Type="nvarchar" MaxLength="20" />
+          <Property Name="RaisonSociale" Type="nvarchar" MaxLength="200" />
+          <Property Name="StructureCotisation" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Contract">
           <Key>
@@ -186,7 +188,7 @@ warning 6002: The table/view 'CompteResultat.dbo._TempOtherFields' does not have
           <Property Name="ReporType" Type="nvarchar" MaxLength="10" />
           <Property Name="MainFolderName" Type="nvarchar" MaxLength="100" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" />
-          <Property Name="CreationDateTime" Type="date" />
+          <Property Name="CreationDateTime" Type="datetime" />
         </EntityType>
         <EntityType Name="CRGenList">
           <Key>
@@ -206,6 +208,8 @@ warning 6002: The table/view 'CompteResultat.dbo._TempOtherFields' does not have
           <Property Name="CRListId" Type="int" />
           <Property Name="GroupName" Type="nvarchar" MaxLength="200" />
           <Property Name="Enterprise" Type="nvarchar" MaxLength="200" />
+          <Property Name="RaisonSociale" Type="nvarchar" MaxLength="200" />
+          <Property Name="StructureCotisation" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="CRPlanning">
           <Key>
@@ -973,6 +977,8 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="CRAutoId" Type="Int32" />
           <NavigationProperty Name="CRAutoMain" Relationship="CompteResultatModel.FK_CompteResult_CRAutoMain" FromRole="CompteResult" ToRole="CRAutoMain" />
           <Property Name="LevelGrEnt" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="RaisonSociale" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="StructureCotisation" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Contract">
           <Key>
@@ -1607,6 +1613,8 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="GroupName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="Enterprise" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="CRGenList" Relationship="CompteResultatModel.FK_CRGenListComp_CRGenList" FromRole="CRGenListComp" ToRole="CRGenList" />
+          <Property Name="RaisonSociale" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="StructureCotisation" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_CRGenListComp_CRGenList">
           <End Type="CompteResultatModel.CRGenList" Role="CRGenList" Multiplicity="0..1" >
@@ -1631,7 +1639,7 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <Property Name="ReporType" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="MainFolderName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CreationDateTime" Type="DateTime" Precision="0" />
+          <Property Name="CreationDateTime" Type="DateTime" Precision="3" />
           <NavigationProperty Name="CompteResults" Relationship="CompteResultatModel.FK_CompteResult_CRAutoMain" FromRole="CRAutoMain" ToRole="CompteResult" />
         </EntityType>
         <Association Name="FK_CompteResult_CRAutoMain">
@@ -1721,6 +1729,8 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySetMapping Name="CompteResults">
             <EntityTypeMapping TypeName="CompteResultatModel.CompteResult">
               <MappingFragment StoreEntitySet="CompteResult">
+                <ScalarProperty Name="StructureCotisation" ColumnName="StructureCotisation" />
+                <ScalarProperty Name="RaisonSociale" ColumnName="RaisonSociale" />
                 <ScalarProperty Name="LevelGrEnt" ColumnName="LevelGrEnt" />
                 <ScalarProperty Name="CRAutoId" ColumnName="CRAutoId" />
                 <ScalarProperty Name="CompanyIds" ColumnName="CompanyIds" />
@@ -2236,6 +2246,8 @@ warning 6002: The table/view 'CompteResultat.dbo.IMReAssAss' does not have a pri
           <EntitySetMapping Name="CRGenListComps">
             <EntityTypeMapping TypeName="CompteResultatModel.CRGenListComp">
               <MappingFragment StoreEntitySet="CRGenListComp">
+                <ScalarProperty Name="StructureCotisation" ColumnName="StructureCotisation" />
+                <ScalarProperty Name="RaisonSociale" ColumnName="RaisonSociale" />
                 <ScalarProperty Name="Enterprise" ColumnName="Enterprise" />
                 <ScalarProperty Name="GroupName" ColumnName="GroupName" />
                 <ScalarProperty Name="CRListId" ColumnName="CRListId" />

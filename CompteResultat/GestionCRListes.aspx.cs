@@ -222,23 +222,40 @@ namespace CompteResultat
         {
             try
             {
+                string prevSante = "SANTE";
+                string entProd = "ENTREPRISE";
+
+                if (type.ToLower().Contains("prev")) prevSante = "PREVOYANCE";
+                if (assurType.ToLower().Contains("prod")) prevSante = "PRODUIT";
+
                 List<CRGenListComp> crComps = CRGenListComp.GetByCRListId(crListId);
 
                 ExcelPackage pck = new ExcelPackage();
                 var ws = pck.Workbook.Worksheets.Add("LISTE GROUPES ET ENTREPRISES");
 
                 //write the header
-                ws.Cells[1, 1].Value = "GROUPE";
-                ws.Cells[1, 2].Value = "N°ENTREPRISE";
-                ws.Cells[1, 3].Value = type;
-                ws.Cells[1, 4].Value = assurType;
+                //ws.Cells[1, 1].Value = "GROUPE";
+                //ws.Cells[1, 2].Value = "N°ENTREPRISE";
+                //ws.Cells[1, 3].Value = type;
+                //ws.Cells[1, 4].Value = assurType;
 
-                int row = 2;
+                ws.Cells[1, 1].Value = "PARAMETRAGE";
+                ws.Cells[2, 1].Value = prevSante;
+                ws.Cells[3, 1].Value = entProd;
+
+                ws.Cells[5, 1].Value = "GROUPE";
+                ws.Cells[5, 2].Value = "N°ENTREPRISE";
+                ws.Cells[5, 3].Value = "RAISON SOCIALE DE L'ENTREPRISE";
+                ws.Cells[5, 4].Value = "STRUCTURE DE COTISATION";
+
+                int row = 6;
 
                 foreach (CRGenListComp c in crComps)
                 {
                     ws.Cells[row, 1].Value = c.GroupName;
                     ws.Cells[row, 2].Value = c.Enterprise;
+                    ws.Cells[row, 3].Value = c.RaisonSociale;
+                    ws.Cells[row, 4].Value = c.StructureCotisation;
                     row++;
                 }
 
@@ -268,6 +285,10 @@ namespace CompteResultat
                 string assurType = "ENTREPRISE";
                 string groupName = "";
                 string enterprise = "";
+                string raisonSociale = "";
+                string structureCotisation = "";
+                string prevSante = "";
+                string entProd = "";
 
                 //read Excel file into datatable
                 DataTable dt = G.ExcelToDataTable(excelFilePath, false);
@@ -283,29 +304,31 @@ namespace CompteResultat
                 int cnt = 0;
                 foreach (DataRow row in dt.Rows)
                 {
-                    if (cnt == 0)
+                    if (cnt == 1)
                     {
-                        string excelType = row[2].ToString();
-                        if (excelType.ToLower().Contains("sant")) { type = "SANTE"; }
+                        prevSante = row[0].ToString();
+                        if (prevSante.ToLower().Contains("sant")) { type = "SANTE"; }
                         else { type = "PREV"; }
-
-                        excelType = row[3].ToString();
-                        if (excelType.ToLower().Contains("prod")) { assurType = "PRODUIT"; }
+                    }
+                    else if (cnt == 2) 
+                    {
+                        entProd = row[0].ToString();
+                        if (entProd.ToLower().Contains("prod")) { assurType = "PRODUIT"; }
                         else { assurType = "ENTREPRISE"; }
 
-                        //create entry in CRGenList
-                        id = CRGenList.Insert(new CRGenList { Name = listName, UserName = userName, Type = type, AssurType=assurType });
-
+                        id = CRGenList.Insert(new CRGenList { Name = listName, UserName = userName, Type = type, AssurType = assurType });
                     }
-                    else
+                    else if (cnt > 4)                     
                     {
                         //validate => all fields must be specified  
                         //if (!Int32.TryParse(row[C.eExcelCadencier.Year.ToString()].ToString(), out year))
                         //    throw new Exception("One of the provided 'Year' values is not valid for the Cadencier you are trying to import !");
                         groupName = row[0].ToString();
                         enterprise = row[1].ToString();
+                        raisonSociale = row[2].ToString();
+                        structureCotisation = row[3].ToString();
 
-                        int idComp = CRGenListComp.Insert(new CRGenListComp { CRListId = id, GroupName = groupName, Enterprise = enterprise });
+                        int idComp = CRGenListComp.Insert(new CRGenListComp { CRListId = id, GroupName = groupName, Enterprise = enterprise, RaisonSociale=raisonSociale, StructureCotisation=structureCotisation });
                     }
                     cnt++;
                 }

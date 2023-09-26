@@ -26,7 +26,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server" style="">
     <div style="margin-top:30px;"></div>
 
-    <div style="float: left; width: 700px; margin-left: 20px;">
+    <div style="float: left; width: 850px; margin-left: 20px;">
         <h1><asp:Literal  ID="Literal9" runat="server">Listes des Groupes et entreprises :</asp:Literal> </h1> 
         
         <asp:CheckBox ID="chkMyLists" runat="server" Checked="false" AutoPostBack="true"
@@ -109,11 +109,11 @@
 
     <%-- Repeater --%>
 
-    <div style="float: left; margin-left:120px; "> 
+    <div style="float: left; margin-left:60px; "> 
 
         <h1><asp:Literal  ID="Literal1" runat="server">Contenu de la liste sélectionnée :</asp:Literal> </h1> 
         
-        <div class="RepeaterCad"> 
+        <div class="RepeaterCR"> 
 
         <asp:PlaceHolder ID="phHeader" Visible='false' runat="server">
             <asp:Label ID="lblEmpty" runat="server" Text="Il n'y a pas des données disponibles !"> </asp:Label>   
@@ -122,22 +122,26 @@
         <asp:Repeater ItemType="CompteResultat.DAL.CRGenListComp" SelectMethod="GetGroupEntreprise" ID="rptCad" runat="server" OnItemDataBound="rptCad_ItemDataBound">
             <HeaderTemplate>      
                   <table>
-                      <tr><th>Groupe</th><th>Entreprise</th></tr>                    
+                      <tr style="font-size: 12px;"><th>Groupe</th><th style="width:150px;">Entreprise</th><th>Raison Sociale</th><th>Structure Cotisation</th></tr>                    
             </HeaderTemplate>
             <FooterTemplate>
                 </table>                
             </FooterTemplate>
 
             <ItemTemplate>
-                <tr>
+                <tr class="standardCR">
                     <td><%#: Item.GroupName %></td>
-                    <td><%#: Item.Enterprise %></td>                    
+                    <td><%#: Item.Enterprise %></td> 
+                    <td><%#: Item.RaisonSociale %></td>   
+                    <td><%#: Item.StructureCotisation %></td> 
                 </tr>
             </ItemTemplate>
             <AlternatingItemTemplate>
-                <tr class="alternate">
+                <tr class="alternateCR">
                     <td><%#: Item.GroupName %></td>
-                    <td><%#: Item.Enterprise %></td>  
+                    <td><%#: Item.Enterprise %></td>
+                    <td><%#: Item.RaisonSociale %></td>
+                    <td><%#: Item.StructureCotisation %></td> 
                 </tr>
             </AlternatingItemTemplate>            
         </asp:Repeater>

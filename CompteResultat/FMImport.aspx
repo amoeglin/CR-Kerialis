@@ -13,9 +13,9 @@
     <div style="float: left; width: 1100px;">
         <h1><asp:Literal   ID="Literal9" runat="server">Liste des imports :</asp:Literal></h1>         
 
-        <dx:ASPxFileManager style="margin-top:20px;" ID="ASPxFileManager2" runat="server">
+        <dx:ASPxFileManager style="margin-top:20px;" ID="ASPxFileManager2" runat="server"> 
             
-            <settings EnableMultiSelect="true" rootfolder="~/App_Data/Imports" AllowedFileExtensions=".csv, .xlsx, .xlsm" />
+            <settings EnableMultiSelect="true" rootfolder="~/App_Data/Imports" AllowedFileExtensions=".csv, .xlsx, .xlsm, .ppt, .pptm" />
             <SettingsFileList View="Details">
             </SettingsFileList>
             <SettingsEditing AllowDelete="True" AllowDownload="True" AllowRename="True" />

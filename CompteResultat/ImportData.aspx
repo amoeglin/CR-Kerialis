@@ -382,6 +382,7 @@
         </table>
     </div>    
 
+    <%--TODO 2 * none - block --%>
     <div id="dropBox" style="border: 4px solid #0099B1; text-align: center; border-radius: 16px; margin-top: 20px; margin-left: 70px; 
         background-color:#D0EFEE; float:left; width:600px; height:70px; display:none">
         <img id="dropIcon" src="/Images/drop1.png" style="width:40px; margin-top:10px; margin-right:20px;">
@@ -389,6 +390,8 @@
         <img id="dropIcon2" src="/Images/drop1.png" style="width:40px; margin-top:10px; margin-left:20px;">
         <%--<asp:Image runat="server" ID="Image1" Width="200" Height="200" ImageUrl="~/Images/folder.png" />--%>            
     </div>
+
+    <%--TODO--%>
     <div style="display:none">        
         <input id="uploadDropFile" type="button" value="Importer"  />                              
     </div>

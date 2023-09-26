@@ -331,6 +331,17 @@ div.accountInfo
 .TreeView { border: 1px solid #A9A9A9; color:#3A4F63; text-decoration:none; overflow: scroll;  }   
 .RepeaterCad { border: 1px solid #A9A9A9; color:#3A4F63; text-decoration:none; overflow-y: scroll; height:495px; width:410px; margin-top:20px; padding:10px;   }
 
+.RepeaterCR1 {
+    border: 1px solid #A9A9A9;
+    color: #3A4F63;
+    text-decoration: none;
+    overflow-y: scroll;
+    height: 495px;
+    width: 425px;
+    margin-top: 20px;
+    padding: 10px;
+}
+
 .RepeaterTP {
     border: 1px solid #A9A9A9;
     color: #3A4F63;
@@ -443,7 +454,29 @@ table th {padding-right:10px;}
 .Label { font-size: 14px; }
 .Textbox { margin-left: 10px; }
 
-tr.alternate { background-color: lightgray; }
+tr.alternate {
+    background-color: lightgray;
+}
+
+tr.standardCR {    
+    font-size: 10px;
+}
+
+tr.alternateCR {
+    background-color: lightgray;
+    font-size: 10px;
+}
+
+.RepeaterCR {
+    border: 1px solid #A9A9A9;
+    color: #3A4F63;
+    text-decoration: none;
+    overflow-y: scroll;
+    height: 495px;
+    width: 480px;
+    margin-top: 20px;
+    padding: 10px;
+}
 
 
 .groupListbox option:checked {

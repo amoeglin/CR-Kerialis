@@ -5,7 +5,7 @@
     <style type="text/css">
         .Hide
         {
-            display: none;
+            display: none; 
         }
     </style>
 
@@ -153,7 +153,9 @@
                                                 <asp:BoundField DataField="CompanyIds" HeaderText="Entreprises" HeaderStyle-Width="20px"  />   
                                                 <asp:BoundField DataField="SubsidIds" HeaderText="Filiales" HeaderStyle-Width="20px"  />   
                                                 <asp:BoundField DataField="ContractIds" HeaderText="Contrats" HeaderStyle-Width="20px"  />
-                                                <asp:BoundField Visible="false" DataField="Name"  />
+                                                <asp:BoundField Visible="true" DataField="RaisonSociale" HeaderText="Raison Sociale"   />
+                                                <asp:BoundField Visible="true" DataField="StructureCotisation" HeaderText="Structure Cotisation"  />
+                                                <asp:BoundField Visible="false" DataField="Name"  /> 
                                                 <asp:BoundField Visible="false" DataField="Name"  />
                                                 <asp:BoundField Visible="false" DataField="Name"  />
                                                 
@@ -171,11 +173,12 @@
 
                             <%--TODO: Add: ListName, Type (Sante,Prev), Folder (test_2023-06-26T22-11-06), Niveau (Group, Entreprise)--%>
                             <asp:BoundField Visible="false" DataField="Id"  /> <%--HeaderText="Id" SortExpression="Id"   HeaderStyle-Width="105px" ItemStyle-Wrap="False"--%>
-                            <asp:BoundField DataField="MainFolderName" HeaderStyle-Width="500px" HeaderText="Nom Compte de Résultat" SortExpression="MainFolderName" />                            
+                            <asp:BoundField DataField="MainFolderName" HeaderStyle-Width="200px" HeaderText="Nom Compte de Résultat" SortExpression="MainFolderName" /> 
+                            <asp:BoundField DataField="MainFolderName" HeaderStyle-Width="600px" HeaderText="Chemin Compte de Résultat" SortExpression="MainFolderName" />                            
                             <asp:BoundField DataField="ReporType" HeaderText="Type" SortExpression="ReporType"  />                            
                             <asp:BoundField DataField="UserName" HeaderText="Utilisateur" SortExpression="UserName"  />
                             <asp:BoundField Visible="true" DataField="CreationDateTime" DataFormatString="{0:g}" HeaderText="Date Génération" SortExpression="CreationDateTime" />
-                            <asp:BoundField DataField="ListName" HeaderText="Nom de la Liste" SortExpression="ListName"  />                            
+                            <asp:BoundField DataField="ListName" HeaderText="Nom de la Liste" SortExpression="ListName"  />                             
                            
                             <asp:TemplateField Visible="true">
                                 <ItemTemplate>

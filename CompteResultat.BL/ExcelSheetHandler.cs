@@ -2086,7 +2086,7 @@ namespace CompteResultat.BL
                 }
                 else if (prevProvSheet == C.ePrevProv.Prov)
                 {
-                    //allProvPrevData = ProvPrev.GetProvPrevForContracts(assurList, parentCompanyList, companyList, contrList, college, debutNew, finNew, dateArret);                    
+                    //allProvPrevData = ProvPrev.GetProvPrevForContracts(assurList, parentCompanyList, companyList, contrList, college, debutNew, finNew, dateArret, typeComptes);                    
 
                     if (allProvPrevData.Any())
                     {
@@ -2583,6 +2583,13 @@ namespace CompteResultat.BL
                 }
 
                 //### CUMUL PROV
+                //##### In order to get Data for CONTROLE sheet in Excel :: first, we need some data in : sinistreEtProv => 
+                // this comes from : ProvPrev.GetProvPrevForContracts(...  => L2089 
+                // then we iterate over sinistreEtProv (L2235) and create new rows for : prevTableProv
+                // finally, we add the required data for the CONTROLE sheet to the cumul List
+
+                //QUERY: select *  FROM [ProvPrev] where AssureurName = 'KERIALIS_PREVOYANCE_PRODUIT' and ContractId = '' and Company = '' and Subsid = ''
+                // and DateSinistre >= '2020-01-01' and DateSinistre <= '2023-01-01' and DateProvision = '2022-12-31'
                 if (true)
                 {
                     if (prevTableProv.Rows.Count > 0)
@@ -2617,9 +2624,10 @@ namespace CompteResultat.BL
                             if (cm == null)
                             {
                                 //following fields are zero: CB, CN, PREST, Charge, Ratio
+                                //##### change ANNEESOIN => ANNESIN
                                 cumul.Add(new Cumul
                                 {
-                                    Year = row["ANNEESOIN"].ToString(),
+                                    Year = row["ANNESIN"].ToString(),
                                     Prest = "0",
                                     Prov = row["PROVISION"].ToString(),
                                     CotBrut = "0",
@@ -2634,7 +2642,7 @@ namespace CompteResultat.BL
                                 double.TryParse(cm.Prest.ToString(), out prest);
                                 if (double.TryParse(cm.CotNet.ToString(), out cn))
                                 {
-                                    ratio = Math.Round(((prest + prov) / cn), 4);
+                                    if(cn != 0) ratio = Math.Round(((prest + prov) / cn), 4);
                                 }
                                 gainLoss = cn - prov - prest;
 
@@ -3064,6 +3072,213 @@ namespace CompteResultat.BL
 
                     ws.Cells["AD2"].Value = "OUI";
                     //ws.Cells["AE2"].Value = "OUI";
+
+                    pck.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: FillAffichageSheet : " + ex.Message);
+                throw ex;
+            }
+        }
+
+        public static void FillIsGroup(FileInfo excelFilePath, string levelGrEnt)
+        {
+            try
+            {
+                string isGr = "OUI";
+                if (levelGrEnt != "Group") isGr = "NON";
+
+                //save data to Excel
+                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
+                {
+                    ExcelWorksheet ws = pck.Workbook.Worksheets["AFFICHAGE-2"];
+
+                    ws.Cells["A1"].Value = "IsGroup";
+                    ws.Cells["A2"].Value = isGr;
+                    pck.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: FillAffichageSheet : " + ex.Message);
+                throw ex;
+            }
+        }
+
+        public static void FillFraisPrev(FileInfo excelFilePath)
+        {
+            try
+            {
+                DataTable fraisPrevTable = new DataTable();
+                DataColumn annee = new DataColumn("ANNEE", typeof(string));
+                DataColumn type = new DataColumn("TYPE", typeof(string));
+                DataColumn frais = new DataColumn("FRAIS", typeof(string));
+                fraisPrevTable.Columns.AddRange(new DataColumn[] { annee, type, frais });
+
+                List<FraisPrevoyance> fraisPref = FraisPrevoyance.GetFraisPrevoyance();
+
+                if (fraisPref.Any())
+                {
+                    DataRow newRow = fraisPrevTable.NewRow();
+                    newRow["ANNEE"] = "AnneeSurvenance";
+                    newRow["TYPE"] = "TypeSinistre";
+                    newRow["FRAIS"] = "Frais";
+                    fraisPrevTable.Rows.Add(newRow);
+
+                    foreach (var elem in fraisPref)
+                    {
+                        newRow = fraisPrevTable.NewRow();
+                        newRow["ANNEE"] = elem.AnneeSurvenance;
+                        newRow["TYPE"] = elem.TypeSinistre;
+                        newRow["FRAIS"] = elem.Frais;
+                        fraisPrevTable.Rows.Add(newRow);
+                    }
+                }
+
+                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
+                {
+                    //pck.Workbook.Worksheets[C.cEXCELGROUPGARANT].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+                    ExcelWorksheet ws = pck.Workbook.Worksheets["AFFICHAGE-2"];
+                    ws.Cells["H1"].LoadFromDataTable(fraisPrevTable, false);
+
+                    pck.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: FillAffichageSheet : " + ex.Message);
+                throw ex;
+            }
+        }
+
+        public static void FillFraisSante(FileInfo excelFilePath)
+        {
+            try
+            {
+                DataTable fraisPrevTable = new DataTable();
+                DataColumn annee = new DataColumn("ANNEE", typeof(string));
+                DataColumn type = new DataColumn("TYPE", typeof(string));
+                DataColumn frais = new DataColumn("FRAIS", typeof(string));
+                fraisPrevTable.Columns.AddRange(new DataColumn[] { annee, type, frais });
+
+                List<FraisSante> fraisPref = FraisSante.GetFraisSante();
+
+                if (fraisPref.Any())
+                {
+                    DataRow newRow = fraisPrevTable.NewRow();
+                    newRow["ANNEE"] = "AnneeSurvenance";
+                    newRow["TYPE"] = "TypeFraisTaxes";
+                    newRow["FRAIS"] = "Frais";
+                    fraisPrevTable.Rows.Add(newRow);
+
+                    foreach (var elem in fraisPref)
+                    {
+                        newRow = fraisPrevTable.NewRow();
+                        newRow["ANNEE"] = elem.AnneeSurvenance;
+                        newRow["TYPE"] = elem.TypeFraisTaxes;
+                        newRow["FRAIS"] = elem.Frais;
+                        fraisPrevTable.Rows.Add(newRow);
+                    }
+                }
+
+                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
+                {
+                    //pck.Workbook.Worksheets[C.cEXCELGROUPGARANT].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+                    ExcelWorksheet ws = pck.Workbook.Worksheets["AFFICHAGE-2"];
+                    ws.Cells["H1"].LoadFromDataTable(fraisPrevTable, false);
+
+                    pck.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: FillAffichageSheet : " + ex.Message);
+                throw ex;
+            }
+        }
+
+        public static void FillCRGroups(FileInfo excelFilePath, Groups crGroups)
+        {
+            try
+            {
+                DataTable groupsTable = new DataTable();
+                DataColumn group = new DataColumn("GROUP", typeof(string));
+                DataColumn entreprise = new DataColumn("ENTREPRISE", typeof(string));
+                DataColumn raison = new DataColumn("RAISON", typeof(string));
+                DataColumn structure = new DataColumn("STRUCTURE", typeof(string));
+                groupsTable.Columns.AddRange(new DataColumn[] { group, entreprise, raison, structure });
+
+                if (crGroups.Name != string.Empty)
+                {
+                    DataRow newRow = groupsTable.NewRow();
+                    newRow["GROUP"] = "GROUPE";
+                    newRow["ENTREPRISE"] = "N°ENTREPRISE";
+                    newRow["RAISON"] = "RAISON SOCIALE DE L'ENTREPRISE";
+                    newRow["STRUCTURE"] = "Structure Cotisation";
+                    groupsTable.Rows.Add(newRow);
+
+                    foreach (var elem in crGroups.Enterprises)
+                    {
+                        newRow = groupsTable.NewRow();
+                        newRow["GROUP"] = elem.GroupName;
+                        newRow["ENTREPRISE"] = elem.Name;
+                        newRow["RAISON"] = elem.RaisonSociale;
+                        newRow["STRUCTURE"] = elem.Structure;
+                        groupsTable.Rows.Add(newRow);
+                    }
+                }
+
+                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
+                {
+                    //pck.Workbook.Worksheets[C.cEXCELGROUPGARANT].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+                    ExcelWorksheet ws = pck.Workbook.Worksheets["AFFICHAGE-2"];
+                    ws.Cells["C1"].LoadFromDataTable(groupsTable, false);
+
+                    pck.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error :: FillAffichageSheet : " + ex.Message);
+                throw ex;
+            }
+        }
+
+        public static void FillCREntrepr(FileInfo excelFilePath, Entrepr crEntr)
+        {
+            try
+            {
+                DataTable groupsTable = new DataTable();
+                DataColumn group = new DataColumn("GROUP", typeof(string));
+                DataColumn entreprise = new DataColumn("ENTREPRISE", typeof(string));
+                DataColumn raison = new DataColumn("RAISON", typeof(string));
+                DataColumn structure = new DataColumn("STRUCTURE", typeof(string));
+                groupsTable.Columns.AddRange(new DataColumn[] { group, entreprise, raison, structure });
+
+                if (crEntr.Name != string.Empty)
+                {
+                    DataRow newRow = groupsTable.NewRow();
+                    newRow["GROUP"] = "GROUPE";
+                    newRow["ENTREPRISE"] = "N°ENTREPRISE";
+                    newRow["RAISON"] = "RAISON SOCIALE DE L'ENTREPRISE";
+                    newRow["STRUCTURE"] = "Structure Cotisation";
+                    groupsTable.Rows.Add(newRow);
+                    
+                    newRow = groupsTable.NewRow();
+                    newRow["GROUP"] = crEntr.GroupName;
+                    newRow["ENTREPRISE"] = crEntr.Name;
+                    newRow["RAISON"] = crEntr.RaisonSociale;
+                    newRow["STRUCTURE"] = crEntr.Structure;
+                    groupsTable.Rows.Add(newRow);                    
+                }
+
+                using (ExcelPackage pck = new ExcelPackage(excelFilePath))
+                {
+                    //pck.Workbook.Worksheets[C.cEXCELGROUPGARANT].DeleteRow(2, C.cNUMBROWSDELETEEXCEL);
+                    ExcelWorksheet ws = pck.Workbook.Worksheets["AFFICHAGE-2"];
+                    ws.Cells["C1"].LoadFromDataTable(groupsTable, false);
 
                     pck.Save();
                 }
