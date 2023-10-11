@@ -32,3 +32,6 @@ CompteResultat/App_Data/Imports/
 CompteResultat/App_Data/ReportTemplates/Backup/
 /CompteResultat/App_Data/ReportTemplates/ReportTemplateSynthesePrev - Copie (3).xlsm
 /CompteResultat/App_Data/ReportTemplates/ReportTemplateSynthesePrev - Copie (2).xlsm
+
+
+CompteResultat/Web.config
